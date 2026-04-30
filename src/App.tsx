@@ -8,6 +8,7 @@ import Deck from "./pages/Deck.tsx";
 import BackendDeck from "./pages/BackendDeck.tsx";
 import OpsDeck from "./pages/OpsDeck.tsx";
 import EnforcementDeck from "./pages/EnforcementDeck.tsx";
+import UserDeck from "./pages/UserDeck.tsx";
 import PrintDeck from "./pages/PrintDeck.tsx";
 import Presenter from "./pages/Presenter.tsx";
 import ApiPlayground from "./pages/ApiPlayground.tsx";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/backend-deck" element={<BackendDeck />} />
           <Route path="/ops-deck" element={<OpsDeck />} />
           <Route path="/enforcement-deck" element={<EnforcementDeck />} />
+          <Route path="/user-deck" element={<UserDeck />} />
           <Route path="/print" element={<PrintDeck />} />
           <Route path="/presenter" element={<Presenter />} />
           <Route path="/api-playground" element={<ApiPlayground />} />
