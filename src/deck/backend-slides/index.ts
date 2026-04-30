@@ -19,6 +19,9 @@ import B4S1 from "./b4-01-move-atomicity";
 import B4S2 from "./b4-02-fractional-index";
 import B4S3 from "./b4-03-rebalance";
 import B4S4 from "./b4-04-soft-delete";
+import B5S1 from "./b5-01-peer-groups";
+import B5S2 from "./b5-02-cycle-detection";
+import B5S3 from "./b5-03-broken-at";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
@@ -48,5 +51,10 @@ export const backendSlides: SlideMeta[] = [
   { id: "b4-2", chapter: "Phase B-4", title: "Fractional indexing math", Component: B4S2 },
   { id: "b4-3", chapter: "Phase B-4", title: "Rebalance & conflict cases", Component: B4S3 },
   { id: "b4-4", chapter: "Phase B-4", title: "Soft-delete & restore", Component: B4S4 },
+
+  { id: "b5-divider", chapter: "Phase B-5", title: "Mirrors", Component: makeDivider("Phase B-5", "Mirrors", "Peer groups · cycle detection · BrokenAt propagation.") },
+  { id: "b5-1", chapter: "Phase B-5", title: "Peer-group resolution", Component: B5S1 },
+  { id: "b5-2", chapter: "Phase B-5", title: "Cycle detection", Component: B5S2 },
+  { id: "b5-3", chapter: "Phase B-5", title: "BrokenAt propagation", Component: B5S3 },
 ];
 
