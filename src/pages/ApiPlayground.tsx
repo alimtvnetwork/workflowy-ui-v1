@@ -97,6 +97,30 @@ export default function ApiPlayground() {
         <div className="flex gap-2">
           <Link to="/"><Button variant="ghost" size="sm">Home</Button></Link>
           <Link to="/backend-deck"><Button variant="ghost" size="sm">Backend deck</Button></Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              await resetPlayground();
+              const a = await applyOp("items.create", { ParentId: null, Content: "Cycle A", ItemType: "Task" });
+              const aId = (a.Results[0] as Item)?.Id;
+              const b = await applyOp("items.create", { ParentId: aId, Content: "Cycle B", ItemType: "Task" });
+              const bId = (b.Results[0] as Item)?.Id;
+              const c = await applyOp("items.create", { ParentId: bId, Content: "Cycle C", ItemType: "Task" });
+              const cId = (c.Results[0] as Item)?.Id;
+              // Attempt to move A under C → should fail with ERR_CYCLE
+              const env = await applyOp("items.move", { Id: aId, NewParentId: cId });
+              setLastEnvelope(env);
+              await refresh();
+              if (env.Status.Code === "ERR_CYCLE") {
+                toast.error(`ERR_CYCLE blocked: ${envelopeSummary(env)}`);
+              } else {
+                toast.warning(`Expected ERR_CYCLE, got ${env.Status.Code}`);
+              }
+            }}
+          >
+            <AlertTriangle className="w-4 h-4 mr-1" /> Try cycle
+          </Button>
           <Button variant="outline" size="sm" onClick={async () => { await resetPlayground(); await refresh(); toast.info("Playground reset"); }}>
             <RotateCcw className="w-4 h-4 mr-1" /> Reset
           </Button>
