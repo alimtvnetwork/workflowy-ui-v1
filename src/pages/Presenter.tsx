@@ -84,7 +84,7 @@ export default function Presenter() {
         >
           Reset
         </button>
-        <Link to={`/${which === "frontend" ? "deck" : "backend-deck"}`}
+        <Link to={`/${DECKS[which].audience}`}
               className="text-muted-foreground hover:text-foreground underline ml-2">
           Open audience view →
         </Link>
