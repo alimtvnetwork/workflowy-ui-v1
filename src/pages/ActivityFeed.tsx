@@ -28,6 +28,7 @@ const EVENT_VARIANT: Record<EventType, "default" | "secondary" | "destructive" |
 export default function ActivityFeed() {
   const [events, setEvents] = useState<ActivityEvent[]>([]);
   const [filter, setFilter] = useState<EventType | "all">("all");
+  const [pageFilter, setPageFilter] = useState<string>("all");
   const [purgedCount, setPurgedCount] = useState<number | null>(null);
 
   const refresh = async () => setEvents(await getFeed({ limit: 200 }));
@@ -37,7 +38,9 @@ export default function ActivityFeed() {
     return subscribeActivity(() => { void refresh(); });
   }, []);
 
-  const filtered = filter === "all" ? events : events.filter((e) => e.EventType === filter);
+  const pageIds = Array.from(new Set(events.map((e) => e.PageItemId))).sort();
+  const byPage = pageFilter === "all" ? events : events.filter((e) => e.PageItemId === pageFilter);
+  const filtered = filter === "all" ? byPage : byPage.filter((e) => e.EventType === filter);
   const types: EventType[] = [
     "ItemCreated", "ItemUpdated", "ItemMoved",
     "ItemDeleted", "ItemRestored", "ItemMirrored",
@@ -62,17 +65,42 @@ export default function ActivityFeed() {
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Home</Link>
       </header>
 
-      <Card className="p-4 mb-4">
+      <Card className="p-4 mb-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground mr-1">Page:</span>
+          <Button
+            size="sm"
+            variant={pageFilter === "all" ? "default" : "outline"}
+            onClick={() => setPageFilter("all")}
+          >
+            All pages ({pageIds.length})
+          </Button>
+          {pageIds.map((pid) => {
+            const count = events.filter((e) => e.PageItemId === pid).length;
+            return (
+              <Button
+                key={pid}
+                size="sm"
+                variant={pageFilter === pid ? "default" : "outline"}
+                onClick={() => setPageFilter(pid)}
+                className="font-mono"
+              >
+                {pid.slice(0, 6)} ({count})
+              </Button>
+            );
+          })}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground mr-1">Type:</span>
           <Button
             size="sm"
             variant={filter === "all" ? "default" : "outline"}
             onClick={() => setFilter("all")}
           >
-            All ({events.length})
+            All ({byPage.length})
           </Button>
           {types.map((t) => {
-            const count = events.filter((e) => e.EventType === t).length;
+            const count = byPage.filter((e) => e.EventType === t).length;
             return (
               <Button
                 key={t}
