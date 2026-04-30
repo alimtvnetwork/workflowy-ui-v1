@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 type Props = {
   chapter?: string;
-  title: string;
+  title?: string;
   subtitle?: string;
   children: ReactNode;
   /** Hide chrome (used for cover slides). */
