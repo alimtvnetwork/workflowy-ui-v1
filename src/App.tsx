@@ -15,6 +15,7 @@ import ApiPlayground from "./pages/ApiPlayground.tsx";
 import SyncSimulator from "./pages/SyncSimulator.tsx";
 import TrashReaper from "./pages/TrashReaper.tsx";
 import ActivityFeed from "./pages/ActivityFeed.tsx";
+import Feedback from "./pages/Feedback.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/sync-simulator" element={<SyncSimulator />} />
           <Route path="/trash-reaper" element={<TrashReaper />} />
           <Route path="/activity-feed" element={<ActivityFeed />} />
+          <Route path="/feedback" element={<Feedback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
