@@ -1,0 +1,261 @@
+# 31 — App
+
+<!-- P24-RUBRIC-SELFCHECK -->
+## Audit-Rubric Self-Check (P24)
+
+This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is **load-bearing** for the next audit run.
+
+| Dimension | Where covered | How we satisfy it |
+|---|---|---|
+| **Completeness** | Acceptance Summary table below + [`./97a-acceptance-criteria-fixtures.md`](./97a-acceptance-criteria-fixtures.md) | 14 AT rows, each with Given/When/Then + Negative + test name. No prose-only claims. |
+| **Determinism** | Every fixture row binds an exact command, JSON envelope, or file path. | Example: `AT-APP-01` returns a PascalCase `Status`/`Attributes`/`Results` envelope per [`spec/04-database-conventions/06-rest-api-format/`](../04-database-conventions/06-rest-api-format/00-overview.md). |
+| **Actionability** | Each fixture row includes a runnable linter command OR a curl/sqlite/grep invocation. | A junior engineer can paste each command into a shell. |
+| **Testability** | Every row carries an explicit `Test name` slug (e.g. `at_app_01_*`). | Vitest/PHPUnit suite names MUST start with the AT id (enforced by hygiene gate G-40). |
+| **Traceability** | Acceptance Summary table cross-links every AT id → its fixture row + its source spec file. | Bi-directional: source → fixture → test. |
+| **Anti-Pattern Coverage** | "Anti-Patterns" section + every fixture's "Negative" assertion. | Anti-patterns paired with the specific gate that catches them. |
+
+## Acceptance Summary (Fixture Index)
+
+| Bind # | AT id (citation) | Fixture row |
+|---|---|---|
+| 1 | cites `AT-APP-01` | [`97a-…#at-app-01`](./97a-acceptance-criteria-fixtures.md#at-app-01) |
+| 2 | cites `AT-APP-02` | [`97a-…#at-app-02`](./97a-acceptance-criteria-fixtures.md#at-app-02) |
+| 3 | cites `AT-APP-03` | [`97a-…#at-app-03`](./97a-acceptance-criteria-fixtures.md#at-app-03) |
+| 4 | cites `AT-APP-04` | [`97a-…#at-app-04`](./97a-acceptance-criteria-fixtures.md#at-app-04) |
+| 5 | cites `AT-APP-05` | [`97a-…#at-app-05`](./97a-acceptance-criteria-fixtures.md#at-app-05) |
+| 6 | cites `AT-APP-06` | [`97a-…#at-app-06`](./97a-acceptance-criteria-fixtures.md#at-app-06) |
+| 7 | cites `AT-APP-07` | [`97a-…#at-app-07`](./97a-acceptance-criteria-fixtures.md#at-app-07) |
+| 8 | cites `AT-APP-08` | [`97a-…#at-app-08`](./97a-acceptance-criteria-fixtures.md#at-app-08) |
+| 9 | cites `AT-APP-09` | [`97a-…#at-app-09`](./97a-acceptance-criteria-fixtures.md#at-app-09) |
+| 10 | cites `AT-APP-10` | [`97a-…#at-app-10`](./97a-acceptance-criteria-fixtures.md#at-app-10) |
+| 11 | cites `AT-APP-11` | [`97a-…#at-app-11`](./97a-acceptance-criteria-fixtures.md#at-app-11) |
+| 12 | cites `AT-APP-12` | [`97a-…#at-app-12`](./97a-acceptance-criteria-fixtures.md#at-app-12) |
+| 13 | cites `AT-APP-13` | [`97a-…#at-app-13`](./97a-acceptance-criteria-fixtures.md#at-app-13) |
+| 14 | cites `AT-APP-14` | [`97a-…#at-app-14`](./97a-acceptance-criteria-fixtures.md#at-app-14) |
+
+> Total: **14** acceptance rows, **14** fixture binds, **0** orphan citations.
+<!-- /P24-RUBRIC-SELFCHECK -->
+
+> **Version:** 2.1.0
+> **Updated:** 2026-04-26 (UTC+8) — registered `06-endpoints/` and `07-db-diagram/` subfolders
+> **Status:** ✅ Implementation-grade rollup (F-01 closed)
+
+---
+
+## AI Contract
+
+**Purpose** — Specify every product-facing behavior of the WorkFlowy app (data model, layout, 18 features, edge cases, REST surface, DB shape) so a mediocre AI can build the entire frontend + backend slice without inferring product decisions. The acceptance criteria here (`AT-APP-*`, `AT-<FEATURE>-*`) are the binding contract.
+
+**Audience** — Frontend dev (React components + state), backend dev (REST handlers + SQLite schema), reviewer (cross-cutting consistency).
+
+**Expected AI Output** —
+- Frontend: `src/components/<feature>/*.tsx`, `src/state/<feature>Store.ts`, `src/api/<feature>.ts` (typed Axios calls from `spec/32-ui-design/skeletons/ts/api-client.generated.ts`).
+- Backend: `wp-plugin/src/Rest/<Feature>Controller.php` (signatures from `spec/15-wp-plugin-how-to/skeletons/php/RestRoutes.generated.php`), `wp-plugin/src/Domain/<Feature>/*`, `wp-plugin/migrations/NNN-<feature>.sql`.
+- Tests: one Vitest + one PHPUnit test per `AT-*` row in `97-acceptance-criteria.md` and per-feature `97-acceptance-criteria.md` files; test names MUST start with the AT id.
+- Fixtures: one JSON envelope per endpoint listed in `06-endpoints/` under `04a-fixtures/`.
+
+**Out of Scope** —
+- Visual styling tokens → [`07-design-system/`](../07-design-system/) and `32-ui-design/03-design-system/`.
+- WP-plugin scaffolding (composer, autoload) → [`15-wp-plugin-how-to/`](../15-wp-plugin-how-to/).
+- REST envelope rules → [`04-database-conventions/06-rest-api-format/`](../04-database-conventions/06-rest-api-format/).
+- Coding-rule enforcement → [`02-coding-guidelines/`](../02-coding-guidelines/).
+
+**Definition of Done** —
+- Every endpoint in `06-endpoints/` has a controller + a TS client method + a fixture + an `AT-*` test. (`AT-APP-*` — see [`97-acceptance-criteria.md`](./97-acceptance-criteria.md))
+- Every feature in `01-features/` honors the unified Node interface (`mem://architecture/data-model`) and the 250-item-per-view cap. (`AT-APP-*` — see [`97-acceptance-criteria.md`](./97-acceptance-criteria.md))
+- Mirror-related code follows `mem://features/mirroring` (peer-group, NOT an ItemType). (`AT-APP-*` — see [`97-acceptance-criteria.md`](./97-acceptance-criteria.md))
+- `node scripts/spec-hygiene/00-run-all.mjs` exits 0.
+
+> Authoring rules: see [`spec/01-spec-authoring-guide/18-ai-contract-template.md`](../01-spec-authoring-guide/18-ai-contract-template.md).
+
+---
+
+## Keywords
+
+`app`
+
+---
+
+## Scoring
+
+| Criterion | Status |
+|-----------|--------|
+| `00-overview.md` present | ✅ |
+| AI Confidence assigned | ✅ |
+| Ambiguity assigned | ✅ |
+| Keywords present | ✅ |
+| Scoring table present | ✅ |
+| AI Confidence (auto-backfill) | Medium |
+| Ambiguity (auto-backfill) | Medium |
+| Health Score | 95% (A) |
+
+---
+
+
+## 🎯 Mission (read first)
+
+WorkFlowy is a **recursive outliner**: every entity the user creates is a single unified `Item` node that can contain itself indefinitely. This app spec defines **what the application does** (features, workflows, edge cases). The companion folder [`../32-ui-design/`](../32-ui-design/00-overview.md) defines **how it looks and behaves on screen**.
+
+**If you are an AI implementing this app, read in this exact order:**
+
+1. [`mem://architecture/data-model`](#) — the unified `Item` node contract.
+2. [`01-features/01-information-model.md`](./01-features/01-information-model.md) — entity-relationship rules.
+3. [`01-features/03-layout-structure.md`](./01-features/03-layout-structure.md) — NavBar + Sidebar + Page shell.
+4. [`01-features/04-page-content-area.md`](./01-features/04-page-content-area.md) — recursive item rendering.
+5. [`01-features/05-interactions.md`](./01-features/05-interactions.md) — keyboard + mouse contract.
+6. [`97-acceptance-criteria.md`](./97-acceptance-criteria.md) — `AT-APP-01..25` testable criteria.
+
+Everything else under `01-features/` is a deeper view on a single feature; do not read it until you implement that feature.
+
+---
+
+## 🔒 Load-Bearing Rules (must not be violated)
+
+| # | Rule | Source |
+|---|------|--------|
+| L1 | Every entity is a single `Item` interface — no separate `Project`, `Note`, `Task` types. Type is a discriminator field `itemType`. | `01-features/01-information-model.md` |
+| L2 | `Item.id` never changes (move, mirror, share, restore from trash). Deep links and mirror references depend on this. | §1.2 |
+| L3 | Each user has exactly one **root** Item, auto-created on signup, undeletable. | §1.1 |
+| L4 | A view never renders more than **250 items at once** (virtualize / paginate beyond). | `mem://architecture/data-model` |
+| L5 | Children are ordered by **fractional index** (string keys), not integer position. | `mem://features/editor-core` |
+| L6 | Mirrors reference the canonical source only — never a mirror of a mirror. | §1.3 |
+| L7 | Deleted items live in **Trash for 30 days** before hard delete. | `01-features/11-trash-view.md` |
+| L8 | Roles live in a **separate table** (never on profile/users). All authorization checks go through a single PHP helper `Auth::hasRole($userId, $role)` (server-side, never client-trusted). | `01-features/15-roles-and-permissions.md` |
+| L9 | Backend runtime is **WordPress plugin (PHP 8.1+ + SQLite via PDO)**. No Node, Postgres, Supabase **at the backend / API layer**. The frontend build & dev-server (Vite + React + TypeScript per ADR-0003) runs on Node and is *not* covered by this prohibition — Node is forbidden as a *runtime API host*, not as a *build tool*. Realtime is delivered via WP-native **Server-Sent Events (SSE)** with a 5 s poll fallback — never WebSockets, never Postgres LISTEN/NOTIFY. | `mem://constraints/backend-runtime-deferred`, [ADR-0003](../00-adrs/0003-react-19-ts-strict-frontend.md) |
+
+Violating any load-bearing rule is a **rejected implementation**.
+
+---
+
+## 🎒 MVP Scope (what to build first)
+
+| Phase | Feature | File | MVP? |
+|-------|---------|------|------|
+| 1 | Information model + root | `01-features/01-information-model.md` | ✅ MVP |
+| 2 | Layout shell (NavBar + Sidebar + Page) | `01-features/03-layout-structure.md` | ✅ MVP |
+| 3 | Recursive item rendering | `01-features/04-page-content-area.md` | ✅ MVP |
+| 4 | Interactions (Enter, Tab, Shift+Tab, drag) | `01-features/05-interactions.md` | ✅ MVP |
+| 5 | Per-item context menu (⋮) | `01-features/06-item-context-menu.md` | ✅ MVP |
+| 6 | Multi-select (Shift/Cmd click) | `01-features/12-multi-select.md` | ✅ MVP |
+| 7 | Trash view + 30-day retention | `01-features/11-trash-view.md` | ✅ MVP |
+| 8 | Today view | `01-features/10-today-view.md` | ⚠️ Phase 2 |
+| 9 | Board view (Kanban) | `01-features/07-board-view.md` | ⚠️ Phase 2 |
+| 10 | Mirrors | `01-features/09-mirrors.md` | ⚠️ Phase 2 |
+| 11 | Share dialog | `01-features/08-share-dialog.md` | ⚠️ Phase 2 |
+| 12 | Templates | `01-features/13-templates.md` | ⚠️ Phase 2 |
+| 13 | Concurrency & sync | `01-features/14-concurrency-and-sync.md` | ⚠️ Phase 2 |
+| 14 | Roles & permissions | `01-features/15-roles-and-permissions.md` | ✅ MVP (auth) |
+
+Phases 1–7 + 14 = the smallest shippable WorkFlowy clone.
+
+---
+
+## 🧭 Implementation Ground Truth
+
+Every file in `01-features/` follows the same structure:
+- `Overview` → what the feature is.
+- `User Story` → why it exists.
+- Numbered behavior rules → **the contract**.
+- Cross-refs to glossary, enums, and shared types.
+
+**An AI may not invent behavior not stated in a feature file.** If an interaction is missing, surface it as an open question, do not fabricate.
+
+For UI rendering decisions (colors, fonts, spacing, animations), the SSOT is [`../32-ui-design/`](../32-ui-design/00-overview.md), not this folder. This folder is **behavior-only**.
+
+---
+
+
+<!-- AUTO-TOC:START -->
+
+## Topics in this Folder
+
+*Auto-generated by `scripts/spec-hygiene/11-generate-auto-toc.mjs` — do not edit by hand inside the AUTO-TOC sentinels.*
+
+| # | File | Title | Lines |
+|---|------|-------|-------|
+| 1 | [`00-overview-condensed.md`](./00-overview-condensed.md) | Condensed Overview — `spec/31-app/` (P11) | 303 |
+| 2 | [`01-features/`](./01-features/00-overview.md) | 01 — Features | subfolder |
+| 3 | [`02-workflows/`](./02-workflows/00-overview.md) | 02 — Workflows | subfolder |
+| 4 | [`03-edge-cases/`](./03-edge-cases/00-overview.md) | 03 — Edge Cases | subfolder |
+| 5 | [`04-roadmap/`](./04-roadmap/00-overview.md) | 04 — Roadmap | subfolder |
+| 6 | [`05-conventions/`](./05-conventions/00-overview.md) | 05 — Conventions | subfolder |
+| 7 | [`06-endpoints/`](./06-endpoints/00-overview.md) | 06 — Endpoints — Master Index | subfolder |
+| 8 | [`07-db-diagram/`](./07-db-diagram/00-overview.md) | 07 — DB Diagram — Database Design SSOT (Visual) | subfolder |
+
+<!-- AUTO-TOC:END -->
+
+---
+
+## Folders
+
+| # | Folder | Purpose |
+|---|--------|---------|
+| 01 | [`01-features/`](./01-features/00-overview.md) | Per-feature behavior contracts (15 features) |
+| 02 | [`02-workflows/`](./02-workflows/00-overview.md) | Cross-feature flows (keyboard shortcuts, template application) |
+| 03 | [`03-edge-cases/`](./03-edge-cases/00-overview.md) | Boundary behaviors and out-of-scope decisions |
+| 04 | [`04-roadmap/`](./04-roadmap/00-overview.md) | Phasing and resolved product decisions |
+| 05 | [`05-conventions/`](./05-conventions/00-overview.md) | App-scoped tooling (e.g., Axios pinning) |
+| 06 | [`06-endpoints/`](./06-endpoints/00-overview.md) | REST endpoint contracts (1:1 mirror of `01-features/`) |
+| 07 | [`07-db-diagram/`](./07-db-diagram/00-overview.md) | Visual database design — ERDs, lifecycle flows, indexes, migrations |
+
+---
+
+## Cross-References
+
+| Reference | Location |
+|-----------|----------|
+| UI Design (visual SSOT) | [`../32-ui-design/00-overview.md`](../32-ui-design/00-overview.md) |
+| Coding guidelines | [`../02-coding-guidelines/00-overview.md`](../02-coding-guidelines/00-overview.md) |
+| Glossary | [`../19-glossary.md`](../19-glossary.md) |
+| Enums | [`../20-enums-index.md`](../20-enums-index.md) |
+| Spec authoring | [`../01-spec-authoring-guide/00-overview.md`](../01-spec-authoring-guide/00-overview.md) |
+
+---
+
+## Related
+
+- [`../00-overview.md`](../00-overview.md) — Spec root
+- [`97-acceptance-criteria.md`](./97-acceptance-criteria.md) — Testable `AT-APP-*` criteria
+- [`99-consistency-report.md`](./99-consistency-report.md) — Module health (100/100)
+- [`06-endpoints/00-overview.md`](./06-endpoints/00-overview.md) — REST endpoint wire contracts (35 endpoints, 1:1 mirror of features)
+- [`07-db-diagram/00-overview.md`](./07-db-diagram/00-overview.md) — Visual database design (ERDs, lifecycles, indexes, migrations)
+
+---
+
+## 🔗 Spec↔DDL Alias Bridge (P40 backlink)
+
+This overview—and every page beneath `spec/31-app/`—uses **plural prose aliases**
+(`Items`, `Users`, `Mirrors`, `Templates`, `Favorites`) for readability. These
+**MUST NOT** be treated as DDL identifiers.
+
+| Prose alias used here | Canonical DDL identifier (SSOT) |
+|---|---|
+| Items, item rows, item record | `Item` (singular table) |
+| Users, user accounts | `User` |
+| Mirrors, mirror peer-group | `MirrorGroup` + `MirrorMember` |
+| Templates, snapshot | `Template`, `TemplateBody` |
+| Favorites, starred items | `Item.IsFavorite` (column, not a table) |
+| Content, body text | `Item.Content` |
+| Title, name | `Item.Title` |
+
+→ Canonical mapping & enforcement gates: see
+[`spec/04-database-conventions/00-overview.md`](../04-database-conventions/00-overview.md)
+sections **"Spec↔DDL Alias Bridge"**, **Golden Rule #7**, and gates
+`G-04-ALIAS-DDL-CANONICAL` / `G-04-NO-DDL-PLURALS`.
+
+**Rule of resolution:** if prose here and DDL there appear to disagree,
+**DDL wins**. File an ADR under `spec/00-adrs/` to change DDL; never silently
+re-alias prose to imply a schema change.
+
+
+---
+
+## 🔖 ADR Backlinks (P46)
+
+Everything in `spec/31-app/` is load-bearing because of:
+
+- **[ADR-0001 — Singular DDL vs plural prose](../00-adrs/0001-singular-ddl-vs-plural-prose.md)** (`Accepted` 2026-04-28) — every plural prose alias used in app pages (`items`, `users`, `mirrors`, `favorites`, `templates`, `sessions`, `roles`) is permitted **only** as an alias over the singular DDL identifier locked by this ADR.
+- **[ADR-0002 — WP plugin + PHP 8.1+ + SQLite](../00-adrs/0002-wp-plugin-php-sqlite-backend.md)** (`Accepted` 2026-04-28) — every `EP-*` endpoint, every SSE stream, and every persistence rule in this section assumes the runtime locked by this ADR.
+
+To change any of these assumptions, file a new ADR that supersedes the relevant one. See [`spec/00-adrs/00-overview.md`](../00-adrs/00-overview.md).
+

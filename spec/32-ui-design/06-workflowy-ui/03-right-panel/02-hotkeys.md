@@ -1,0 +1,144 @@
+# Hotkeys Reference
+
+> **Parent:** [`00-overview.md`](./00-overview.md)  
+> **Source:** img-65 verbatim (~30 entries)
+
+---
+
+## Platform Detection
+
+| Platform | Modifier | Display |
+|----------|----------|---------|
+| macOS | Cmd ⌘ | "⌘" |
+| Windows | Ctrl | "Ctrl" |
+| Linux | Ctrl | "Ctrl" |
+
+All shortcuts use **Cmd on Mac, Ctrl elsewhere** — no platform-specific variants except the symbol display.
+
+---
+
+## Hotkey Table (~30 entries)
+
+Sorted by functional category, then alphabetical within category.
+
+### Navigation
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| ⌘↑ / Ctrl+↑ | Move to parent | Any node with parent |
+| ⌘↓ / Ctrl+↓ | Move to first child | Nodes with children only |
+| ⌘→ / Ctrl+→ | Zoom in (focus node) | Any node |
+| ⌘← / Ctrl+← | Zoom out (parent view) | Zoomed state only |
+| ⌘. / Ctrl+. | Go to Home | Global |
+| ⌘⇧H / Ctrl+Shift+H | Go to Inbox | Global |
+
+### Editing
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| ↵ | Edit selected node | Node selected, not editing |
+| ⌘↵ / Ctrl+Enter | Save & exit edit | Editing mode |
+| ⌘A / Ctrl+A | Select all text | Editing mode |
+| ⌘Z / Ctrl+Z | Undo | Global |
+| ⌘⇧Z / Ctrl+Shift+Z | Redo | Global |
+| ⌘X / Ctrl+X | Cut node | Node selected |
+| ⌘C / Ctrl+C | Copy node | Node selected |
+| ⌘V / Ctrl+V | Paste node | Node selected |
+| ⌘⇧V / Ctrl+Shift+V | Paste as mirror | Node selected |
+
+### Hierarchy
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| ⌘⇧→ / Ctrl+Shift+→ | Indent (make child) | Node selected |
+| ⌘⇧← / Ctrl+Shift+← | Outdent (make sibling of parent) | Indented node |
+| ⌘⇧↑ / Ctrl+Shift+↑ | Move up | Node selected |
+| ⌘⇧↓ / Ctrl+Shift+↓ | Move down | Node selected |
+| Tab | Indent while editing | Editing mode |
+| Shift+Tab | Outdent while editing | Editing mode, indented |
+
+### Selection & Multi-Select
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| ↑ / ↓ | Navigate up/down | Navigation mode |
+| ⇧↑ / Shift+↑ | Add to selection above | Navigation mode |
+| ⇧↓ / Shift+↓ | Add to selection below | Navigation mode |
+| ⌘Click / Ctrl+Click | Toggle item in selection | Any |
+| Esc | Clear selection | Selection active |
+| ⌘A / Ctrl+A (navigation) | Select all visible | Navigation mode, no edit |
+
+### View & Interface
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| ⌘K / Ctrl+K | Open Search Popover | Global (canonical — Phase 2) |
+| ⌘F / Ctrl+F | Open Search Popover (alias) | Global (legacy alias for ⌘K) |
+| ⌘/ / Ctrl+/ | Toggle right panel (Handbook) | Global |
+| ⌘⇧N / Ctrl+Shift+N | Quick Add modal | Global (Phase 7) |
+| ⌘L / Ctrl+L | Toggle left sidebar | Global (Phase 6) |
+| ⌘⇧Y / Ctrl+Shift+Y | Cycle theme (Light → Dark → System) | Global (Phase 8) |
+| ⌘, / Ctrl+, | Open Settings panel | Global (Phase 8) |
+| ⌘S / Ctrl+S | Force-flush save | Global (Phase 8) |
+| ⌘P / Ctrl+P | Print | Global (Phase 8 — browser passthrough) |
+| ⌘+ / Ctrl+Plus | Zoom in (font) | Global |
+| ⌘- / Ctrl+Minus | Zoom out (font) | Global |
+| ⌘0 / Ctrl+0 | Reset zoom | Global |
+
+### Advanced
+
+| Shortcut | Action | Context |
+|----------|--------|---------|
+| ⌘⇧C / Ctrl+Shift+C | Copy link to node | Node selected |
+| ⌘⇧D / Ctrl+Shift+D | Duplicate node | Node selected |
+| ⌘⇧M / Ctrl+Shift+M | Toggle mirror | Node selected, has mirrors |
+| ⌘⇧T / Ctrl+Shift+T | Add/remove from Starred | Node selected |
+| / | Open slash menu | Editing mode |
+
+### Context-scoped (Search Popover only)
+
+When the Search Popover is open, the following overrides apply (see Phase 2 [`../02-search/08-keyboard-shortcuts.md`](../02-search/08-keyboard-shortcuts.md)):
+
+| Shortcut | Action | Note |
+|----------|--------|------|
+| ⌘. / Ctrl+. | Pin popover open | Overrides global "Go to Home" while popover focused |
+| ⌘J / Ctrl+J | Open Quick Actions menu | Popover-only |
+| ⌘⇧S / Ctrl+Shift+S | Open Saved Searches | Popover-only |
+| ↑ / ↓ | Cycle through matches | When focus is in footer pill |
+| Esc | Close popover | Returns focus to last node |
+
+> Outside the popover, `⌘.` retains its global "Go to Home" behavior (see Navigation section).
+
+---
+
+## Visual Treatment
+
+| Element | Token / Style |
+|---------|---------------|
+| Table header | `--muted` background, `--foreground` text, uppercase 11px |
+| Category divider | 2px line using `--border` |
+| Shortcut chip | `--accent` background, `--accent-foreground` text, 4px radius |
+| Modifier key | Bold weight within chip |
+| Action description | `--foreground` 14px |
+| Context tag | `--muted-foreground` 11px, italic |
+
+---
+
+## Interactions
+
+- **Click shortcut chip:** Trims to "copy to clipboard" (flash toast: "⌘C copied").
+- **Hover row:** Background highlight `--muted/40`.
+- **Filter:** Optional search field above table (not required for v1).
+
+---
+
+## Source Attribution
+
+> All shortcuts transcribed verbatim from screenshot img-65, then **extended (2026-04-25)** with:
+> - Phase 2 v2.0.0 additions: `⌘K` (canonical Search), `⌘J`, `⌘⇧S`, `⌘.` (popover-scoped pin)
+> - Phase 8 additions: `⌘⇧Y` theme cycle, `⌘,` settings, `⌘S` save, `⌘P` print
+> - Phase 7 addition: `⌘⇧N` Quick Add (already in img-65)
+> - `⌘F` retained as alias for `⌘K` (legacy compatibility)
+>
+> Discrepancies with standard OS conventions (e.g., Ctrl vs Cmd) resolved by "Cmd on Mac / Ctrl elsewhere" rule.
+> Cross-cutting registry: Phase 8 [`../08-app-shell/00-overview.md`](../08-app-shell/00-overview.md) § Global Hotkey Registration.
