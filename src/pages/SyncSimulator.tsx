@@ -44,6 +44,37 @@ export default function SyncSimulator() {
     });
   }, []);
 
+  // Coalesced "N changes restored" toast — spec 14b §14b.4. When more than 3
+  // local edits are silently overwritten within a 2s window, suppress the
+  // per-event noise and surface a single rollup toast instead.
+  useEffect(() => {
+    let buffer: { ItemId: string; At: number }[] = [];
+    let flushTimer: ReturnType<typeof setTimeout> | null = null;
+    const WINDOW_MS = 2000;
+    const THRESHOLD = 3;
+
+    const flush = () => {
+      flushTimer = null;
+      if (buffer.length === 0) return;
+      if (buffer.length > THRESHOLD) {
+        const distinct = new Set(buffer.map((b) => b.ItemId)).size;
+        toast.warning(`${buffer.length} changes restored`, {
+          description: `Local edits to ${distinct} item${distinct === 1 ? "" : "s"} were overwritten by remote versions. Undo to recover.`,
+        });
+      } else {
+        // Below threshold — emit individual notices so users still see them.
+        buffer.forEach(() => toast.info("Local edit overwritten by remote"));
+      }
+      buffer = [];
+    };
+
+    return syncQueue.subscribeLoss((ev) => {
+      buffer.push({ ItemId: ev.ItemId, At: Date.now() });
+      if (flushTimer) clearTimeout(flushTimer);
+      flushTimer = setTimeout(flush, WINDOW_MS);
+    });
+  }, []);
+
   useEffect(() => { syncQueue.latencyMs = latency; }, [latency]);
   useEffect(() => { syncQueue.injectConflictForNext = armConflict; }, [armConflict]);
 
