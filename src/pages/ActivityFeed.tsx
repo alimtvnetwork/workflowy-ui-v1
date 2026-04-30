@@ -28,6 +28,7 @@ const EVENT_VARIANT: Record<EventType, "default" | "secondary" | "destructive" |
 export default function ActivityFeed() {
   const [events, setEvents] = useState<ActivityEvent[]>([]);
   const [filter, setFilter] = useState<EventType | "all">("all");
+  const [pageFilter, setPageFilter] = useState<string>("all");
   const [purgedCount, setPurgedCount] = useState<number | null>(null);
 
   const refresh = async () => setEvents(await getFeed({ limit: 200 }));
@@ -37,7 +38,9 @@ export default function ActivityFeed() {
     return subscribeActivity(() => { void refresh(); });
   }, []);
 
-  const filtered = filter === "all" ? events : events.filter((e) => e.EventType === filter);
+  const pageIds = Array.from(new Set(events.map((e) => e.PageItemId))).sort();
+  const byPage = pageFilter === "all" ? events : events.filter((e) => e.PageItemId === pageFilter);
+  const filtered = filter === "all" ? byPage : byPage.filter((e) => e.EventType === filter);
   const types: EventType[] = [
     "ItemCreated", "ItemUpdated", "ItemMoved",
     "ItemDeleted", "ItemRestored", "ItemMirrored",
