@@ -195,4 +195,30 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "e4-03-pipeline", spec: "spec/31-app/05-conventions/02-ci-quality-gates.md" },
 
   { slideId: "e9-closing", spec: "spec/35-enforcement-rules/00-overview.md" },
+
+  // =========================================================================
+  // User-management deck (/user-deck) — u-cover, u1..u4 + closing
+  // =========================================================================
+  { slideId: "u-cover", spec: "spec/36-user-management/00-overview.md" },
+  { slideId: "u-guide", spec: "spec/36-user-management/00-overview.md" },
+
+  { slideId: "u1-1", spec: "spec/36-user-management/01-account-and-settings.md" },
+  { slideId: "u1-2", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "password" },
+  { slideId: "u1-3", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "mfa" },
+  { slideId: "u1-4", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "delete" },
+
+  { slideId: "u2-1", spec: "spec/36-user-management/02-auth-flow.md" },
+  { slideId: "u2-2", spec: "spec/36-user-management/02-auth-flow.md", anchor: "login" },
+  { slideId: "u2-3", spec: "spec/36-user-management/02-auth-flow.md", anchor: "token" },
+  { slideId: "u2-4", spec: "spec/36-user-management/02-auth-flow.md", anchor: "mfa" },
+
+  { slideId: "u3-1", spec: "spec/36-user-management/03-rbac-helpers.md" },
+  { slideId: "u3-2", spec: "spec/36-user-management/03-rbac-helpers.md", anchor: "require" },
+  { slideId: "u3-3", spec: "spec/36-user-management/03-rbac-helpers.md", anchor: "escalation" },
+
+  { slideId: "u4-1", spec: "spec/36-user-management/04-admin-ui.md" },
+  { slideId: "u4-2", spec: "spec/36-user-management/04-admin-ui.md", anchor: "invite" },
+  { slideId: "u4-3", spec: "spec/36-user-management/04-admin-ui.md", anchor: "audit" },
+
+  { slideId: "u9-closing", spec: "spec/36-user-management/00-overview.md" },
 ];
