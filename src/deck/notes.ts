@@ -6,89 +6,467 @@ import type { SlideMeta } from "./types";
  *
  * Conventions:
  *  - 1-3 short paragraphs, ~30-60 seconds of talk per slide
- *  - First line is the "headline" — what to say if you're rushed
+ *  - First sentence is the "headline" — what to say if you're rushed
  *  - Use `--` for sub-points the speaker can drop into
+ *  - Divider slides get one-line orientation; closing slides recap
  */
 export const NOTES: Record<string, string> = {
-  // ---------- Frontend deck ----------
-  "cover": `Welcome. This deck walks through every screen of the WorkFlowy clone — what users see and why.
+  // ============================================================
+  // FRONTEND DECK
+  // ============================================================
+
+  cover: `Welcome. This deck walks through every screen of the WorkFlowy clone — what users see and why.
 
 -- Audience: PMs, designers, and engineers onboarding to the product.
--- We'll cover ~65 slides across 23 chapters; 35-40 minutes at a steady pace.
+-- ~65 slides across 23 chapters; budget 35-40 minutes at a steady pace.
 -- Backend internals are in a separate /backend-deck.`,
 
-  "guide": `One thing to keep in mind: every screen in this deck is backed by a real
-spec under spec/31-app/ through spec/36-user-management/. If you see something
-that contradicts the spec, the spec wins — flag it and we'll update the slide.
+  "reading-guide": `Every screen here is backed by a real spec under spec/31-app/ through spec/36-user-management/. If a slide contradicts the spec, the spec wins — flag it.
 
--- Skip the divider slides if you're tight on time.`,
+-- Skip the divider slides if you're tight on time.
+-- "Endpoints & DB" slides at the end of each chapter are the bridge to the backend deck.`,
 
-  // ---------- Backend deck ----------
-  "b-cover": `This is the systems deck. We assume the audience has seen the frontend deck
-or used a WorkFlowy-style outliner before.
+  // ----- Chapter 1: WorkFlowy in 60 seconds -----
+  "ch1-divider": `Three slides to set the mental model before we touch any UI.`,
 
--- We'll move from architecture (B-1) down to deployment (B-10).
--- Every code snippet is real-shape TypeScript — not pseudocode. You should be
-   able to grep the repo and find the matching file.`,
+  "ch1-1": `WorkFlowy is one infinite outline. Every line is an item, every item can have children, and any subtree can become a focused view.
 
-  "b-guide": `Three things to assume going in:
+-- The pitch in one sentence: "Lists, but recursive."
+-- Everything else in this deck is a consequence of that one idea.`,
+
+  "ch1-2": `Item is THE primitive — there's no separate "task", "note", or "page" table. The shape determines the role: an item with a dueDate behaves like a task, an item with children behaves like a list.
+
+-- This is why the schema is so small. Look for the items table on slide 22-1.`,
+
+  "ch1-3": `Today, Calendar, Board, Dashboard — none of these are separate entities. They're all queries over the same item tree, filtered and projected differently.
+
+-- Mental model: Views are read-only lenses. Edits always go back to items.`,
+
+  // ----- Chapter 2: App Shell -----
+  "ch2-divider": `The frame around every screen — navbar, sidebar, content. Persists across navigation.`,
+
+  "ch2-1": `Three regions: navbar on top, sidebar on the left, content in the middle. The right-side panel slides in on demand (chapter 14).
+
+-- The shell is fixed; only the content region scrolls.`,
+
+  "ch2-2": `Navbar holds breadcrumbs (your zoom path), search, and the user menu. Breadcrumbs are clickable — each segment zooms back to that level.`,
+
+  "ch2-3": `Sidebar shows starred items + recent + system views (Today, Trash). It's NOT a separate file tree — it's saved pointers into the same outline.
+
+-- Drag-reorder works inside the sidebar; that's a tag/star write, not a move.`,
+
+  "ch2-4": `The shell itself only needs three reads: current user, starred items, recent items. Everything else loads lazily as you navigate.`,
+
+  // ----- Chapter 3: Recursive Rendering -----
+  "ch3-divider": `How one component renders the whole tree without exploding.`,
+
+  "ch3-1": `Each <Item> renders its content row plus a list of <Item> children. That's the whole trick. Virtualization kicks in past 200 visible rows.
+
+-- Collapsed subtrees aren't rendered at all — saves DOM and lets us handle 10K-item outlines.`,
+
+  "ch3-2": `Zoom = change the root. The URL holds the root item id; everything above it is hidden but still loaded so breadcrumbs work.
+
+-- Zoom out = pop a level. Cmd-. and Cmd-, are the keybinds.`,
+
+  "ch3-3": `Reads are scoped to (root, depth). Writes never need to know about zoom — they target item ids directly.`,
+
+  // ----- Chapter 4: Editor & Interactions -----
+  "ch4-divider": `The bullet is a contenteditable. Five slides on what makes it feel WorkFlowy-fast.`,
+
+  "ch4-1": `Each row is a contenteditable div with inline formatting. Newline = new sibling, Tab = indent, Shift-Tab = outdent. Enter at end of empty bullet outdents.
+
+-- We don't use a heavyweight editor framework. The DOM IS the model for inline marks.`,
+
+  "ch4-2": `Keyboard is the API. Show the cheat sheet — Cmd-Enter to complete, Cmd-Shift-↑/↓ to move, Cmd-/ to slash menu.
+
+-- Power users never touch the mouse. Demo this if you have time.`,
+
+  "ch4-3": `Slash menu is the discoverability layer. Type "/" and get every block-level action: type change, due date, tag, mirror, template.
+
+-- Same actions exist in the row menu (chapter 5) — slash menu is just faster.`,
+
+  "ch4-4": `Floating toolbar appears on text selection. Bold, italic, link, color. Disappears on blur.
+
+-- Touch devices get a sticky version above the keyboard.`,
+
+  "ch4-5": `Editor writes go through the sync funnel — every keystroke batch is a queued op (see chapter 16). No direct DB writes from the editor.`,
+
+  // ----- Chapter 5: Bullet Anatomy -----
+  "ch5-divider": `Two slides on the row itself — the dot, the handle, the menu.`,
+
+  "ch5-1": `Each row has: expand/collapse caret, the bullet (drag handle + zoom target), content area, and a hover-revealed ⋮ menu.
+
+-- Click the bullet = zoom. Drag the bullet = move. Cmd-click = open in right panel.`,
+
+  "ch5-2": `Row menu is the kitchen sink: complete, indent, move, mirror, template, tag, color, share, delete. Same actions as slash menu, just findable by mouse.`,
+
+  "ch5-3": `Every row action maps 1:1 to a sync op. The menu is a thin wrapper around dispatchOp().`,
+
+  // ----- Chapter 6: Multi-Select & Drag-and-Drop -----
+  "ch6-divider": `Bulk operations. Click-drag or Shift-click to select; act on the set.`,
+
+  "ch6-1": `Selection is a Set<itemId> in client state. Visual highlight, count badge, action bar at the bottom of the viewport.
+
+-- Selecting a parent does NOT auto-select children — that surprised early testers; we kept it explicit.`,
+
+  "ch6-2": `Drag-and-drop uses the bullet as the handle. A blue insertion line shows the drop target; indent level changes with horizontal drag.
+
+-- Multi-drag respects the selection set.`,
+
+  "ch6-3": `Bulk ops are sent as a batched op array, not N individual requests. Server applies them in one transaction.`,
+
+  // ----- Chapter 7: Search -----
+  "ch7-divider": `Cmd-K opens search. Operators, scopes, ranking.`,
+
+  "ch7-1": `Search is a sticky overlay. Top result previewed inline; Enter zooms to it.
+
+-- Recent searches saved per user.`,
+
+  "ch7-2": `Operators: is:task, tag:#x, due:<7d, in:zoom-path. Free text falls through to FTS. Parser is on backend slide B-8.2.`,
+
+  "ch7-3": `Server returns ranked itemIds; client fetches the actual rows in a follow-up call. Keeps the search response tiny.`,
+
+  // ----- Chapter 8: Today & Calendar -----
+  "ch8-divider": `Time-based views. The same items, sorted by dueDate.`,
+
+  "ch8-1": `Today shows everything due today + overdue, grouped by parent for context. Calendar is a month grid; click a day to inline-create.
+
+-- Both are read-only projections; editing flips back to the home outline.`,
+
+  "ch8-2": `One query: items WHERE dueDate <= today AND completedAt IS NULL. The grouping is client-side.`,
+
+  "ch8-3": `Indexed by (workspaceId, dueDate) — see backend B-9.3 for the query plan.`,
+
+  // ----- Chapter 9: Board & Dashboard -----
+  "ch9-divider": `Two more views over the same tree.`,
+
+  "ch9-1": `Kanban board: columns are tags or status values, cards are items. Drag a card → tag write. No new schema.
+
+-- Column config is stored on the parent item as JSON.`,
+
+  "ch9-2": `Dashboard is a widget grid. Each widget is a saved query (count, list, chart). Composable, not a separate report builder.`,
+
+  "ch9-3": `Same items table powers both. The "magic" is in how queries are saved (a sub-item with a viewConfig blob).`,
+
+  // ----- Chapter 10: Mirrors -----
+  "ch10-divider": `One item, multiple parents. The feature most demos skip.`,
+
+  "ch10-1": `A mirror is a pointer. Edit any peer (source or mirror), they all change. Mirrors look like normal items but with a small icon.
+
+-- Use case: one task lives in both "Project X" and "This week".`,
+
+  "ch10-2": `Create via slash menu → Mirror to. Detach turns a mirror back into an independent copy. Cycles are forbidden — backend rejects them (B-5.2).`,
+
+  "ch10-3": `Mirror table is a thin join. Read-side resolution joins items to the source row. See B-5.1.`,
+
+  // ----- Chapter 11: Templates -----
+  "ch11-divider": `Snapshot a subtree, instantiate it elsewhere.`,
+
+  "ch11-1": `Templates gallery shows your saved templates + workspace + public ones. "Apply" deep-copies into the current parent.
+
+-- Common templates: weekly review, project kickoff, meeting notes.`,
+
+  "ch11-2": `Templates live in a separate DB file (backend B-1.2). Snapshot is canonical JSON; instantiate mints fresh ids (B-6.2).`,
+
+  // ----- Chapter 12: Share & Permissions -----
+  "ch12-divider": `Sharing is per-item, inherited downward. Three slides.`,
+
+  "ch12-1": `Share dialog: invite by email, grant role (read/comment/write/admin), or copy a link. Link sharing has its own permission rows.`,
+
+  "ch12-2": `Permission ranks: admin > write > comment > read. Strongest grant on any ancestor wins. Inheritance means revoking high also revokes low.
+
+-- Common gotcha: removing a member from the workspace doesn't auto-revoke item-level grants on items they were directly invited to.`,
+
+  "ch12-3": `Effective permission resolved by recursive CTE walking ancestors. Cached 60s in-memory. See B-6.3.`,
+
+  // ----- Chapter 13: Trash -----
+  "ch13-divider": `Soft-delete with a 30-day window.`,
+
+  "ch13-1": `Trash view groups deleted items by day. Restore brings the whole subtree back; permanent-delete needs confirm.`,
+
+  "ch13-2": `Restore re-parents to the original location if it still exists, otherwise to the workspace root. Reaper hard-deletes after 30 days.
+
+-- Mirrors of reaped items stay in "broken" state — user decides.`,
+
+  "ch13-3": `deletedAt timestamp + cascading subtree update. Reaper is a background job (B-7.2).`,
+
+  // ----- Chapter 14: Right-side panel -----
+  "ch14-divider": `The contextual sidekick. Opens with Cmd-click on a bullet.`,
+
+  "ch14-1": `Right panel shows item details: full content, tags, due date, history, comments. Doesn't take you out of context — main outline stays visible.`,
+
+  "ch14-2": `Tabs: Details, Activity (chapter 19), Comments, Backlinks. Each tab is a separate fetch; they load on demand.`,
+
+  // ----- Chapter 15: App menu, themes, settings -----
+  "ch15-divider": `Three slides on the top-right ⋮ menu, themes, and the settings page.`,
+
+  "ch15-1": `App menu (top-right ⋮): keyboard shortcuts, theme toggle, switch workspace, sign out, send feedback.`,
+
+  "ch15-2": `Settings page is its own route: profile, password, notifications, integrations, danger zone.
+
+-- Per-user preferences (theme, font size, dense mode) persist server-side so they roam across devices.`,
+
+  "ch15-3": `Settings backed by user_preferences (KV blob). No schema migration when adding a new pref.`,
+
+  // ----- Chapter 16: Concurrency, sync, offline -----
+  "ch16-divider": `The single most important chapter for engineers. Three slides; expect questions.`,
+
+  "ch16-1": `Optimistic UI: every edit applies locally first, then queues for the server. Last-write-wins on the server with deterministic tie-break (B-3.2).
+
+-- "Concurrent" here means "from the same user's two tabs" as much as "from two users".`,
+
+  "ch16-2": `Sync POST /sync with op batch + cursor → server returns new cursor + remote ops. SSE pushes incremental updates between syncs.
+
+-- Offline = ops queue in IndexedDB outbox; replay on reconnect with clientOpId for idempotency.`,
+
+  "ch16-3": `Two endpoints: POST /sync, GET /events (SSE). Cursor is HMAC-signed (B-3.3) so it can't be tampered with.`,
+
+  // ----- Chapter 17: User management -----
+  "ch17-divider": `Auth flow, roles, admin UI, endpoints. Four slides.`,
+
+  "ch17-1": `Email + password, with optional magic-link as a future addition. Reset via email token (B-2.3). Sessions are HttpOnly cookies.`,
+
+  "ch17-2": `Two role layers: system roles (admin, user) and workspace roles (owner, member, viewer). Both checked via has_role helper (B-2.4).`,
+
+  "ch17-3": `Admin UI is a separate route, gated by hasRole(actor, 'admin'). Lists users, recent sign-ups, locked accounts, audit log.`,
+
+  "ch17-4": `Endpoints: /auth/login, /auth/logout, /auth/reset, /admin/*. All admin endpoints double-check the role server-side — never trust the client.`,
+
+  // ----- Chapter 18: Feedback Reporting -----
+  "ch18-divider": `In-app feedback widget. Bug, idea, or praise → ticket.`,
+
+  "ch18-1": `Bottom-right button opens a small form. Auto-attaches current URL, viewport size, and the last 50 client log lines.`,
+
+  "ch18-2": `Stored in a separate feedback table. Admins triage in the admin UI (chapter 17.3).`,
+
+  // ----- Chapter 19: Activity Feed -----
+  "ch19-divider": `Append-only audit of who did what. Per-item and global views.`,
+
+  "ch19-1": `Activity tab on the right panel shows per-item history. Workspace activity feed shows everyone's recent ops.
+
+-- Useful for "who deleted my thing?" — answer is always there.`,
+
+  "ch19-2": `Every applied op writes one activity row in the same transaction (B-8.3 write-path hooks). 90-day hot retention, then archived (B-7.3).`,
+
+  // ----- Chapter 20: Enforcement Rules -----
+  "ch20-divider": `One slide. Recap of the four guardrails that keep the app honest.`,
+
+  "ch20-1": `1. All mutations through the sync funnel. 2. Permissions checked server-side, every op. 3. Sensitive routes re-verify the role. 4. Schemas Zod-parsed at the boundary.
+
+-- These show up over and over in both decks. If you remember nothing else, remember these four.`,
+
+  // ----- Chapter 21: Endpoint Catalogue -----
+  "ch21-divider": `One slide. Every HTTP endpoint at a glance.`,
+
+  "ch21-1": `Walk the table by section: auth, sync, items (read-only fetches), templates, sharing, admin. Note how few there are — most behavior is one of eight op types in the sync POST.`,
+
+  // ----- Chapter 22: Database Map -----
+  "ch22-divider": `Two slides. The whole schema fits on one diagram.`,
+
+  "ch22-1": `Items at the center. Everything else (tags, shares, mirrors, activity) hangs off via FK. Templates DB is separate (small, isolated).`,
+
+  "ch22-2": `Constraints worth pointing out: items.parentItemId is self-FK with ON DELETE CASCADE; mirrors enforce mirrorOfItemId <> id; sessions index is partial on revokedAt IS NULL.`,
+
+  // ----- Closing -----
+  "ch23-closing": `That's WorkFlowy. Three takeaways:
+
+1. One primitive (Item) makes the whole product composable.
+2. Every view is a query, not a separate feature.
+3. Sync is the spine — the rest of the codebase orbits around it.
+
+Backend deck is at /backend-deck if you want the systems story.`,
+
+  // ============================================================
+  // BACKEND DECK
+  // ============================================================
+
+  "b-cover": `This is the systems deck. Assume the audience has used a WorkFlowy-style outliner before, or seen the frontend deck.
+
+-- We move from architecture (B-1) down to deployment (B-10). ~45 slides.
+-- Every code snippet is real-shape TypeScript — not pseudocode. You should be able to grep for it.`,
+
+  "b-guide": `Three things to assume:
 1. One Node process, two SQLite files (app + templates).
-2. All mutations flow through one "op" funnel — no direct table writes from
-   route handlers.
-3. We optimize for correctness and operability over throughput. This isn't
-   designed to scale past a single host yet.`,
+2. All mutations through one "op" funnel — no direct table writes from route handlers.
+3. We optimize for correctness and operability over throughput. Not designed to scale past a single host yet.`,
 
-  "b1-1": `The whole server is one Node process. We use better-sqlite3 in WAL mode,
-which means readers don't block writers and we get one-writer-at-a-time
-serialization for free — no need for a queue.
+  // ----- B-1: Architecture -----
+  "b1-divider": `Three slides on the shape of the server before we look at any feature.`,
 
--- The "two-DB" split is the next slide; the short version is: app data and
-   template snapshots live in different files so we can back them up,
-   migrate, and reason about them independently.`,
+  "b1-1": `One Node process, better-sqlite3 in WAL mode. WAL gives us non-blocking reads and one-writer-at-a-time without a queue.
 
-  "b3-2": `LWW is the part everyone gets wrong. The tie-break order matters:
-(timestamp, actorUserId, clientOpId). Without the actor and op id, two
-clients can produce indistinguishable updates and you get flapping.
+-- "One process" is the whole story. No queue, no cache layer, no orchestrator.`,
 
--- We store the winning stamp per field, not per row. This means a content
-   edit and a tag change at the same wall-clock time both apply.`,
+  "b1-2": `Two SQLite files: app.sqlite (your data) and templates.sqlite (snapshots). They never reference each other across files — that's the boundary rule.
 
-  "b4-2": `Fractional indexing is how we avoid renumbering siblings on every move.
-The mental model: each sibling has a base-62 string, and "between(a,b)"
-returns a string that sorts strictly between them.
+-- Why split? Independent backup cadence, independent migrations, and templates can be rebuilt from scratch if corrupted.`,
 
--- Worst case is one extra char per ~62 inserts at the same gap.
--- We do a lazy rebalance (B-7) when any group exceeds 32 chars.`,
+  "b1-3": `Request flows: cookie → session lookup → Zod parse → domain handler → DB transaction → write hooks → response. Same skeleton for every endpoint.
 
-  "b5-2": `Mirror cycles are the one thing the server absolutely must reject. If a
-mirror lives inside its own source's subtree, reading it loops forever.
+-- The skeleton is enforced by lint rules (B-10.2).`,
 
--- The recursive CTE walks UP from the target parent and bails the moment
-   it sees the source ID.
--- Note we also forbid "mirror of a mirror" — there's only ever one source.`,
+  // ----- B-2: Auth -----
+  "b2-divider": `Four slides on auth. Boring on purpose.`,
 
-  "b7-2": `The trash reaper is hourly, chunks of 500. The chunking matters: SQLite's
-single-writer model means a giant DELETE blocks every other write for the
-duration. 500 keeps each transaction under ~50 ms in practice.
+  "b2-1": `Argon2id with memoryCost 19,456 and timeCost 2 — current OWASP recommendation. Pepper is in the env, never in the DB.
 
--- Mirrors pointing at reaped sources stay in brokenAt state. We do NOT
-   touch them — the user decides whether to restore or delete.`,
+-- Verify-then-rehash: if params are below current target, rehash on next successful login.`,
 
-  "b10-1": `Zod is the boundary. The rule is: untrusted data hits exactly one
-schema parser, and after that point we have a fully typed value. No "as any",
-no manual typeof checks deeper in the call stack.
+  "b2-2": `Sessions: base64url token (32 bytes). We store SHA-256 of the token in the DB so a DB leak doesn't grant sessions. HttpOnly, Secure, SameSite=Lax cookie.
 
--- The schemas live in src/contracts/ and are imported by both the route
-   handler and the client SDK — one source of truth, type-checked on both
-   sides.`,
+-- Rotate on privilege escalation (e.g., promoting a user to admin).`,
+
+  "b2-3": `Reset tokens are single-use and time-bounded. The "always wait at least 200 ms" trick prevents email enumeration via timing.
+
+-- We respond identically whether the email exists or not.`,
+
+  "b2-4": `Two helpers: hasRole(userId, role) for system roles, workspaceRole(userId, wsId) for membership. Never check role from the cookie/session payload — always re-query.`,
+
+  // ----- B-3: Sync -----
+  "b3-divider": `Six slides on the sync protocol. The hardest chapter; take your time.`,
+
+  "b3-1": `Op is a discriminated union over eight verbs. Every mutation is exactly one of these. clientOpId is the idempotency key — server dedupes.
+
+-- New verbs require a migration AND a Zod schema update. Same code change.`,
+
+  "b3-2": `LWW is the part everyone gets wrong. Tie-break order matters: (timestamp, actorUserId, clientOpId). Without all three you get flapping.
+
+-- We store the winning stamp PER FIELD, not per row. So a content edit and a tag change at the same wall-clock time both apply.`,
+
+  "b3-3": `Cursors are HMAC-signed. They contain (userId, lastSeenSeq) and the signature uses a server secret. Tampering = invalid cursor = full resync.
+
+-- Don't return the raw seq; the signature also prevents user-cross-talk.`,
+
+  "b3-4": `End-to-end: client batches ops with current cursor, server applies, returns new cursor + any remote ops the client hasn't seen.
+
+-- Walk the diagram once, slowly. If anyone's confused, this is where to spend the time.`,
+
+  "b3-5": `SSE for push. text/event-stream, Last-Event-ID for catch-up after disconnect, 15-second heartbeat to keep proxies from idling sockets.
+
+-- Why SSE not WebSockets? One direction (server→client), works through every proxy, and reconnect-with-resume is built into the protocol.`,
+
+  "b3-6": `Outbox in IndexedDB. Optimistic apply locally, queue op, replay on reconnect. clientOpId guarantees we never double-apply.
+
+-- The outbox is what lets the app feel instant on flaky connections.`,
+
+  // ----- B-4: Item ops -----
+  "b4-divider": `Four slides on the structural ops. Move, indent, fractional indexing, soft-delete.`,
+
+  "b4-1": `Move/indent/outdent are all the same op under the hood — set parentItemId + fractionalIndex. Wrap in BEGIN IMMEDIATE so concurrent moves queue.
+
+-- Cycles rejected by walking the parent chain.`,
+
+  "b4-2": `Fractional indexing avoids renumbering siblings on every move. Each sibling has a base-62 string; between(a,b) returns a string strictly between them.
+
+-- Worst case one extra char per ~62 inserts at the same gap. Lazy rebalance kicks in when any group exceeds 32 chars.`,
+
+  "b4-3": `Two clients can mint identical fractional indexes. We disambiguate by appending the actor's ULID suffix — preserves total order across replicas.
+
+-- Rebalance is idempotent; safe to retry.`,
+
+  "b4-4": `Delete sets deletedAt + cascades to descendants. Restore is the inverse. Hard-delete only via the reaper (B-7.2) after 30 days.
+
+-- Restore falls back to root if the original parent is gone.`,
+
+  // ----- B-5: Mirrors -----
+  "b5-divider": `Three slides. Mirrors are the feature most likely to introduce bugs.`,
+
+  "b5-1": `Mirrors are pointers. The mirror's items row has mirrorOfItemId set; its content column is ignored at read time. Reads JOIN to source.
+
+-- COALESCE on every content field — slide shows the canonical query.`,
+
+  "b5-2": `Cycle detection is the one thing the server absolutely must reject. Recursive CTE walks UP from target parent; bails on source-id hit.
+
+-- Also forbid "mirror of a mirror" — there's only ever one source.`,
+
+  "b5-3": `When a source is deleted, mirrors don't disappear — flagged brokenAt. UI shows tombstone, user decides.
+
+-- Permission revocation triggers the same path, scoped to affected workspace.`,
+
+  // ----- B-6: Templates & sharing -----
+  "b6-divider": `Three slides. Snapshot, instantiate, permissions.`,
+
+  "b6-1": `Templates are immutable JSON snapshots. Canonical form (sorted keys) so SHA-256 gives a stable content hash for dedup.
+
+-- LocalIds in the snapshot are scoped to the snapshot only — no DB ids leak.`,
+
+  "b6-2": `Instantiate walks the snapshot, mints fresh ids, rewrites parent pointers. localId→newId map built top-down so children always resolve their parent.
+
+-- Tags looked up by NAME in the destination workspace; created if missing.`,
+
+  "b6-3": `Permissions inherited downward. Effective permission = strongest grant on any ancestor. Recursive CTE resolves in one query; cached 60 s per (user, item).
+
+-- Revoke cascades implicitly — deleting a share row drops the grant on the whole subtree because resolution always walks ancestors at read time.`,
+
+  // ----- B-7: Background jobs -----
+  "b7-divider": `Four slides. In-process scheduler, three jobs, plus SSE fan-out (which technically isn't a job but lives in the same module).`,
+
+  "b7-1": `One in-process scheduler, no external queue. Jobs are async functions registered with cron-like specs. A SQLite lease row enforces single-instance.
+
+-- Lease design lets a future multi-node deploy add coordination without rewriting the API.`,
+
+  "b7-2": `Trash reaper runs hourly, chunks of 500. Chunking matters: SQLite's single-writer model means a giant DELETE blocks every other write. 500 keeps each tx under ~50 ms.
+
+-- Mirrors pointing at reaped sources stay in brokenAt — reaper does NOT touch them.`,
+
+  "b7-3": `Activity table grows fast — 90 days hot, then streamed to gzip ndjson archives and dropped. Archive job is idempotent.
+
+-- Restore from archive is manual but supported. Procedure is in the runbook.`,
+
+  "b7-4": `One in-memory hub, one Set of writers per workspace. Bounded queue per socket (256 ops); slow consumers get a reconnect event and catch up via cursor sync.
+
+-- Heartbeat is a separate job, every 15 s.`,
+
+  // ----- B-8: Search & activity -----
+  "b8-divider": `Three slides. Search index, query parser, write-path hooks.`,
+
+  "b8-1": `FTS5 contentless table mirrored from items. Trigram tokenizer for prefix + infix. bm25 weighted to favor content over tags. Per-workspace filter via a join.
+
+-- Why contentless? Item updates would otherwise trigger automatic re-tokenization on every write.`,
+
+  "b8-2": `Operator parser: is:, tag:, due:, in:, completed:. Hand-rolled tokenizer (no regex backtracking). Unknown ops fall through to free-text. Output → parameterized SQL builder.
+
+-- Key safety property: user input never concatenated into SQL.`,
+
+  "b8-3": `Every applied op flows through one funnel that fans out to FTS, activity, SSE. Hooks run inside the SAME transaction as the op — no eventual consistency drift.
+
+-- SSE publish is the one exception: deferred to after-commit so subscribers never see uncommitted state.`,
+
+  // ----- B-9: Migrations & indexes -----
+  "b9-divider": `Three slides. The runner is ~80 lines.`,
+
+  "b9-1": `Numbered SQL files, run inside a transaction. PRAGMA user_version is the source of truth. No external migration tool.
+
+-- foreign_keys = OFF during migration prevents constraint thrash on table rebuilds; foreign_key_check at the end catches dangling refs.`,
+
+  "b9-2": `Worked example: adding mirrorOfItemId. ALTER TABLE ADD COLUMN with FK + CHECK. Partial index because most rows aren't mirrors.
+
+-- Forward compat: pre-v2 clients still work; mirror ops get rejected and the client falls back to a normal create.`,
+
+  "b9-3": `Every read endpoint has an EXPLAIN QUERY PLAN snapshot in tests/query-plans/. CI fails if a plan changes from SEARCH USING INDEX to SCAN.
+
+-- ANALYZE runs after every migration so SQLite has fresh stats.`,
+
+  // ----- B-10: Enforcement & deployment -----
+  "b10-divider": `Final phase. Four slides: Zod, ESLint, runbook, closing.`,
+
+  "b10-1": `Zod is the boundary. Untrusted data hits exactly one schema parser; after that point we have a fully-typed value. No "as any" deeper in the stack.
+
+-- Schemas in src/contracts/ imported by both server and client SDK. One source of truth.`,
+
+  "b10-2": `Boundaries enforced by lint, not discipline. no-restricted-imports per directory. Domain code can't reach into transport, transport can't reach into storage, raw better-sqlite3 only inside src/db/.
+
+-- Pre-commit + CI both run eslint --max-warnings=0.`,
+
+  "b10-3": `Walk the runbook step by step. Build → pre-flight → atomic swap via systemd → health/SLOs → backups → incident playbook.
+
+-- Single binary, single host, two SQLite files. No orchestrator.`,
 
   "b10-closing": `That's the backend in 45 slides. Three takeaways:
 
 1. One process, two SQLite files. Boring is a feature.
-2. Ops are the only mutation API — every behavior in this deck eventually
-   becomes an applyOp() call.
-3. Boundaries are enforced by the type system and the linter, not by
-   discipline. If you can write the wrong code, eventually someone will.
+2. Ops are the only mutation API — every behavior eventually becomes an applyOp() call.
+3. Boundaries enforced by the type system and the linter, not by discipline. If you can write the wrong code, eventually someone will.
 
 Questions?`,
 };
