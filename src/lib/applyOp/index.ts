@@ -31,6 +31,7 @@ import type {
 } from "./types";
 import { nowIso, sortAfter, ulid } from "./util";
 import { hasCycle } from "./cycle";
+import { recordActivity, eventTypeFor } from "./activity";
 
 export { hasCycle } from "./cycle";
 export type { CycleResult } from "./cycle";
@@ -387,20 +388,21 @@ export async function applyOp(kind: "shares.revoke", payload: ShareRevokePayload
 export async function applyOp(kind: "boards.addColumn", payload: BoardAddColumnPayload): Promise<Envelope<BoardColumn>>;
 export async function applyOp(kind: "boards.moveCard", payload: BoardMoveCardPayload): Promise<Envelope<Item>>;
 export async function applyOp(kind: OpKind, payload: any): Promise<Envelope<unknown>> {
+  let env: Envelope<unknown>;
   try {
     switch (kind) {
-      case "items.create": return await createItem(payload);
-      case "items.update": return await updateItem(payload);
-      case "items.complete": return await completeItem(payload);
-      case "items.move": return await moveItem(payload);
-      case "items.delete": return await deleteItem(payload);
-      case "items.restore": return await restoreItem(payload);
-      case "mirrors.create": return await createMirror(payload);
-      case "mirrors.detach": return await detachMirror(payload);
-      case "shares.grant": return await grantShare(payload);
-      case "shares.revoke": return await revokeShare(payload);
-      case "boards.addColumn": return await addColumn(payload);
-      case "boards.moveCard": return await moveCard(payload);
+      case "items.create": env = await createItem(payload); break;
+      case "items.update": env = await updateItem(payload); break;
+      case "items.complete": env = await completeItem(payload); break;
+      case "items.move": env = await moveItem(payload); break;
+      case "items.delete": env = await deleteItem(payload); break;
+      case "items.restore": env = await restoreItem(payload); break;
+      case "mirrors.create": env = await createMirror(payload); break;
+      case "mirrors.detach": env = await detachMirror(payload); break;
+      case "shares.grant": env = await grantShare(payload); break;
+      case "shares.revoke": env = await revokeShare(payload); break;
+      case "boards.addColumn": env = await addColumn(payload); break;
+      case "boards.moveCard": env = await moveCard(payload); break;
       default: return fail(400, `Unknown op kind: ${kind}`);
     }
   } catch (e) {
@@ -408,6 +410,27 @@ export async function applyOp(kind: OpKind, payload: any): Promise<Envelope<unkn
     await journal(kind, payload, false, msg);
     return fail(500, msg);
   }
+
+  // Activity capture chokepoint (spec 34 §G-34-CP-CHOKEPOINT) — only on success.
+  if (env.Status.IsSuccess) {
+    const eventType = eventTypeFor(kind);
+    const result = env.Results[0] as Item | undefined;
+    if (eventType && result && "Id" in result) {
+      try {
+        await recordActivity({
+          EventType: eventType,
+          ActorUserId: 1, // single-user playground
+          TargetItemId: result.Id,
+          ParentItemId: result.ParentId ?? null,
+          PageItemId: result.ParentId ?? result.Id,
+          OccurredAt: nowIso(),
+          Payload: payload,
+          Reversible: kind !== "boards.addColumn",
+        });
+      } catch { /* never let activity capture break the op */ }
+    }
+  }
+  return env;
 }
 
 export async function listItems(opts?: { includeTrashed?: boolean }) {
