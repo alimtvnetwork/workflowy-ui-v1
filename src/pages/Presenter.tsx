@@ -36,7 +36,7 @@ const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: stri
 export default function Presenter() {
   const [params, setParams] = useSearchParams();
   const q = params.get("deck");
-  const which = q === "backend" || q === "ops" || q === "enforcement" ? q : "frontend";
+  const which = q === "backend" || q === "ops" || q === "enforcement" || q === "user" ? q : "frontend";
   const { title, slides } = DECKS[which];
 
   const [index, setIndex] = useState(() => Number(params.get("i") ?? 0));
