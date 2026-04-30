@@ -35,6 +35,10 @@ import B8S3 from "./b8-03-write-hooks";
 import B9S1 from "./b9-01-versioning";
 import B9S2 from "./b9-02-v2-example";
 import B9S3 from "./b9-03-query-plans";
+import B10S1 from "./b10-01-zod";
+import B10S2 from "./b10-02-eslint-boundary";
+import B10S3 from "./b10-03-runbook";
+import B10S4 from "./b10-04-closing";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
@@ -90,5 +94,11 @@ export const backendSlides: SlideMeta[] = [
   { id: "b9-1", chapter: "Phase B-9", title: "Versioning & runner", Component: B9S1 },
   { id: "b9-2", chapter: "Phase B-9", title: "v2 example: add mirrorOfItemId", Component: B9S2 },
   { id: "b9-3", chapter: "Phase B-9", title: "Query plans & hot indexes", Component: B9S3 },
+
+  { id: "b10-divider", chapter: "Phase B-10", title: "Enforcement & deployment", Component: makeDivider("Phase B-10", "Enforcement & deployment", "Zod boundary · ESLint walls · runbook.") },
+  { id: "b10-1", chapter: "Phase B-10", title: "Zod at the boundary", Component: B10S1 },
+  { id: "b10-2", chapter: "Phase B-10", title: "ESLint boundary rules", Component: B10S2 },
+  { id: "b10-3", chapter: "Phase B-10", title: "Deployment runbook", Component: B10S3 },
+  { id: "b10-closing", chapter: "Closing", title: "That's the backend", Component: B10S4 },
 ];
 
