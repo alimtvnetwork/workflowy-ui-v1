@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
+import { opsSlides } from "@/deck/ops-slides";
 
 const Index = () => {
   const fePhases = countChapters(frontendSlides);
   const bePhases = countChapters(backendSlides);
+  const opsPhases = countChapters(opsSlides);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -66,16 +68,16 @@ const Index = () => {
           </div>
           <div>
             PDF export:{" "}
-            <Link to="/print?deck=frontend" className="underline hover:text-foreground">frontend deck</Link>
-            {" · "}
-            <Link to="/print?deck=backend" className="underline hover:text-foreground">backend deck</Link>
+            <Link to="/print?deck=frontend" className="underline hover:text-foreground">frontend</Link>
+            {" · "}<Link to="/print?deck=backend" className="underline hover:text-foreground">backend</Link>
+            {" · "}<Link to="/print?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
           <div>
             Presenter mode:{" "}
             <Link to="/presenter?deck=frontend" className="underline hover:text-foreground">frontend</Link>
-            {" · "}
-            <Link to="/presenter?deck=backend" className="underline hover:text-foreground">backend</Link>
+            {" · "}<Link to="/presenter?deck=backend" className="underline hover:text-foreground">backend</Link>
+            {" · "}<Link to="/presenter?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
         </footer>
