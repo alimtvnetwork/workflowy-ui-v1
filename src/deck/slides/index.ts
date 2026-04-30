@@ -73,6 +73,16 @@ import Ch17S1 from "./ch17-01-auth-ui";
 import Ch17S2 from "./ch17-02-rbac";
 import Ch17S3 from "./ch17-03-admin-ui";
 import Ch17S4 from "./ch17-04-auth-tech";
+// Chapter 18-23
+import Ch18S1 from "./ch18-01-feedback-ui";
+import Ch18S2 from "./ch18-02-feedback-tech";
+import Ch19S1 from "./ch19-01-activity-ui";
+import Ch19S2 from "./ch19-02-activity-tech";
+import Ch20S1 from "./ch20-01-enforcement";
+import Ch21S1 from "./ch21-01-endpoint-catalogue";
+import Ch22S1 from "./ch22-01-db-map";
+import Ch22S2 from "./ch22-02-constraints";
+import Ch23S1 from "./ch23-01-closing";
 
 export const slides: SlideMeta[] = [
   { id: "cover", chapter: "Cover", title: "WorkFlowy — Frontend Deck", Component: CoverSlide },
@@ -164,4 +174,24 @@ export const slides: SlideMeta[] = [
   { id: "ch17-2", chapter: "Chapter 17", title: "RBAC roles", Component: Ch17S2 },
   { id: "ch17-3", chapter: "Chapter 17", title: "Admin UI", Component: Ch17S3 },
   { id: "ch17-4", chapter: "Chapter 17", title: "Endpoints & DB", Component: Ch17S4 },
+
+  { id: "ch18-divider", chapter: "Chapter 18", title: "Feedback Reporting", Component: makeDivider("Chapter 18", "Feedback Reporting", "User submits · admin reviews.") },
+  { id: "ch18-1", chapter: "Chapter 18", title: "Feedback — UI", Component: Ch18S1 },
+  { id: "ch18-2", chapter: "Chapter 18", title: "Endpoints & DB", Component: Ch18S2 },
+
+  { id: "ch19-divider", chapter: "Chapter 19", title: "Activity Feed", Component: makeDivider("Chapter 19", "Activity Feed", "Who did what, when.") },
+  { id: "ch19-1", chapter: "Chapter 19", title: "Activity — UI", Component: Ch19S1 },
+  { id: "ch19-2", chapter: "Chapter 19", title: "Endpoints & DB", Component: Ch19S2 },
+
+  { id: "ch20-divider", chapter: "Chapter 20", title: "Enforcement Rules", Component: makeDivider("Chapter 20", "Enforcement Rules", "Guardrails the codebase enforces.") },
+  { id: "ch20-1", chapter: "Chapter 20", title: "Four guardrails", Component: Ch20S1 },
+
+  { id: "ch21-divider", chapter: "Chapter 21", title: "Endpoint Catalogue", Component: makeDivider("Chapter 21", "Endpoint Catalogue", "Every REST route on one page.") },
+  { id: "ch21-1", chapter: "Chapter 21", title: "All endpoints", Component: Ch21S1 },
+
+  { id: "ch22-divider", chapter: "Chapter 22", title: "Database Map", Component: makeDivider("Chapter 22", "Database Map", "Two DBs, one logical link.") },
+  { id: "ch22-1", chapter: "Chapter 22", title: "ERD overview", Component: Ch22S1 },
+  { id: "ch22-2", chapter: "Chapter 22", title: "Key constraints", Component: Ch22S2 },
+
+  { id: "ch23-closing", chapter: "Chapter 23", title: "That's WorkFlowy", Component: Ch23S1 },
 ];
