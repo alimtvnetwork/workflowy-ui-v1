@@ -162,6 +162,7 @@ export default function SyncSimulator() {
               {queue.slice().reverse().map((q) => (
                 <li key={q.QueueId} className="rounded border border-border p-3 text-xs space-y-2">
                   <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="font-mono">#{q.LocalSeq}</Badge>
                     <Badge variant={statusColor[q.Status]}>{q.Status}</Badge>
                     <Badge variant="outline">{q.Kind}</Badge>
                     <span className="text-muted-foreground ml-auto">
