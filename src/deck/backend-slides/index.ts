@@ -9,6 +9,12 @@ import B2S1 from "./b2-01-password-storage";
 import B2S2 from "./b2-02-sessions";
 import B2S3 from "./b2-03-reset-tokens";
 import B2S4 from "./b2-04-rbac";
+import B3S1 from "./b3-01-op-shapes";
+import B3S2 from "./b3-02-lww";
+import B3S3 from "./b3-03-cursors";
+import B3S4 from "./b3-04-sequence";
+import B3S5 from "./b3-05-sse";
+import B3S6 from "./b3-06-offline-replay";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
@@ -24,5 +30,13 @@ export const backendSlides: SlideMeta[] = [
   { id: "b2-2", chapter: "Phase B-2", title: "Sessions & cookies", Component: B2S2 },
   { id: "b2-3", chapter: "Phase B-2", title: "Forgot-password reset tokens", Component: B2S3 },
   { id: "b2-4", chapter: "Phase B-2", title: "RBAC: has_role + workspace", Component: B2S4 },
+
+  { id: "b3-divider", chapter: "Phase B-3", title: "Sync protocol", Component: makeDivider("Phase B-3", "Sync protocol", "Op shapes · LWW · cursors · SSE · offline replay.") },
+  { id: "b3-1", chapter: "Phase B-3", title: "Op shapes", Component: B3S1 },
+  { id: "b3-2", chapter: "Phase B-3", title: "LWW resolution", Component: B3S2 },
+  { id: "b3-3", chapter: "Phase B-3", title: "Cursors", Component: B3S3 },
+  { id: "b3-4", chapter: "Phase B-3", title: "Sync sequence", Component: B3S4 },
+  { id: "b3-5", chapter: "Phase B-3", title: "SSE transport", Component: B3S5 },
+  { id: "b3-6", chapter: "Phase B-3", title: "Offline replay (outbox)", Component: B3S6 },
 ];
 
