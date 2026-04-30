@@ -582,6 +582,129 @@ Questions?`,
 3. Boring deploys: atomic swap, pre-flight, automatic rollback. Excitement is a smell.
 
 Questions?`,
+
+  // ============================================================
+  // ENFORCEMENT DECK
+  // ============================================================
+
+  "e-cover": `Welcome to the enforcement deck. Twenty-one slides on how we make project guidelines mechanical — so CI, not reviewers, catches drift.
+
+-- Audience: tech leads, DevOps, anyone wiring CI; also frontend/backend devs who'll consume the rules day-to-day.
+-- Companion to /deck, /backend-deck, /ops-deck. This one is about HOW we keep all those promises.
+-- Source of truth: spec/35-enforcement-rules — 14 acceptance rows, ~26 gates.`,
+
+  "e-guide": `One sentence: rules without gates rot. The whole deck is built around that.
+
+-- We'll cover four layers — compile, lint, runtime, test — in that order. Each layer catches a class of error the layer before it cannot.
+-- Every slide cites a G-35-* gate ID and an AT-ENFORCEMENTRULES-NN row. If a slide makes a claim that isn't gated, treat it as a bug.
+-- Definition of Done lives in the overview: all 14 ATs pass, the grep for \`any\`/@ts-ignore returns zero, and \`spec-hygiene/00-run-all.mjs\` exits 0.`,
+
+  // ----- Phase E-1: Compile-time generics -----
+  "e1-divider": `Phase one: the compiler. Four rules that keep \`any\` and \`unknown\` from ever crossing a public surface.`,
+
+  "e1-1": `The simplest rule: no bare \`any\` in any signature. The compiler can't help you keep promises about a value typed as \`any\`.
+
+-- Forbidden: parameters or returns typed \`any\`. Even one leak invalidates every type guarantee downstream.
+-- Required: branded or generic parameter types, concrete or generic return types.
+-- The CI grep \`rg -nP ":\\s*any\\b|@ts-ignore" src/\` must return zero hits — it's the simplest possible gate.
+-- Gate: G-35-RT-NO-ANY · AT-ENFORCEMENTRULES-01.`,
+
+  "e1-2": `\`unknown\` is fine as a parser INPUT — \`schema.parse(input: unknown)\` is correct. It's forbidden as an exported RETURN.
+
+-- Why: returning \`unknown\` pushes the narrowing burden onto every caller. Inevitably, one caller skips it.
+-- The fix is to narrow inside the boundary owner and expose the narrow type. Often that means a generic keyed off an enum or schema.
+-- Gate: G-35-RT-NO-UNKNOWN · AT-ENFORCEMENTRULES-02.`,
+
+  "e1-3": `Phantom generics are the silent killer. \`function fetch<T>(): Promise<T>\` looks safe but \`T\` widens to \`unknown\` at every call-site because the caller has nothing to bind it to.
+
+-- Two valid patterns: (1) generic inferable from an argument — pass a Zod schema or a discriminator. (2) Default the generic to \`never\`, which forces the caller to write \`fetch<UserDto>('/me')\`.
+-- The eslint rule walks every generic parameter and verifies one of those two conditions holds.
+-- Gate: G-35-RT-NO-PHANTOM · AT-ENFORCEMENTRULES-03.`,
+
+  "e1-4": `Per ADR-0020 we use branded IDs — \`ItemId\`, \`PageId\`, \`UserId\` — never raw \`string\`. Generic helpers must preserve the brand through the return type.
+
+-- Forbidden: \`function parentOf(id: string): string\` — strips the brand, opens the door to mixing IDs across types.
+-- Required: \`function parentOf<TId extends ItemId>(id: TId): TId\` — the brand flows through.
+-- Gate: G-35-RT-PRESERVE-BRAND · AT-ENFORCEMENTRULES-04.`,
+
+  // ----- Phase E-2: Runtime validation -----
+  "e2-divider": `Phase two: the boundary. Compile-time generics protect in-process types — but anything coming from HTTP, IndexedDB, SSE, a worker, or the URL is untrusted shape until you parse it.`,
+
+  "e2-1": `Five trust boundaries: B1 HTTP fetch · B2 IndexedDB · B3 SSE/WebSocket · B4 React Router loader params · B5 Worker postMessage.
+
+-- The rule: every value sourced from any of these must pass through a Zod parse before any field access. \`as User\` casts at boundaries are forbidden.
+-- The eslint rule traces \`response.json()\`, \`event.data\`, \`params\` access etc. and flags missing parse calls.
+-- Gate: G-35-RV-PARSE-AT-BOUNDARY · AT-ENFORCEMENTRULES-05.`,
+
+  "e2-2": `Every B1 (HTTP) response parses through \`EnvelopeSchema(rowSchema)\` — never the row schema directly.
+
+-- Why: the envelope enforces our PascalCase contract — Status, Attributes, Results — and validates pagination + error shape BEFORE any field access. Skipping it means trusting shape that never went through CI.
+-- Per ADR-0004/0019, every endpoint returns this envelope. The schema is a single import; misuse is an eslint failure, not a runtime crash.
+-- Gate: G-35-RV-USE-ENVELOPE · AT-ENFORCEMENTRULES-06.`,
+
+  "e2-3": `The Zod schema mints the brand at the parse boundary. Downstream code receives an already-branded value — there's no place to "forget" to brand.
+
+-- Forbidden: \`Id: z.string()\` for an ID field. Required: \`Id: z.string().brand<'ItemId'>()\`.
+-- This pairs with E-1 R4: branded in, branded out, brand preserved through generics. Together they make ID-mixing a compile error end-to-end.
+-- Gate: G-35-RV-BRAND-IDS · AT-ENFORCEMENTRULES-07.`,
+
+  "e2-4": `Two rules on one slide because they're a pair: schemas are strict by default, and parse failures throw a typed error.
+
+-- R4 strict: \`.strict()\` on every schema except \`Attributes\` and \`Detail\` (which legitimately carry passthrough metadata). Catches API drift the day it ships, not three sprints later.
+-- R5 typed failures: parse failures throw \`BoundaryParseError\` with one of \`USR-35-PARSE | -ENVELOPE | -BRAND\`. Silent \`try { … } catch { return null }\` is forbidden — it's the worst possible failure mode.
+-- Gates: G-35-RV-STRICT-DEFAULT · G-35-RV-NO-SILENT-CATCH · AT-08.`,
+
+  // ----- Phase E-3: ESLint authoring -----
+  "e3-divider": `Phase three: how the rules themselves are built. We have a custom plugin — without authoring discipline, the plugin becomes the new untyped surface.`,
+
+  "e3-1": `Every custom rule lives at \`eslint-plugins/coding-guidelines/src/rules/<name>.ts\` with a matching \`tests/<name>.test.ts\`, exported from \`src/index.ts\`.
+
+-- Required factory: \`ESLintUtils.RuleCreator(getDocsUrl)\`. Hand-rolled \`module.exports\` rules are forbidden.
+-- \`meta.docs.description\` must quote or paraphrase (≤10 words) the source-spec rule. Bare descriptions like "no any" fail CI.
+-- Gates: G-35-EL-PLUGIN-LAYOUT · G-35-EL-USE-CREATOR · G-35-EL-MEANINGFUL-DOCS.`,
+
+  "e3-2": `Naming: every rule matches one of three patterns — \`no-*\`, \`require-*\`, or \`prefer-*-over-*\`. Anything else (\`enforce-foo\`, \`check-bar\`, \`lint-baz\`) is rejected.
+
+-- Why three patterns: every rule is either forbidding a thing, requiring a thing, or proposing a swap. There is no fourth shape.
+-- Registration triple: every rule must be exported from \`src/index.ts\`, enabled in flat-config \`eslint.config.js\`, AND listed in the docs-URL map. Missing any one blocks merge.
+-- Gates: G-35-EL-NAMING · G-35-EL-FULL-REGISTRATION · AT-10/11.`,
+
+  "e3-3": `Two rules per author: cover ≥3 valid AND ≥3 invalid cases via \`RuleTester\`, asserting exact \`messageId\` (never string-matching \`.message\` text — too brittle).
+
+-- Severity: every rule ships at \`error\`. \`warn\` is allowed only with a graduation date in the ledger. \`off\` in committed config is forbidden.
+-- Sibling boundary rule: a rule that lingers as permanent \`warn\` past 14 days must promote to \`error\` or be removed entirely. No silent \`warn\` graveyards.
+-- Gates: G-35-EL-RULE-TESTER · G-35-EL-NO-OFF · G-35-BE-PROMOTE-OR-REMOVE · AT-12.`,
+
+  // ----- Phase E-4: Boundaries -----
+  "e4-divider": `Phase four: the codebase shape. One module per external primitive. One parse per boundary. The whole pipeline wired into CI.`,
+
+  "e4-1": `The chokepoint principle: every external primitive enters the codebase through exactly ONE module — its chokepoint.
+
+-- Today: \`axios\` → \`src/api/client.ts\`. \`idb\` → \`src/lib/idb/client.ts\`. \`EventSource\` → \`src/realtime/sseClient.ts\`. \`Worker\` → \`src/workers/workerClient.ts\`.
+-- Two-part rule: (1) chokepoint imports — exactly one module imports the primitive. (2) Export narrowing — that module owns the parse and re-exports only typed, branded, schema-validated values. Re-exporting \`AxiosResponse<unknown>\` defeats the entire purpose.
+-- Gate: G-35-BE-CHOKEPOINT-IMPORT · AT-ENFORCEMENTRULES-13.`,
+
+  "e4-2": `React Router loaders read untrusted input from the URL. Every loader/action that reads \`params\` or \`request.url\` must Zod-parse before any field access.
+
+-- The pattern is one schema, one \`.parse(params)\` call, then destructure. After that the IDs flow through the codebase with their brand intact.
+-- It's the same B4 boundary rule from E-2 R1 — called out separately because router loaders are a high-traffic foot-gun.
+-- Gate: G-35-BE-LOADER-PARSE · AT-ENFORCEMENTRULES-14.`,
+
+  "e4-3": `Putting it all together: four layers, each catching what the previous layer cannot.
+
+-- Layer 1 Compile (tsconfig strict, generic rules) catches \`any\`, \`unknown\`, phantom generics, brand erasure.
+-- Layer 2 Lint (custom plugin) catches naming/registration/severity drift and chokepoint violations.
+-- Layer 3 Runtime (Zod boundary schemas) catches API drift, untrusted shape, missing brand.
+-- Layer 4 Test (type-tests + RuleTester) catches generic regressions and rule false-negatives.
+-- All four run on every PR via \`.github/workflows/ci.yml\`. Plus \`scripts/spec-hygiene/00-run-all.mjs\` audits AT-binds.`,
+
+  "e9-closing": `Three takeaways:
+
+1. Rules without gates rot. Ship the gate the same day you ship the rule, or don't ship the rule.
+2. \`any\` and \`unknown\` aren't lazy — they're ungated promises. The compiler can't keep them for you.
+3. Parse at the boundary, mint the brand at the parse, throw a typed error on failure. Three lines, three layers.
+
+Cross-reference: spec/35-enforcement-rules/97-acceptance-criteria.md and 97a-acceptance-criteria-fixtures.md. Questions?`,
 };
 
 // Merge with auto-extracted notes from spec markdown.
