@@ -12,6 +12,8 @@ import { applyOp, listItems } from "@/lib/applyOp";
 import type { Item } from "@/lib/applyOp/types";
 import { runReaper, type ReaperRun } from "@/lib/applyOp/reaper";
 import { itemsStore } from "@/lib/applyOp/db";
+import { virtualClock, type ClockState } from "@/lib/applyOp/virtualClock";
+import { Switch } from "@/components/ui/switch";
 
 export default function TrashReaper() {
   const [items, setItems] = useState<Item[]>([]);
