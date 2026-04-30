@@ -91,6 +91,18 @@ export default function Presenter() {
         >
           Reset
         </button>
+        <button
+          onClick={() => {
+            const json = exportOverridesAsJson();
+            const count = Object.keys(getAllOverrides()).length;
+            navigator.clipboard?.writeText(json);
+            alert(`Copied ${count} note override(s) to clipboard as JSON.`);
+          }}
+          className="px-2 py-1 rounded bg-muted hover:bg-muted/70"
+          title="Copy all per-slide note overrides to clipboard"
+        >
+          Export edits
+        </button>
         <Link to={`/${DECKS[which].audience}`}
               className="text-muted-foreground hover:text-foreground underline ml-2">
           Open audience view →
@@ -137,4 +149,100 @@ function fmt(s: number) {
   const m = Math.floor(s / 60);
   const r = s % 60;
   return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+
+function NotesPanel({ slide }: { slide: SlideMeta }) {
+  const baseline = slide.notes ?? "";
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [override, setOverrideState] = useState<string | undefined>(() => getOverride(slide.id));
+  const taRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Reset local state whenever the slide changes
+  useEffect(() => {
+    setEditing(false);
+    setOverrideState(getOverride(slide.id));
+  }, [slide.id]);
+
+  const displayed = useMemo(() => override ?? baseline, [override, baseline]);
+  const hasOverride = override !== undefined;
+
+  function startEdit() {
+    setDraft(displayed);
+    setEditing(true);
+    setTimeout(() => taRef.current?.focus(), 0);
+  }
+  function save() {
+    setOverride(slide.id, draft);
+    setOverrideState(draft);
+    setEditing(false);
+  }
+  function cancel() {
+    setEditing(false);
+  }
+  function reset() {
+    clearOverride(slide.id);
+    setOverrideState(undefined);
+    setEditing(false);
+  }
+
+  return (
+    <div className="h-56 shrink-0 rounded-lg border border-border bg-card p-5 overflow-hidden flex flex-col">
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground">
+          Speaker notes · {slide.chapter} · {slide.title}
+          {hasOverride && (
+            <span className="ml-2 px-1.5 py-0.5 rounded bg-primary/15 text-primary normal-case tracking-normal">
+              edited
+            </span>
+          )}
+        </div>
+        <div className="flex gap-1.5 text-xs">
+          {!editing ? (
+            <>
+              <button onClick={startEdit} className="px-2 py-0.5 rounded bg-muted hover:bg-muted/70">
+                Edit
+              </button>
+              {hasOverride && (
+                <button onClick={reset} className="px-2 py-0.5 rounded bg-muted hover:bg-muted/70">
+                  Reset
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button onClick={save} className="px-2 py-0.5 rounded bg-primary text-primary-foreground hover:opacity-90">
+                Save
+              </button>
+              <button onClick={cancel} className="px-2 py-0.5 rounded bg-muted hover:bg-muted/70">
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {editing ? (
+        <textarea
+          ref={taRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); save(); }
+            if (e.key === "Escape") { e.preventDefault(); cancel(); }
+          }}
+          className="flex-1 resize-none rounded border border-border bg-background p-3 text-[15px] leading-relaxed font-sans text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+          placeholder="Speaker notes for this slide…"
+        />
+      ) : displayed ? (
+        <pre className="flex-1 overflow-y-auto whitespace-pre-wrap font-sans text-[15px] leading-relaxed text-foreground m-0">
+          {displayed}
+        </pre>
+      ) : (
+        <div className="flex-1 text-muted-foreground italic text-sm">
+          No notes for this slide. Click <strong>Edit</strong> to add one (id <code>{slide.id}</code>).
+        </div>
+      )}
+    </div>
+  );
 }
