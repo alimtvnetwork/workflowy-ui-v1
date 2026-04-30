@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label";
 import { applyOp, listItems, resetPlayground } from "@/lib/applyOp";
 import type { Item } from "@/lib/applyOp/types";
 import { syncQueue, type QueuedOp, type ResolutionStrategy } from "@/lib/applyOp/syncQueue";
+import { virtualClock, type ClockState } from "@/lib/applyOp/virtualClock";
 import { toast } from "sonner";
-import { Plus, RotateCcw, Zap, AlertTriangle, Clock, Check, X } from "lucide-react";
+import { Plus, RotateCcw, Zap, AlertTriangle, Clock, Check, X, Play, Pause } from "lucide-react";
 
 const statusColor: Record<QueuedOp["Status"], "default" | "secondary" | "destructive" | "outline"> = {
   queued: "secondary",
