@@ -65,14 +65,40 @@ export default function ActivityFeed() {
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Home</Link>
       </header>
 
-      <Card className="p-4 mb-4">
+      <Card className="p-4 mb-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground mr-1">Page:</span>
+          <Button
+            size="sm"
+            variant={pageFilter === "all" ? "default" : "outline"}
+            onClick={() => setPageFilter("all")}
+          >
+            All pages ({pageIds.length})
+          </Button>
+          {pageIds.map((pid) => {
+            const count = events.filter((e) => e.PageItemId === pid).length;
+            return (
+              <Button
+                key={pid}
+                size="sm"
+                variant={pageFilter === pid ? "default" : "outline"}
+                onClick={() => setPageFilter(pid)}
+                className="font-mono"
+              >
+                {pid.slice(0, 6)} ({count})
+              </Button>
+            );
+          })}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground mr-1">Type:</span>
           <Button
             size="sm"
             variant={filter === "all" ? "default" : "outline"}
             onClick={() => setFilter("all")}
           >
-            All ({events.length})
+            All ({byPage.length})
+          </Button>
           </Button>
           {types.map((t) => {
             const count = events.filter((e) => e.EventType === t).length;
