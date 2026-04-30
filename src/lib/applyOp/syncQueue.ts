@@ -212,10 +212,12 @@ class SyncQueue {
     if (!entry || entry.Status !== "conflict") return;
     entry.Resolution = strategy;
     if (strategy === "keep-remote") {
-      // Drop the local change entirely.
+      // Drop the local change entirely — local user's edit was overwritten.
       entry.Status = "applied";
       entry.ResultEnvelope = null;
       await this.persist(entry);
+      const itemId = (entry.Payload as UpdatePayload)?.Id ?? entry.BaseSnapshot?.Id ?? "";
+      this.emitLoss({ QueueId: entry.QueueId, ItemId: itemId, Reason: "keep-remote", At: nowIso() });
       this.emit();
       return;
     }
