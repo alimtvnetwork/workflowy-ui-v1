@@ -138,7 +138,7 @@ export default function Presenter() {
           <div className="relative flex-1 min-h-0 rounded-lg border border-border bg-muted/20 overflow-hidden">
             <ScaledSlide><Cur /></ScaledSlide>
           </div>
-          <NotesPanel slide={cur} />
+          <NotesPanel slide={cur} key={cur.id} />
         </div>
 
         {/* Right column: next slide + nav */}
