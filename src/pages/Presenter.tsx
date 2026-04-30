@@ -11,9 +11,18 @@ import {
   exportOverridesAsJson,
   getAllOverrides,
   getOverride,
+  importOverridesFromJson,
   setOverride,
 } from "@/deck/noteOverrides";
 import type { SlideMeta } from "@/deck/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: string }> = {
   frontend:    { title: "Frontend Deck",     slides: attachNotes(frontendSlides),    audience: "deck" },
@@ -31,6 +40,11 @@ export default function Presenter() {
   const [index, setIndex] = useState(() => Number(params.get("i") ?? 0));
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importDraft, setImportDraft] = useState("");
+  const [importMode, setImportMode] = useState<"merge" | "replace">("merge");
+  const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [, forceTick] = useState(0);
 
   // Sync index → URL (so refresh keeps position)
   useEffect(() => {
