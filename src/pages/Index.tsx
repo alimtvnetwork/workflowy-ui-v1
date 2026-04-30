@@ -3,12 +3,14 @@ import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
 import { enforcementSlides } from "@/deck/enforcement-slides";
+import { userSlides } from "@/deck/user-slides";
 
 const Index = () => {
   const fePhases = countChapters(frontendSlides);
   const bePhases = countChapters(backendSlides);
   const opsPhases = countChapters(opsSlides);
   const enfPhases = countChapters(enforcementSlides);
+  const usrPhases = countChapters(userSlides);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
