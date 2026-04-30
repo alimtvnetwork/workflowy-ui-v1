@@ -44,7 +44,7 @@ export default function Presenter() {
   const [importDraft, setImportDraft] = useState("");
   const [importMode, setImportMode] = useState<"merge" | "replace">("merge");
   const [importMsg, setImportMsg] = useState<string | null>(null);
-  const [, forceTick] = useState(0);
+  const [refreshTick, forceTick] = useState(0);
 
   // Sync index → URL (so refresh keeps position)
   useEffect(() => {
@@ -138,7 +138,7 @@ export default function Presenter() {
           <div className="relative flex-1 min-h-0 rounded-lg border border-border bg-muted/20 overflow-hidden">
             <ScaledSlide><Cur /></ScaledSlide>
           </div>
-          <NotesPanel slide={cur} key={cur.id} />
+          <NotesPanel slide={cur} key={`${cur.id}:${refreshTick}`} />
         </div>
 
         {/* Right column: next slide + nav */}
