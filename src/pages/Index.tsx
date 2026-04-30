@@ -2,11 +2,13 @@ import { Link } from "react-router-dom";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
+import { enforcementSlides } from "@/deck/enforcement-slides";
 
 const Index = () => {
   const fePhases = countChapters(frontendSlides);
   const bePhases = countChapters(backendSlides);
   const opsPhases = countChapters(opsSlides);
+  const enfPhases = countChapters(enforcementSlides);
 
   return (
     <main className="min-h-screen bg-background text-foreground">

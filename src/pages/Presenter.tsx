@@ -4,6 +4,7 @@ import { ScaledSlide } from "@/deck/ScaledSlide";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
+import { enforcementSlides } from "@/deck/enforcement-slides";
 import { attachNotes } from "@/deck/notes";
 import {
   clearOverride,
@@ -15,15 +16,16 @@ import {
 import type { SlideMeta } from "@/deck/types";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: string }> = {
-  frontend: { title: "Frontend Deck", slides: attachNotes(frontendSlides), audience: "deck" },
-  backend:  { title: "Backend Deck",  slides: attachNotes(backendSlides),  audience: "backend-deck" },
-  ops:      { title: "Operations",    slides: attachNotes(opsSlides),      audience: "ops-deck" },
+  frontend:    { title: "Frontend Deck",     slides: attachNotes(frontendSlides),    audience: "deck" },
+  backend:     { title: "Backend Deck",      slides: attachNotes(backendSlides),     audience: "backend-deck" },
+  ops:         { title: "Operations",        slides: attachNotes(opsSlides),         audience: "ops-deck" },
+  enforcement: { title: "Enforcement Rules", slides: attachNotes(enforcementSlides), audience: "enforcement-deck" },
 };
 
 export default function Presenter() {
   const [params, setParams] = useSearchParams();
   const q = params.get("deck");
-  const which = q === "backend" || q === "ops" ? q : "frontend";
+  const which = q === "backend" || q === "ops" || q === "enforcement" ? q : "frontend";
   const { title, slides } = DECKS[which];
 
   const [index, setIndex] = useState(() => Number(params.get("i") ?? 0));
