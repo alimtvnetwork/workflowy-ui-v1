@@ -24,7 +24,7 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "ch2-01-app-shell-ui", spec: "spec/32-ui-design/01-architecture/03-component-hierarchy.md" },
   { slideId: "ch2-02-navbar", spec: "spec/32-ui-design/06-workflowy-ui/01-navbar/01-layout.md" },
   { slideId: "ch2-03-sidebar", spec: "spec/31-app/01-features/03-layout-structure.md" },
-  { slideId: "ch2-04-shell-tech", spec: "spec/32-ui-design/01-architecture/04-file-organization.md" },
+  { slideId: "ch2-04-shell-tech", spec: "spec/32-ui-design/01-architecture/03-component-hierarchy.md" },
 
   { slideId: "ch3-01-recursive-ui", spec: "spec/31-app/01-features/04-page-content-area.md" },
   { slideId: "ch3-02-zoom", spec: "spec/31-app/01-features/12b-multi-select-zoom.md" },
@@ -108,19 +108,19 @@ export const NOTE_SOURCES: NoteSource[] = [
 
   { slideId: "b2-01-password-storage", spec: "spec/36-user-management/02-auth-flow.md" },
   { slideId: "b2-02-sessions", spec: "spec/31-app/05-conventions/11-session-token-lifecycle.md" },
-  { slideId: "b2-03-reset-tokens", spec: "spec/31-app/05-conventions/11-session-token-lifecycle.md", anchor: "Reset" },
+  { slideId: "b2-03-reset-tokens", spec: "spec/31-app/05-conventions/11-session-token-lifecycle.md" },
   { slideId: "b2-04-rbac", spec: "spec/36-user-management/03-rbac-helpers.md" },
 
   { slideId: "b3-01-op-shapes", spec: "spec/31-app/06-endpoints/97b-endpoint-envelope-fixtures.md" },
-  { slideId: "b3-02-lww", spec: "spec/31-app/01-features/14-concurrency-and-sync.md", anchor: "Conflict" },
-  { slideId: "b3-03-cursors", spec: "spec/31-app/01-features/14-concurrency-and-sync.md", anchor: "Pull" },
+  { slideId: "b3-02-lww", spec: "spec/31-app/01-features/14-concurrency-and-sync.md" },
+  { slideId: "b3-03-cursors", spec: "spec/31-app/01-features/14-concurrency-and-sync.md" },
   { slideId: "b3-04-sequence", spec: "spec/31-app/02-workflows/07-sync-replay-flow.md" },
   { slideId: "b3-05-sse", spec: "spec/31-app/05-conventions/32-sse-php-implementation.md" },
   { slideId: "b3-06-offline-replay", spec: "spec/31-app/01-features/14b-offline-queue.md" },
 
   { slideId: "b4-01-move-atomicity", spec: "spec/31-app/01-features/06-item-context-menu.md" },
   { slideId: "b4-02-fractional-index", spec: "spec/31-app/01-features/01-information-model.md" },
-  { slideId: "b4-03-rebalance", spec: "spec/31-app/01-features/01-information-model.md", anchor: "Sort" },
+  { slideId: "b4-03-rebalance", spec: "spec/31-app/01-features/01-information-model.md" },
   { slideId: "b4-04-soft-delete", spec: "spec/31-app/01-features/11-trash-view.md" },
 
   { slideId: "b5-01-peer-groups", spec: "spec/31-app/01-features/09b-mirror-peer-group-model.md" },
@@ -134,7 +134,7 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "b7-01-job-runner", spec: "spec/31-app/05-conventions/14-backup-and-dr-policy.md" },
   { slideId: "b7-02-trash-reaper", spec: "spec/31-app/01-features/11b-trash-reaper.md" },
   { slideId: "b7-03-activity-purge", spec: "spec/34-activity-feed/04-retention-and-purge.md" },
-  { slideId: "b7-04-sse-fanout", spec: "spec/31-app/05-conventions/32-sse-php-implementation.md", anchor: "Fanout" },
+  { slideId: "b7-04-sse-fanout", spec: "spec/31-app/05-conventions/32-sse-php-implementation.md" },
 
   { slideId: "b8-01-fts5", spec: "spec/31-app/01-features/16-search-ranking.md" },
   { slideId: "b8-02-operator-parser", spec: "spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md" },
@@ -153,7 +153,7 @@ export const NOTE_SOURCES: NoteSource[] = [
   // Ops deck (/ops-deck) — o1..o5
   // =========================================================================
   { slideId: "o1-01-slos", spec: "spec/31-app/05-conventions/14-backup-and-dr-policy.md" },
-  { slideId: "o1-02-error-budget", spec: "spec/31-app/05-conventions/14-backup-and-dr-policy.md", anchor: "Budget" },
+  { slideId: "o1-02-error-budget", spec: "spec/31-app/05-conventions/14-backup-and-dr-policy.md" },
 
   { slideId: "o2-01-metrics-surface", spec: "spec/31-app/05-conventions/09-audit-log-policy.md" },
   { slideId: "o2-02-logs-traces", spec: "spec/31-app/05-conventions/09-audit-log-policy.md" },
@@ -178,7 +178,7 @@ export const NOTE_SOURCES: NoteSource[] = [
   // =========================================================================
   { slideId: "e1-01-no-any", spec: "spec/35-enforcement-rules/01-generic-return-types.md" },
   { slideId: "e1-02-no-unknown", spec: "spec/35-enforcement-rules/01-generic-return-types.md", anchor: "unknown" },
-  { slideId: "e1-03-no-phantom", spec: "spec/35-enforcement-rules/01-generic-return-types.md", anchor: "phantom" },
+  { slideId: "e1-03-no-phantom", spec: "spec/35-enforcement-rules/01-generic-return-types.md" },
   { slideId: "e1-04-preserve-brand", spec: "spec/35-enforcement-rules/01-generic-return-types.md", anchor: "brand" },
 
   { slideId: "e2-01-parse-boundary", spec: "spec/35-enforcement-rules/02-runtime-validation.md" },
@@ -188,7 +188,7 @@ export const NOTE_SOURCES: NoteSource[] = [
 
   { slideId: "e3-01-plugin-layout", spec: "spec/35-enforcement-rules/03-eslint-rule-authoring.md" },
   { slideId: "e3-02-naming-registration", spec: "spec/35-enforcement-rules/03-eslint-rule-authoring.md", anchor: "naming" },
-  { slideId: "e3-03-tester-severity", spec: "spec/35-enforcement-rules/03-eslint-rule-authoring.md", anchor: "tester" },
+  { slideId: "e3-03-tester-severity", spec: "spec/35-enforcement-rules/03-eslint-rule-authoring.md" },
 
   { slideId: "e4-01-chokepoint", spec: "spec/35-enforcement-rules/04-boundary-enforcement.md" },
   { slideId: "e4-02-loader-parse", spec: "spec/35-enforcement-rules/04-boundary-enforcement.md", anchor: "loader" },
