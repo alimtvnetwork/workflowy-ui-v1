@@ -77,6 +77,7 @@ const Index = () => {
             Reference implementation:{" "}
             <Link to="/api-playground" className="underline hover:text-foreground">applyOp playground</Link>
             {" · "}<Link to="/sync-simulator" className="underline hover:text-foreground">sync simulator</Link>
+            {" · "}<Link to="/trash-reaper" className="underline hover:text-foreground">trash reaper</Link>
             {" "}— interactive items + op-journal in IndexedDB, plus latency + conflict resolution.
           </div>
         </footer>
