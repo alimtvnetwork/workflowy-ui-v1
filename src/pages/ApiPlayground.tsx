@@ -26,7 +26,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Check, Trash2, Plus, RotateCcw, Undo2, Diamond, X, Link2 } from "lucide-react";
+import { Check, Trash2, Plus, RotateCcw, Undo2, Diamond, X, Link2, AlertTriangle } from "lucide-react";
 
 function envelopeSummary(e: Envelope<unknown>) {
   return `${e.Status.Code} ${e.Status.Message} · ${e.Attributes.TotalRecords} record(s)`;
@@ -97,6 +97,30 @@ export default function ApiPlayground() {
         <div className="flex gap-2">
           <Link to="/"><Button variant="ghost" size="sm">Home</Button></Link>
           <Link to="/backend-deck"><Button variant="ghost" size="sm">Backend deck</Button></Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              await resetPlayground();
+              const op = applyOp as (k: string, p: unknown) => Promise<Envelope<unknown>>;
+              const a = await op("items.create", { ParentId: null, Content: "Cycle A", ItemType: "Task" });
+              const aId = (a.Results[0] as Item)?.Id;
+              const b = await op("items.create", { ParentId: aId, Content: "Cycle B", ItemType: "Task" });
+              const bId = (b.Results[0] as Item)?.Id;
+              const c = await op("items.create", { ParentId: bId, Content: "Cycle C", ItemType: "Task" });
+              const cId = (c.Results[0] as Item)?.Id;
+              const env = await op("items.move", { Id: aId, NewParentId: cId });
+              setLastEnvelope(env);
+              await refresh();
+              if (String(env.Status.Code) === "ERR_CYCLE") {
+                toast.error(`ERR_CYCLE blocked: ${envelopeSummary(env)}`);
+              } else {
+                toast.warning(`Expected ERR_CYCLE, got ${env.Status.Code}`);
+              }
+            }}
+          >
+            <AlertTriangle className="w-4 h-4 mr-1" /> Try cycle
+          </Button>
           <Button variant="outline" size="sm" onClick={async () => { await resetPlayground(); await refresh(); toast.info("Playground reset"); }}>
             <RotateCcw className="w-4 h-4 mr-1" /> Reset
           </Button>
