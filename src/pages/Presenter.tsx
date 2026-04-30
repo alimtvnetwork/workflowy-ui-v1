@@ -5,6 +5,7 @@ import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
 import { enforcementSlides } from "@/deck/enforcement-slides";
+import { userSlides } from "@/deck/user-slides";
 import { attachNotes } from "@/deck/notes";
 import {
   clearOverride,
@@ -29,6 +30,7 @@ const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: stri
   backend:     { title: "Backend Deck",      slides: attachNotes(backendSlides),     audience: "backend-deck" },
   ops:         { title: "Operations",        slides: attachNotes(opsSlides),         audience: "ops-deck" },
   enforcement: { title: "Enforcement Rules", slides: attachNotes(enforcementSlides), audience: "enforcement-deck" },
+  user:        { title: "User Management",   slides: attachNotes(userSlides),        audience: "user-deck" },
 };
 
 export default function Presenter() {
