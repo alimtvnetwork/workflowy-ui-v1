@@ -89,6 +89,15 @@ class SyncQueue {
     this.listeners.forEach((l) => l(snap));
   }
 
+  subscribeLoss(fn: LossListener) {
+    this.lossListeners.add(fn);
+    return () => { this.lossListeners.delete(fn); };
+  }
+
+  private emitLoss(ev: LwwLossEvent) {
+    this.lossListeners.forEach((l) => l(ev));
+  }
+
   list() { return [...this.queue]; }
 
   async clear() {
