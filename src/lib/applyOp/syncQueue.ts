@@ -1,13 +1,10 @@
-// Sync simulator — wraps applyOp with configurable latency, a pending queue, and
+// Sync simulator — wraps applyOp with configurable latency, a durable queue, and
 // a conflict-resolver hook. Models spec/31-app/01-features/14-concurrency-and-sync.md
-// (last-write-wins by default, with explicit user override).
-//
-// This module deliberately lives next to the reference applyOp impl: the
-// WordPress plugin would replace this file with a real network client, but the
-// queue / conflict shape stays the same.
+// + spec/31-app/01-features/14b-offline-queue.md (queue persists across reload —
+// invariant I-OQ-02).
 
 import { applyOp, listItems } from "./index";
-import { itemsStore } from "./db";
+import { itemsStore, syncQueueStore } from "./db";
 import type { Envelope, Item, Op, OpKind, UpdatePayload } from "./types";
 import { nowIso, ulid } from "./util";
 
@@ -15,6 +12,8 @@ export type ResolutionStrategy = "lww" | "keep-local" | "keep-remote";
 
 export interface QueuedOp {
   QueueId: string;
+  /** Monotonic per-device sequence — strict FIFO replay order (spec 14b §14b.1). */
+  LocalSeq: number;
   Kind: OpKind;
   Payload: unknown;
   EnqueuedAt: string;
@@ -32,16 +31,48 @@ export interface QueuedOp {
 
 type Listener = (snapshot: QueuedOp[]) => void;
 
+const SEQ_KEY = "spec-applyop-localseq";
+
 class SyncQueue {
   private queue: QueuedOp[] = [];
   private listeners = new Set<Listener>();
+  private hydrated = false;
+  private hydratePromise: Promise<void> | null = null;
+  private nextSeq = 1;
   latencyMs = 1500;
   /** When true, the next queued items.update on the same Id will inject a remote conflict. */
   injectConflictForNext = false;
 
+  /** Load persisted queue + LocalSeq from IndexedDB. Called on first subscribe/list. */
+  private async hydrate(): Promise<void> {
+    if (this.hydrated) return;
+    if (this.hydratePromise) return this.hydratePromise;
+    this.hydratePromise = (async () => {
+      const persisted = await syncQueueStore.getAll();
+      persisted.sort((a, b) => a.LocalSeq - b.LocalSeq);
+      this.queue = persisted;
+      const stored = typeof localStorage !== "undefined" ? localStorage.getItem(SEQ_KEY) : null;
+      const fromSeq = stored ? parseInt(stored, 10) : 0;
+      const fromQueue = persisted.reduce((m, q) => Math.max(m, q.LocalSeq), 0);
+      this.nextSeq = Math.max(fromSeq, fromQueue) + 1;
+      // Resume timers for ops that were "queued" or "in-flight" when the page died.
+      for (const entry of this.queue) {
+        if (entry.Status === "in-flight") entry.Status = "queued";
+        if (entry.Status === "queued") {
+          const delay = Math.max(0, new Date(entry.ScheduledFor).getTime() - Date.now());
+          setTimeout(() => { void this.flush(entry.QueueId); }, delay);
+        }
+      }
+      this.hydrated = true;
+      this.emit();
+    })();
+    return this.hydratePromise;
+  }
+
   subscribe(fn: Listener) {
     this.listeners.add(fn);
     fn([...this.queue]);
+    void this.hydrate();
     return () => { this.listeners.delete(fn); };
   }
 
@@ -52,9 +83,21 @@ class SyncQueue {
 
   list() { return [...this.queue]; }
 
-  clear() {
+  async clear() {
     this.queue = [];
+    await syncQueueStore.clear();
     this.emit();
+  }
+
+  /** Persist a single entry (insert or update). */
+  private async persist(entry: QueuedOp) {
+    await syncQueueStore.put(entry);
+  }
+
+  private bumpSeq(): number {
+    const s = this.nextSeq++;
+    if (typeof localStorage !== "undefined") localStorage.setItem(SEQ_KEY, String(s));
+    return s;
   }
 
   /**
@@ -62,6 +105,7 @@ class SyncQueue {
    * detect conflicts when the op finally fires. Returns the QueueId.
    */
   async enqueue(kind: OpKind, payload: unknown): Promise<string> {
+    await this.hydrate();
     const queueId = ulid();
     let baseSnapshot: Item | null = null;
     let optimisticPatch: Partial<Item> | null = null;
@@ -78,6 +122,7 @@ class SyncQueue {
 
     const entry: QueuedOp = {
       QueueId: queueId,
+      LocalSeq: this.bumpSeq(),
       Kind: kind,
       Payload: payload,
       EnqueuedAt: nowIso(),
@@ -91,6 +136,7 @@ class SyncQueue {
       ResultEnvelope: null,
     };
     this.queue.push(entry);
+    await this.persist(entry);
     this.emit();
 
     // If conflict injection is armed and this is an update, mutate the
@@ -118,6 +164,7 @@ class SyncQueue {
     const entry = this.queue.find((q) => q.QueueId === queueId);
     if (!entry || entry.Status !== "queued") return;
     entry.Status = "in-flight";
+    await this.persist(entry);
     this.emit();
 
     // Conflict detection for items.update — compare current persisted item
@@ -133,6 +180,7 @@ class SyncQueue {
         entry.Status = "conflict";
         entry.ConflictRemote = current;
         entry.ConflictLocal = entry.OptimisticPatch;
+        await this.persist(entry);
         this.emit();
         return;
       }
@@ -150,6 +198,7 @@ class SyncQueue {
       // Drop the local change entirely.
       entry.Status = "applied";
       entry.ResultEnvelope = null;
+      await this.persist(entry);
       this.emit();
       return;
     }
@@ -163,10 +212,11 @@ class SyncQueue {
       const env = await applyOp(entry.Kind as never, entry.Payload as never);
       entry.ResultEnvelope = env as Envelope<unknown>;
       entry.Status = env.Status.IsSuccess ? "applied" : "failed";
-    } catch (e) {
+    } catch {
       entry.Status = "failed";
       entry.ResultEnvelope = null;
     }
+    await this.persist(entry);
     this.emit();
   }
 }
