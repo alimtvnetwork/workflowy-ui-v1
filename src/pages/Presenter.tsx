@@ -164,6 +164,69 @@ export default function Presenter() {
           </div>
         </div>
       </div>
+
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Import note overrides</DialogTitle>
+            <DialogDescription>
+              Paste JSON exported from another machine ({"{ \"slideId\": \"text\", … }"}).
+              {" "}<strong>Merge</strong> keeps existing edits and adds/overwrites by key;
+              {" "}<strong>Replace</strong> wipes current overrides first.
+            </DialogDescription>
+          </DialogHeader>
+          <textarea
+            value={importDraft}
+            onChange={(e) => setImportDraft(e.target.value)}
+            placeholder='{ "ch1-01-what-is-workflowy": "My talk track …" }'
+            className="w-full h-56 resize-none rounded border border-border bg-background p-3 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary"
+            spellCheck={false}
+          />
+          <div className="flex items-center gap-4 text-sm">
+            <label className="flex items-center gap-1.5">
+              <input type="radio" name="import-mode" checked={importMode === "merge"}
+                     onChange={() => setImportMode("merge")} />
+              Merge
+            </label>
+            <label className="flex items-center gap-1.5">
+              <input type="radio" name="import-mode" checked={importMode === "replace"}
+                     onChange={() => setImportMode("replace")} />
+              Replace
+            </label>
+            {importMsg && (
+              <span className={importMsg.startsWith("✓") ? "text-primary" : "text-destructive"}>
+                {importMsg}
+              </span>
+            )}
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setImportOpen(false)}
+              className="px-3 py-1.5 rounded bg-muted hover:bg-muted/70 text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                const r = importOverridesFromJson(importDraft, { mode: importMode });
+                if (!r.ok) {
+                  setImportMsg(`✗ ${r.error ?? "Import failed"}`);
+                  return;
+                }
+                setImportMsg(
+                  `✓ Imported ${r.imported} of ${r.total}` +
+                    (r.skipped ? ` (${r.skipped} skipped)` : "") +
+                    (importMode === "replace" ? " · replaced" : " · merged"),
+                );
+                forceTick((n) => n + 1); // re-render NotesPanel for current slide
+              }}
+              className="px-3 py-1.5 rounded bg-primary text-primary-foreground hover:opacity-90 text-sm"
+            >
+              Import
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
