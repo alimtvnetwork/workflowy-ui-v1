@@ -79,6 +79,21 @@ export default function SyncSimulator() {
   useEffect(() => { syncQueue.latencyMs = latency; }, [latency]);
   useEffect(() => { syncQueue.injectConflictForNext = armConflict; }, [armConflict]);
 
+  const [clock, setClock] = useState<ClockState>(virtualClock.getState());
+  const [virtualDay, setVirtualDay] = useState(virtualClock.virtualDay());
+  useEffect(() => {
+    const unsubState = virtualClock.subscribe((s) => {
+      setClock(s);
+      setVirtualDay(virtualClock.virtualDay());
+    });
+    const unsubReap = virtualClock.subscribeReap((run) => {
+      if (run.RowsDeleted > 0) {
+        toast.info(`Reaper auto-tick — purged ${run.RowsDeleted} row(s)`);
+      }
+    });
+    return () => { unsubState(); unsubReap(); };
+  }, []);
+
   async function handleResolve(q: QueuedOp, strategy: ResolutionStrategy) {
     await syncQueue.resolve(q.QueueId, strategy);
     toast.success(`Resolved with ${strategy}`);
