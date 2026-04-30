@@ -46,12 +46,21 @@ const Index = () => {
           />
         </div>
 
-        <footer className="mt-20 pt-8 border-t border-border text-sm text-muted-foreground">
-          Use <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground">←</kbd>
-          {" / "}
-          <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground">→</kbd> inside
-          a deck to navigate. Press <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground">Esc</kbd> to
-          open the slide index.
+        <footer className="mt-20 pt-8 border-t border-border text-sm text-muted-foreground space-y-2">
+          <div>
+            Use <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground">←</kbd>
+            {" / "}
+            <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground">→</kbd> inside
+            a deck to navigate. Press <kbd className="px-1.5 py-0.5 rounded bg-muted text-foreground">Esc</kbd> to
+            open the slide index.
+          </div>
+          <div>
+            PDF export:{" "}
+            <Link to="/print?deck=frontend" className="underline hover:text-foreground">frontend deck</Link>
+            {" · "}
+            <Link to="/print?deck=backend" className="underline hover:text-foreground">backend deck</Link>
+            {" "}— then Cmd/Ctrl-P → Save as PDF.
+          </div>
         </footer>
       </div>
     </main>
