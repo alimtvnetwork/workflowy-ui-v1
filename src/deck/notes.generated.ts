@@ -1050,6 +1050,30 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
 
 -- Source: spec/36-user-management/01-account-and-settings.md`,
+  "u1-2": `(no prose found in source section)
+
+-- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
+-- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
+-- Multi-Factor Authentication — From Account → Security → MFA. Supports TOTP (authenticator app, RFC 6238) and WebAuthn passkeys (per ./00-overview.md FR-3). One TOTP secret + N passkeys per user. Recovery codes are generated once at enrolment; user must download/print before the dialog can close. (component: mfa-enroll-dialog)
+-- Delete Account — From Account → Danger Zone. Requires re-entering password + typing the literal phrase delete my account. On confirmation, the account is soft-deleted with a 30-day grace window matching trash retention (mem://features/trash-logic); login during grace cancels the deletion. After grace, a daily WP cron purges all User rows + cascaded Item/Mirror/Share rows. (component: delete-account-dialog)
+
+-- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity`,
+  "u1-3": `(no prose found in source section)
+
+-- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
+-- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
+-- Multi-Factor Authentication — From Account → Security → MFA. Supports TOTP (authenticator app, RFC 6238) and WebAuthn passkeys (per ./00-overview.md FR-3). One TOTP secret + N passkeys per user. Recovery codes are generated once at enrolment; user must download/print before the dialog can close. (component: mfa-enroll-dialog)
+-- Delete Account — From Account → Danger Zone. Requires re-entering password + typing the literal phrase delete my account. On confirmation, the account is soft-deleted with a 30-day grace window matching trash retention (mem://features/trash-logic); login during grace cancels the deletion. After grace, a daily WP cron purges all User rows + cascaded Item/Mirror/Share rows. (component: delete-account-dialog)
+
+-- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity`,
+  "u1-4": `(no prose found in source section)
+
+-- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
+-- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
+-- Multi-Factor Authentication — From Account → Security → MFA. Supports TOTP (authenticator app, RFC 6238) and WebAuthn passkeys (per ./00-overview.md FR-3). One TOTP secret + N passkeys per user. Recovery codes are generated once at enrolment; user must download/print before the dialog can close. (component: mfa-enroll-dialog)
+-- Delete Account — From Account → Danger Zone. Requires re-entering password + typing the literal phrase delete my account. On confirmation, the account is soft-deleted with a 30-day grace window matching trash retention (mem://features/trash-logic); login during grace cancels the deletion. After grace, a daily WP cron purges all User rows + cascaded Item/Mirror/Share rows. (component: delete-account-dialog)
+
+-- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity`,
   "u2-1": `auth · login · registration · passkey · webauthn · session · jwt · argon2id · mfa · recovery-codes · solo-mode · sync-mode
 
 -- ./00-overview.md §"Functional Requirements" (FR-3, FR-4, FR-6) and §"Anti-Patterns".
@@ -1062,6 +1086,9 @@ export const GENERATED_NOTES: Record<string, string> = {
   "u2-2": `POST /wp-json/workflowy/v1/auth/login
 
 -- Source: spec/36-user-management/02-auth-flow.md # login`,
+  "u2-3": `| Mode | Where | TTL | Refresh | |---|---|---|---| | sync | Session SQLite row + Set-Cookie | 7 days from LastSeenAt | Sliding — every authenticated request bumps LastSeenAt | | solo | localStorage["solo-session"] (opaque blob) | infinite | n/a |
+
+-- Source: spec/36-user-management/02-auth-flow.md # Session Lifecycle`,
   "u2-4": `If MfaRequired: true in the login response, Results[0] carries an opaque MfaChallengeToken instead of SessionToken.
 
 -- Source: spec/36-user-management/02-auth-flow.md # mfa`,
@@ -1077,6 +1104,9 @@ export const GENERATED_NOTES: Record<string, string> = {
   "u3-2": `Every REST handler that requires authorization MUST call requireRole as its first executable line after argument validation [gate: G-36-VIA-HAS-ROLE].
 
 -- Source: spec/36-user-management/03-rbac-helpers.md # require`,
+  "u3-3": `The AI MUST NOT [gate: G-36-CLIENT-NO-ROLE, G-36-VIA-HAS-ROLE, G-36-NO-SELF-ROLE]:
+
+-- Source: spec/36-user-management/03-rbac-helpers.md # Forbidden Patterns`,
   "u4-1": `Define the admin-only React UI surfaces for managing other users — invite, list, role-assign, deactivate, reactivate, delete, audit. md).
 
 -- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 04)
