@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { frontendSlides } from "@/deck/slides";
+import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
 
 const Index = () => {
