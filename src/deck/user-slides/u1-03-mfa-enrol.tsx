@@ -9,7 +9,7 @@ export default function Slide() {
         { k: "Factors", v: "1 TOTP secret + N WebAuthn credentials per user" },
         { k: "Enrolment", v: "QR + manual secret · user types a 6-digit code to confirm" },
         { k: "Recovery codes", v: <><strong>10 single-use codes</strong> generated at enrolment · user must download/print before dialog can close</> },
-        { k: "Storage", v: <code>UserMfaCredential</code> (kind, public key / encrypted secret, last used) </> },
+        { k: "Storage", v: <><code>UserMfaCredential</code> (kind, public key / encrypted secret, last used)</> },
         { k: "Reset", v: "Lost device → use a recovery code at login → fall back to password + reset all factors" },
         { k: "Bypass", v: <span className="text-destructive">Admin-forced reset is audit-logged with reason; no silent bypass.</span> },
       ]} />
