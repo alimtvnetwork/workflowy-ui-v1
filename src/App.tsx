@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import Deck from "./pages/Deck.tsx";
 import BackendDeck from "./pages/BackendDeck.tsx";
+import OpsDeck from "./pages/OpsDeck.tsx";
 import PrintDeck from "./pages/PrintDeck.tsx";
 import Presenter from "./pages/Presenter.tsx";
 import NotFound from "./pages/NotFound.tsx";
