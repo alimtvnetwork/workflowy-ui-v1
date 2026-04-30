@@ -61,6 +61,13 @@ const Index = () => {
             <Link to="/print?deck=backend" className="underline hover:text-foreground">backend deck</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
+          <div>
+            Presenter mode:{" "}
+            <Link to="/presenter?deck=frontend" className="underline hover:text-foreground">frontend</Link>
+            {" · "}
+            <Link to="/presenter?deck=backend" className="underline hover:text-foreground">backend</Link>
+            {" "}— current slide, next slide, speaker notes, and a timer.
+          </div>
         </footer>
       </div>
     </main>

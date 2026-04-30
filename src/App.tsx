@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import Deck from "./pages/Deck.tsx";
 import BackendDeck from "./pages/BackendDeck.tsx";
 import PrintDeck from "./pages/PrintDeck.tsx";
+import Presenter from "./pages/Presenter.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/deck" element={<Deck />} />
           <Route path="/backend-deck" element={<BackendDeck />} />
           <Route path="/print" element={<PrintDeck />} />
+          <Route path="/presenter" element={<Presenter />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

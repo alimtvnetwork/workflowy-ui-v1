@@ -5,4 +5,5 @@ export type SlideMeta = {
   chapter: string;
   title: string;
   Component: ComponentType;
+  notes?: string;     // optional speaker notes (markdown-ish, plain text)
 };
