@@ -29,6 +29,9 @@ import B7S1 from "./b7-01-job-runner";
 import B7S2 from "./b7-02-trash-reaper";
 import B7S3 from "./b7-03-activity-purge";
 import B7S4 from "./b7-04-sse-fanout";
+import B8S1 from "./b8-01-fts5";
+import B8S2 from "./b8-02-operator-parser";
+import B8S3 from "./b8-03-write-hooks";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
@@ -74,5 +77,10 @@ export const backendSlides: SlideMeta[] = [
   { id: "b7-2", chapter: "Phase B-7", title: "Trash reaper", Component: B7S2 },
   { id: "b7-3", chapter: "Phase B-7", title: "Activity purge", Component: B7S3 },
   { id: "b7-4", chapter: "Phase B-7", title: "SSE fan-out", Component: B7S4 },
+
+  { id: "b8-divider", chapter: "Phase B-8", title: "Search & activity", Component: makeDivider("Phase B-8", "Search & activity capture", "FTS5 · operator parser · write-path hooks.") },
+  { id: "b8-1", chapter: "Phase B-8", title: "FTS5 virtual table", Component: B8S1 },
+  { id: "b8-2", chapter: "Phase B-8", title: "Operator parser", Component: B8S2 },
+  { id: "b8-3", chapter: "Phase B-8", title: "Write-path hooks", Component: B8S3 },
 ];
 
