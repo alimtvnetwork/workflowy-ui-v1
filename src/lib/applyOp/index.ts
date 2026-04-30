@@ -30,6 +30,10 @@ import type {
   UpdatePayload,
 } from "./types";
 import { nowIso, sortAfter, ulid } from "./util";
+import { hasCycle } from "./cycle";
+
+export { hasCycle } from "./cycle";
+export type { CycleResult } from "./cycle";
 
 function ok<T>(results: T[], code = 200, message = "OK", url = "/applyOp"): Envelope<T> {
   const ts = nowIso();
@@ -179,6 +183,15 @@ async function moveItem(p: MovePayload): Promise<Envelope<Item>> {
   const cur = await itemsStore.get(p.Id);
   if (!cur) return fail(404, `Item ${p.Id} not found`);
   const all = await itemsStore.getAll();
+  // Spec 09a: reject moves that would create a cycle (ERR_CYCLE).
+  if (p.NewParentId) {
+    const members = await mirrorMembersStore.getAll();
+    const cyc = hasCycle(p.Id, p.NewParentId, all, members);
+    if (cyc.IsCycle) {
+      await journal("items.move", p, false, `ERR_CYCLE: ${cyc.CyclePath.join(" → ")}`);
+      return fail(409, `ERR_CYCLE: move would create a loop (${cyc.CyclePath.join(" → ")})`);
+    }
+  }
   const siblings = all
     .filter((i) => i.ParentId === p.NewParentId && i.Id !== p.Id && !i.TrashedAt)
     .sort((a, b) => (a.Sort < b.Sort ? -1 : 1));
@@ -212,6 +225,17 @@ async function restoreItem(p: RestorePayload): Promise<Envelope<Item>> {
 async function createMirror(p: MirrorCreatePayload): Promise<Envelope<Item>> {
   const source = await itemsStore.get(p.SourceItemId);
   if (!source) return fail(404, `Source item ${p.SourceItemId} not found`);
+
+  // Spec 09a: mirror creation is a virtual move; same cycle check applies.
+  if (p.NewParentId) {
+    const allItems = await itemsStore.getAll();
+    const allMembers = await mirrorMembersStore.getAll();
+    const cyc = hasCycle(p.SourceItemId, p.NewParentId, allItems, allMembers);
+    if (cyc.IsCycle) {
+      await journal("mirrors.create", p, false, `ERR_CYCLE: ${cyc.CyclePath.join(" → ")}`);
+      return fail(409, `ERR_CYCLE: mirror would create a loop (${cyc.CyclePath.join(" → ")})`);
+    }
+  }
 
   // Promote source into a peer group if it isn't already in one.
   const peerGroupId = source.PeerGroupId ?? ulid();
