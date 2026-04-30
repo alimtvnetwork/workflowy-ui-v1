@@ -99,9 +99,8 @@ export default function ActivityFeed() {
           >
             All ({byPage.length})
           </Button>
-          </Button>
           {types.map((t) => {
-            const count = events.filter((e) => e.EventType === t).length;
+            const count = byPage.filter((e) => e.EventType === t).length;
             return (
               <Button
                 key={t}
