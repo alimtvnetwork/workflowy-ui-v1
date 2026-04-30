@@ -53,6 +53,15 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- ❌ Reading these keys without going through the Settings facade.
 
 -- Source: spec/31-app/01-features/03-layout-structure.md`,
+  "ch2-04-shell-tech": `The app wraps everything in a query cache provider, authentication provider, and router. A global toast notification system is available throughout.
+
+-- NavBar (fixed at top, ~48px height)
+-- NavBar Left: Menu toggle, back arrow, forward arrow, home button, breadcrumbs with overflow
+-- NavBar Right: Search button, share button (hidden on home), clipboard/copy button, favorite button (hidden on home), checkmark (complete), layout toggle (list/board), settings menu dropdown
+-- Sidebar (~240px, collapsible from left, shortcut: ^L)
+-- Collapse/expand arrow at top
+
+-- Source: spec/32-ui-design/01-architecture/03-component-hierarchy.md`,
   "ch3-01-recursive-ui": `The Page is the scrollable content area below the NavBar where the user's outline lives. Every bullet item is one row composed of expand toggle, bullet dot, content, note, badges, and hover-revealed action buttons.
 
 -- Renders below the content area, aligned with the content (not the bullet dot).
@@ -549,6 +558,15 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Session ↔ token ↔ user invariants
 
 -- Source: spec/31-app/05-conventions/11-session-token-lifecycle.md`,
+  "b2-03-reset-tokens": `WordPress provides cookies; the WorkFlowy plugin layers a typed token system on top for REST + SSE channels.
+
+-- Token kinds and what each one authorizes
+-- Issuance, refresh, rotation, and revocation flow
+-- Idle vs. absolute timeouts
+-- Server-side TokenRevocationList semantics
+-- Session ↔ token ↔ user invariants
+
+-- Source: spec/31-app/05-conventions/11-session-token-lifecycle.md`,
   "b2-04-rbac": `rbac · has-role · require-role · security-definer · authorization · capability-check · role-cache · auth-helper
 
 -- ./00-overview.md FR-5 ("All RBAC checks via central hasRole"), FR-6, §"Anti-Patterns" rows 2/5/6, §"Worked Example" §2–§4.
@@ -567,6 +585,24 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Error fixtures follow 2.6 in the SSOT (sample reproduced once below; per-endpoint variants only differ in Status.Code, Status.Message, and Errors.Backend).
 
 -- Source: spec/31-app/06-endpoints/97b-endpoint-envelope-fixtures.md`,
+  "b3-02-lww": `This file is the single source of truth for how concurrent edits resolve across tabs, devices, and collaborators. Every other feature (mirrors, sharing, multi-select, today, board) defers to the rules here.
+
+-- ❌ Mutating BrokenAt without also writing BrokenAtUpdatedAt = serverNow and BrokenAtUpdatedBy.
+-- ❌ Resolving "broken vs healthy" with MAX(BrokenAt) — the comparison is on BrokenAtUpdatedAt, not on BrokenAt itself.
+-- ❌ Letting a stale restore re-heal a mirror whose source has since been hard-deleted (rule 5 rejects it).
+-- ❌ Treating 'system' writes as authoritative over human writes at exact ties — they are not (rule 4b).
+-- A successful §14.2 LWW write MUST emit exactly one SSE event in the same transaction commit phase (no separate publish step that can drift) [gate: G-25-SSE-TX-ATOMIC-EMIT].
+
+-- Source: spec/31-app/01-features/14-concurrency-and-sync.md`,
+  "b3-03-cursors": `This file is the single source of truth for how concurrent edits resolve across tabs, devices, and collaborators. Every other feature (mirrors, sharing, multi-select, today, board) defers to the rules here.
+
+-- ❌ Mutating BrokenAt without also writing BrokenAtUpdatedAt = serverNow and BrokenAtUpdatedBy.
+-- ❌ Resolving "broken vs healthy" with MAX(BrokenAt) — the comparison is on BrokenAtUpdatedAt, not on BrokenAt itself.
+-- ❌ Letting a stale restore re-heal a mirror whose source has since been hard-deleted (rule 5 rejects it).
+-- ❌ Treating 'system' writes as authoritative over human writes at exact ties — they are not (rule 4b).
+-- A successful §14.2 LWW write MUST emit exactly one SSE event in the same transaction commit phase (no separate publish step that can drift) [gate: G-25-SSE-TX-ATOMIC-EMIT].
+
+-- Source: spec/31-app/01-features/14-concurrency-and-sync.md`,
   "b3-04-sequence": `md describes the FIFO queue and LWW reconciliation. md describes the EP-SYNC-REPLAY request/response shape.
 
 -- The local mirror is initialized (AT-APP-97).
@@ -598,6 +634,15 @@ export const GENERATED_NOTES: Record<string, string> = {
 
 -- Source: spec/31-app/01-features/06-item-context-menu.md`,
   "b4-02-fractional-index": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Workspace, User, WorkspaceMember, RoleType, Share, PendingInvites, Template (catalog) | Membership + workspace-level metadata. | | App DB (per workspace) | Items, MirrorGroup, MirrorMember, Comment, ItemTags, Favorite | All item-tree content lives here.
+
+-- Root always exists. Every user has exactly one root item created on signup.
+-- Root cannot be deleted.
+-- Root is the destination for the Home button.
+-- Root renders the top-level item list.
+-- Deleting a parent item cascades deletion to all children.
+
+-- Source: spec/31-app/01-features/01-information-model.md`,
+  "b4-03-rebalance": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Workspace, User, WorkspaceMember, RoleType, Share, PendingInvites, Template (catalog) | Membership + workspace-level metadata. | | App DB (per workspace) | Items, MirrorGroup, MirrorMember, Comment, ItemTags, Favorite | All item-tree content lives here.
 
 -- Root always exists. Every user has exactly one root item created on signup.
 -- Root cannot be deleted.
@@ -696,6 +741,9 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Trash retention (covered by mem://features/trash-logic and spec/31-app/01-features/19-trash-logic/)
 
 -- Source: spec/34-activity-feed/04-retention-and-purge.md`,
+  "b7-04-sse-fanout": `sse · php · streaming · gc · fastcgi-finish · output-buffering · keepalive
+
+-- Source: spec/31-app/05-conventions/32-sse-php-implementation.md`,
   "b8-01-fts5": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | WorkspaceMember | Determine accessible workspaces for search fan-out. Content + ItemTags; ranking inputs (UpdatedAt, Favorite) | Search executes against each accessible App DB sequentially.
 
 -- I-SR-01 Ranking is deterministic — same query + same DB snapshot always yields identical order.
@@ -769,6 +817,15 @@ export const GENERATED_NOTES: Record<string, string> = {
 
 -- Source: spec/31-app/05-conventions/00-overview.md`,
   "o1-01-slos": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
+
+-- What is backed up (and what isn't)
+-- RPO / RTO objectives per data class
+-- Schedule, retention, encryption, and off-site placement
+-- Restore procedure and mandatory quarterly drill
+-- Audit and alerting contract
+
+-- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "o1-02-error-budget": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
 
 -- What is backed up (and what isn't)
 -- RPO / RTO objectives per data class
@@ -900,6 +957,12 @@ export const GENERATED_NOTES: Record<string, string> = {
   "e1-02-no-unknown": `parse(input: unknown)), but never as a return type from a public surface. Forces the parser owner to narrow before exposing.
 
 -- Source: spec/35-enforcement-rules/01-generic-return-types.md # unknown`,
+  "e1-03-no-phantom": `Define the generic-first signature rules that every public function, hook, and helper MUST follow. The rules below mechanically forbid any/unknown from leaking out of any callable surface, force callers to pin a concrete type at the call-site, and make every return value structurally inferable without runtime probing.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 01)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/01-generic-return-types.md`,
   "e1-04-preserve-brand": `Per ADR-0020, raw string IDs are forbidden. Generic helpers MUST preserve the brand through the return type.
 
 -- Source: spec/35-enforcement-rules/01-generic-return-types.md # brand`,
@@ -933,6 +996,12 @@ export const GENERATED_NOTES: Record<string, string> = {
   "e3-02-naming-registration": `| Pattern | Use when | Example | |---|---|---| | no-<thing> | Rule forbids a syntax/identifier | no-any, no-phantom-generic, no-localstorage | | require-<thing> | Rule mandates presence of a syntax | require-strict-schema, require-error-boundary | | prefer-<a>-over-<b> | Rule recommends one of two valid forms | prefer-discriminated-union-over-intersection |
 
 -- Source: spec/35-enforcement-rules/03-eslint-rule-authoring.md # naming`,
+  "e3-03-tester-severity": `Define how to add a new lint rule to the in-tree plugin eslint-plugins/coding-guidelines/. Every gate prefix G-35- (and many G-NN- from sibling sections) is enforced by exactly one rule in this plugin.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 03)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/03-eslint-rule-authoring.md`,
   "e4-01-chokepoint": `Define the single chokepoint through which every value crossing a trust boundary MUST pass, and the gates that prove no caller bypassed it. md defines how a rule is authored, this sub-spec defines the architectural funnel: every B1–B5 boundary has exactly one allowed chokepoint module, and every other module is forbidden from importing the underlying primitive (axios, idb, EventSource, localStorage).
 
 -- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 04 — closes the cluster)
