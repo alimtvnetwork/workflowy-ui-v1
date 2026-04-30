@@ -80,6 +80,11 @@ const Index = () => {
             {" · "}<Link to="/presenter?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
+          <div>
+            Reference implementation:{" "}
+            <Link to="/api-playground" className="underline hover:text-foreground">applyOp playground</Link>
+            {" "}— interactive items + op-journal in IndexedDB, mirrors the universal envelope.
+          </div>
         </footer>
       </div>
     </main>
