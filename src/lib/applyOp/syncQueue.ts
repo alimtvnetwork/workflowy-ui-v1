@@ -43,6 +43,7 @@ const SEQ_KEY = "spec-applyop-localseq";
 class SyncQueue {
   private queue: QueuedOp[] = [];
   private listeners = new Set<Listener>();
+  private lossListeners = new Set<LossListener>();
   private hydrated = false;
   private hydratePromise: Promise<void> | null = null;
   private nextSeq = 1;
