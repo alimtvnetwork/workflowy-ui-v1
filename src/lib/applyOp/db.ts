@@ -3,7 +3,7 @@ import type { BoardColumn, Item, MirrorMember, Op, ShareGrant } from "./types";
 import type { QueuedOp } from "./syncQueue";
 
 const DB_NAME = "spec-applyop-playground";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 let _db: IDBDatabase | null = null;
 
@@ -41,6 +41,12 @@ export function openDb(): Promise<IDBDatabase> {
         const s = db.createObjectStore("activityEvents", { keyPath: "ActivityEventId", autoIncrement: true });
         s.createIndex("PageItemId", "PageItemId", { unique: false });
         s.createIndex("OccurredAt", "OccurredAt", { unique: false });
+        s.createIndex("PurgeAfter", "PurgeAfter", { unique: false });
+      }
+      if (!db.objectStoreNames.contains("feedbackReports")) {
+        const s = db.createObjectStore("feedbackReports", { keyPath: "FeedbackReportId", autoIncrement: true });
+        s.createIndex("Status", "Status", { unique: false });
+        s.createIndex("SubmittedAt", "SubmittedAt", { unique: false });
         s.createIndex("PurgeAfter", "PurgeAfter", { unique: false });
       }
     };

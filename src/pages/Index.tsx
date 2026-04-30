@@ -79,6 +79,7 @@ const Index = () => {
             {" · "}<Link to="/sync-simulator" className="underline hover:text-foreground">sync simulator</Link>
             {" · "}<Link to="/trash-reaper" className="underline hover:text-foreground">trash reaper</Link>
             {" · "}<Link to="/activity-feed" className="underline hover:text-foreground">activity feed</Link>
+            {" · "}<Link to="/feedback" className="underline hover:text-foreground">feedback</Link>
             {" "}— interactive items + op-journal in IndexedDB, plus latency + conflict resolution.
           </div>
         </footer>
