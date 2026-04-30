@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import Deck from "./pages/Deck.tsx";
 import BackendDeck from "./pages/BackendDeck.tsx";
+import OpsDeck from "./pages/OpsDeck.tsx";
 import PrintDeck from "./pages/PrintDeck.tsx";
 import Presenter from "./pages/Presenter.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/deck" element={<Deck />} />
           <Route path="/backend-deck" element={<BackendDeck />} />
+          <Route path="/ops-deck" element={<OpsDeck />} />
           <Route path="/print" element={<PrintDeck />} />
           <Route path="/presenter" element={<Presenter />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

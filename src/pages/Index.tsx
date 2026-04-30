@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
+import { opsSlides } from "@/deck/ops-slides";
 
 const Index = () => {
   const fePhases = countChapters(frontendSlides);
   const bePhases = countChapters(backendSlides);
+  const opsPhases = countChapters(opsSlides);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -23,12 +25,12 @@ const Index = () => {
           </p>
         </header>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-3">
           <DeckCard
             to="/deck"
             kicker="Frontend"
             title="Product walkthrough"
-            blurb="Item model, views, sync UX, mirrors, templates, sharing, trash, settings, admin — every screen and interaction."
+            blurb="Item model, views, sync UX, mirrors, templates, sharing, trash, settings, admin."
             stats={[
               { label: "Slides", value: frontendSlides.length },
               { label: "Chapters", value: fePhases },
@@ -38,10 +40,20 @@ const Index = () => {
             to="/backend-deck"
             kicker="Backend"
             title="Systems deep-dive"
-            blurb="Process model, auth, sync protocol, item ops, mirrors, templates, jobs, search, migrations, deployment."
+            blurb="Process model, auth, sync protocol, item ops, mirrors, jobs, search, migrations, deployment."
             stats={[
               { label: "Slides", value: backendSlides.length },
               { label: "Phases", value: bePhases },
+            ]}
+          />
+          <DeckCard
+            to="/ops-deck"
+            kicker="Operations"
+            title="Run it in production"
+            blurb="SLOs, metrics, alerts, dashboards, on-call rotation, incident playbooks."
+            stats={[
+              { label: "Slides", value: opsSlides.length },
+              { label: "Phases", value: opsPhases },
             ]}
           />
         </div>
@@ -56,16 +68,16 @@ const Index = () => {
           </div>
           <div>
             PDF export:{" "}
-            <Link to="/print?deck=frontend" className="underline hover:text-foreground">frontend deck</Link>
-            {" · "}
-            <Link to="/print?deck=backend" className="underline hover:text-foreground">backend deck</Link>
+            <Link to="/print?deck=frontend" className="underline hover:text-foreground">frontend</Link>
+            {" · "}<Link to="/print?deck=backend" className="underline hover:text-foreground">backend</Link>
+            {" · "}<Link to="/print?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
           <div>
             Presenter mode:{" "}
             <Link to="/presenter?deck=frontend" className="underline hover:text-foreground">frontend</Link>
-            {" · "}
-            <Link to="/presenter?deck=backend" className="underline hover:text-foreground">backend</Link>
+            {" · "}<Link to="/presenter?deck=backend" className="underline hover:text-foreground">backend</Link>
+            {" · "}<Link to="/presenter?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
         </footer>

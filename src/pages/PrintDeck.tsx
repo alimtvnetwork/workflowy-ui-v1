@@ -2,16 +2,19 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
+import { opsSlides } from "@/deck/ops-slides";
 import type { SlideMeta } from "@/deck/types";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
   frontend: { title: "WorkFlowy — Frontend Deck", slides: frontendSlides },
   backend:  { title: "WorkFlowy — Backend Deck",  slides: backendSlides },
+  ops:      { title: "WorkFlowy — Operations",    slides: opsSlides },
 };
 
 export default function PrintDeck() {
   const [params] = useSearchParams();
-  const which = params.get("deck") === "backend" ? "backend" : "frontend";
+  const q = params.get("deck");
+  const which = q === "backend" || q === "ops" ? q : "frontend";
   const { title, slides } = DECKS[which];
 
   useEffect(() => { document.title = title + " — Print"; }, [title]);
@@ -48,10 +51,9 @@ export default function PrintDeck() {
         <strong className="text-foreground">{title}</strong>
         <span className="text-muted-foreground">{slides.length} slides</span>
         <div className="flex-1" />
-        <a href={which === "frontend" ? "/print?deck=backend" : "/print?deck=frontend"}
-           className="text-muted-foreground hover:text-foreground underline">
-          Switch to {which === "frontend" ? "backend" : "frontend"} deck
-        </a>
+        <a href="/print?deck=frontend" className="text-muted-foreground hover:text-foreground underline">Frontend</a>
+        <a href="/print?deck=backend"  className="text-muted-foreground hover:text-foreground underline">Backend</a>
+        <a href="/print?deck=ops"      className="text-muted-foreground hover:text-foreground underline">Ops</a>
         <button onClick={() => window.print()}
                 className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:opacity-90">
           Print / Save as PDF
