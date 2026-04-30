@@ -22,6 +22,9 @@ import B4S4 from "./b4-04-soft-delete";
 import B5S1 from "./b5-01-peer-groups";
 import B5S2 from "./b5-02-cycle-detection";
 import B5S3 from "./b5-03-broken-at";
+import B6S1 from "./b6-01-snapshot";
+import B6S2 from "./b6-02-deep-copy";
+import B6S3 from "./b6-03-cascading-perms";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
@@ -56,5 +59,10 @@ export const backendSlides: SlideMeta[] = [
   { id: "b5-1", chapter: "Phase B-5", title: "Peer-group resolution", Component: B5S1 },
   { id: "b5-2", chapter: "Phase B-5", title: "Cycle detection", Component: B5S2 },
   { id: "b5-3", chapter: "Phase B-5", title: "BrokenAt propagation", Component: B5S3 },
+
+  { id: "b6-divider", chapter: "Phase B-6", title: "Templates & sharing", Component: makeDivider("Phase B-6", "Templates & sharing", "Snapshot serialization · deep-copy · cascading permissions.") },
+  { id: "b6-1", chapter: "Phase B-6", title: "Snapshot serialization", Component: B6S1 },
+  { id: "b6-2", chapter: "Phase B-6", title: "Deep-copy on instantiate", Component: B6S2 },
+  { id: "b6-3", chapter: "Phase B-6", title: "Cascading permissions", Component: B6S3 },
 ];
 
