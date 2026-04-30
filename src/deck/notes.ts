@@ -584,6 +584,12 @@ Questions?`,
 Questions?`,
 };
 
+// Merge with auto-extracted notes from spec markdown.
+// Hand-written entries above always win.
+import { GENERATED_NOTES } from "./notes.generated";
+const MERGED: Record<string, string> = { ...GENERATED_NOTES, ...NOTES };
+
 export function attachNotes<T extends SlideMeta>(slides: T[]): T[] {
-  return slides.map((s) => (s.notes ? s : { ...s, notes: NOTES[s.id] }));
+  return slides.map((s) => (s.notes ? s : { ...s, notes: MERGED[s.id] }));
 }
+
