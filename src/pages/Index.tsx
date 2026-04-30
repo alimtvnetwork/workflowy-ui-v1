@@ -29,47 +29,22 @@ const Index = () => {
           </p>
         </header>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <DeckCard
-            to="/deck"
-            kicker="Frontend"
-            title="Product walkthrough"
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <DeckCard to="/deck" kicker="Frontend" title="Product walkthrough"
             blurb="Item model, views, sync UX, mirrors, templates, sharing, trash, settings, admin."
-            stats={[
-              { label: "Slides", value: frontendSlides.length },
-              { label: "Chapters", value: fePhases },
-            ]}
-          />
-          <DeckCard
-            to="/backend-deck"
-            kicker="Backend"
-            title="Systems deep-dive"
+            stats={[{ label: "Slides", value: frontendSlides.length }, { label: "Chapters", value: fePhases }]} />
+          <DeckCard to="/backend-deck" kicker="Backend" title="Systems deep-dive"
             blurb="Process model, auth, sync protocol, item ops, mirrors, jobs, search, migrations, deployment."
-            stats={[
-              { label: "Slides", value: backendSlides.length },
-              { label: "Phases", value: bePhases },
-            ]}
-          />
-          <DeckCard
-            to="/ops-deck"
-            kicker="Operations"
-            title="Run it in production"
+            stats={[{ label: "Slides", value: backendSlides.length }, { label: "Phases", value: bePhases }]} />
+          <DeckCard to="/ops-deck" kicker="Operations" title="Run it in production"
             blurb="SLOs, metrics, alerts, dashboards, on-call rotation, incident playbooks."
-            stats={[
-              { label: "Slides", value: opsSlides.length },
-              { label: "Phases", value: opsPhases },
-            ]}
-          />
-          <DeckCard
-            to="/enforcement-deck"
-            kicker="Enforcement"
-            title="Make CI fail before review"
+            stats={[{ label: "Slides", value: opsSlides.length }, { label: "Phases", value: opsPhases }]} />
+          <DeckCard to="/enforcement-deck" kicker="Enforcement" title="Make CI fail before review"
             blurb="The four-layer enforcement model: compile-time generics, Zod runtime, ESLint authoring, boundary chokepoints."
-            stats={[
-              { label: "Slides", value: enforcementSlides.length },
-              { label: "Phases", value: enfPhases },
-            ]}
-          />
+            stats={[{ label: "Slides", value: enforcementSlides.length }, { label: "Phases", value: enfPhases }]} />
+          <DeckCard to="/user-deck" kicker="User Mgmt" title="Who you are. What you can do."
+            blurb="Settings, password & MFA, login state machine, tokens, RBAC helpers, role escalation, admin UI, audit."
+            stats={[{ label: "Slides", value: userSlides.length }, { label: "Phases", value: usrPhases }]} />
         </div>
 
         <footer className="mt-20 pt-8 border-t border-border text-sm text-muted-foreground space-y-2">
@@ -86,6 +61,7 @@ const Index = () => {
             {" · "}<Link to="/print?deck=backend" className="underline hover:text-foreground">backend</Link>
             {" · "}<Link to="/print?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" · "}<Link to="/print?deck=enforcement" className="underline hover:text-foreground">enforcement</Link>
+            {" · "}<Link to="/print?deck=user" className="underline hover:text-foreground">user</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
           <div>
@@ -94,6 +70,7 @@ const Index = () => {
             {" · "}<Link to="/presenter?deck=backend" className="underline hover:text-foreground">backend</Link>
             {" · "}<Link to="/presenter?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" · "}<Link to="/presenter?deck=enforcement" className="underline hover:text-foreground">enforcement</Link>
+            {" · "}<Link to="/presenter?deck=user" className="underline hover:text-foreground">user</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
           <div>
