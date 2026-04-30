@@ -119,6 +119,13 @@ export default function Presenter() {
         >
           Export edits
         </button>
+        <button
+          onClick={() => { setImportDraft(""); setImportMsg(null); setImportOpen(true); }}
+          className="px-2 py-1 rounded bg-muted hover:bg-muted/70"
+          title="Paste exported JSON to restore note overrides"
+        >
+          Import edits
+        </button>
         <Link to={`/${DECKS[which].audience}`}
               className="text-muted-foreground hover:text-foreground underline ml-2">
           Open audience view →
