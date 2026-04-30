@@ -2,16 +2,19 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
+import { opsSlides } from "@/deck/ops-slides";
 import type { SlideMeta } from "@/deck/types";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
   frontend: { title: "WorkFlowy — Frontend Deck", slides: frontendSlides },
   backend:  { title: "WorkFlowy — Backend Deck",  slides: backendSlides },
+  ops:      { title: "WorkFlowy — Operations",    slides: opsSlides },
 };
 
 export default function PrintDeck() {
   const [params] = useSearchParams();
-  const which = params.get("deck") === "backend" ? "backend" : "frontend";
+  const q = params.get("deck");
+  const which = q === "backend" || q === "ops" ? q : "frontend";
   const { title, slides } = DECKS[which];
 
   useEffect(() => { document.title = title + " — Print"; }, [title]);
