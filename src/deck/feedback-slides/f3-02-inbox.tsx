@@ -6,8 +6,8 @@ export default function Slide() {
     <SlideLayout chapter="Phase F-3 · Admin" title="Inbox — URL state, cursor pagination, virtualization"
       subtitle="Filter values come from imported enums. Search hits Title only. State lives in the URL — refresh restores the exact view.">
       <div className="mt-6 grid grid-cols-[1.3fr_1fr] gap-8 items-start">
-        <Wireframe>
-          <div className="flex flex-col h-full">
+        <figure className="rounded-xl border border-border bg-muted/30 overflow-hidden">
+          <div className="flex flex-col h-[420px]">
             <div className="flex gap-2 p-2 border-b border-border bg-muted/40 text-xs">
               <span className="px-2 py-0.5 rounded bg-background border border-border">Status: New, Triaged</span>
               <span className="px-2 py-0.5 rounded bg-background border border-border">Type: Bug, Idea</span>
@@ -27,7 +27,7 @@ export default function Slide() {
             </div>
             <div className="p-2 border-t border-border text-center text-xs text-muted-foreground">Load more · cursor 1714485000000_1234</div>
           </div>
-        </Wireframe>
+        </figure>
         <div className="space-y-4 text-base">
           <div className="rounded-lg border border-border p-4">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Filters</div>
