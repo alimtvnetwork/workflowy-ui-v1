@@ -12,10 +12,47 @@ export interface Item {
   IsCompleted: boolean;
   Note: string | null;
   Tags: string[];
+  /** Optional board column id (only meaningful when ParentId points to a Board). */
+  ColumnId: string | null;
+  /** Peer-group id when this item participates in a mirror group (per spec 09b). */
+  PeerGroupId: string | null;
   CreatedAt: string;
   UpdatedAt: string;
   CompletedAt: string | null;
   TrashedAt: string | null;
+}
+
+/** Per spec/31-app/01-features/09b — mirror identity is a peer group, not source/copy. */
+export interface MirrorGroup {
+  PeerGroupId: string;
+  CreatedAt: string;
+}
+export interface MirrorMember {
+  PeerGroupId: string;
+  ItemId: string;
+  ParentId: string | null;
+  Sort: string;
+  CreatedAt: string;
+}
+
+export type SharePermission = "View" | "Edit" | "Admin";
+
+export interface ShareGrant {
+  ShareId: string;
+  ItemId: string;
+  GranteeEmail: string;
+  Permission: SharePermission;
+  CreatedAt: string;
+  RevokedAt: string | null;
+}
+
+/** Board columns are children of a Board item; cards are items with ColumnId set. */
+export interface BoardColumn {
+  ColumnId: string;
+  BoardItemId: string;
+  Title: string;
+  Sort: string;
+  CreatedAt: string;
 }
 
 export type OpKind =
@@ -24,7 +61,13 @@ export type OpKind =
   | "items.complete"
   | "items.move"
   | "items.delete"
-  | "items.restore";
+  | "items.restore"
+  | "mirrors.create"
+  | "mirrors.detach"
+  | "shares.grant"
+  | "shares.revoke"
+  | "boards.addColumn"
+  | "boards.moveCard";
 
 export interface Op<P = unknown> {
   OpId: string;
@@ -69,12 +112,13 @@ export interface Envelope<T> {
   } | null;
 }
 
-// Payloads
+// ---- Payloads ----
 export interface CreatePayload {
   ParentId: string | null;
   Content: string;
   ItemType: ItemType;
   AfterSort?: string;
+  ColumnId?: string | null;
 }
 export interface UpdatePayload {
   Id: string;
@@ -96,4 +140,33 @@ export interface DeletePayload {
 }
 export interface RestorePayload {
   Id: string;
+}
+
+/** Mirror an existing item under a new parent. Both items end up in the same peer group. */
+export interface MirrorCreatePayload {
+  SourceItemId: string;
+  NewParentId: string | null;
+}
+/** Detach a single member from its peer group. Per spec 09b a singleton peer-group dissolves. */
+export interface MirrorDetachPayload {
+  ItemId: string;
+}
+
+export interface ShareGrantPayload {
+  ItemId: string;
+  GranteeEmail: string;
+  Permission: SharePermission;
+}
+export interface ShareRevokePayload {
+  ShareId: string;
+}
+
+export interface BoardAddColumnPayload {
+  BoardItemId: string;
+  Title: string;
+}
+export interface BoardMoveCardPayload {
+  CardItemId: string;
+  TargetColumnId: string;
+  AfterSort?: string;
 }
