@@ -53,6 +53,26 @@ import Ch11S2 from "./ch11-02-templates-tech";
 import Ch12S1 from "./ch12-01-share-ui";
 import Ch12S2 from "./ch12-02-permissions";
 import Ch12S3 from "./ch12-03-share-tech";
+// Chapter 13
+import Ch13S1 from "./ch13-01-trash-ui";
+import Ch13S2 from "./ch13-02-trash-flow";
+import Ch13S3 from "./ch13-03-trash-tech";
+// Chapter 14
+import Ch14S1 from "./ch14-01-right-panel-ui";
+import Ch14S2 from "./ch14-02-right-panel-tech";
+// Chapter 15
+import Ch15S1 from "./ch15-01-app-menu-ui";
+import Ch15S2 from "./ch15-02-settings-ui";
+import Ch15S3 from "./ch15-03-settings-tech";
+// Chapter 16
+import Ch16S1 from "./ch16-01-concurrency-ui";
+import Ch16S2 from "./ch16-02-sync-flow";
+import Ch16S3 from "./ch16-03-sync-tech";
+// Chapter 17
+import Ch17S1 from "./ch17-01-auth-ui";
+import Ch17S2 from "./ch17-02-rbac";
+import Ch17S3 from "./ch17-03-admin-ui";
+import Ch17S4 from "./ch17-04-auth-tech";
 
 export const slides: SlideMeta[] = [
   { id: "cover", chapter: "Cover", title: "WorkFlowy — Frontend Deck", Component: CoverSlide },
@@ -119,4 +139,29 @@ export const slides: SlideMeta[] = [
   { id: "ch12-1", chapter: "Chapter 12", title: "Share dialog", Component: Ch12S1 },
   { id: "ch12-2", chapter: "Chapter 12", title: "Permissions model", Component: Ch12S2 },
   { id: "ch12-3", chapter: "Chapter 12", title: "Endpoints & DB", Component: Ch12S3 },
+
+  { id: "ch13-divider", chapter: "Chapter 13", title: "Trash", Component: makeDivider("Chapter 13", "Trash", "Soft-delete + 30-day reaper.") },
+  { id: "ch13-1", chapter: "Chapter 13", title: "Trash — UI", Component: Ch13S1 },
+  { id: "ch13-2", chapter: "Chapter 13", title: "Restore & reaper", Component: Ch13S2 },
+  { id: "ch13-3", chapter: "Chapter 13", title: "Endpoints & DB", Component: Ch13S3 },
+
+  { id: "ch14-divider", chapter: "Chapter 14", title: "Right-side panel", Component: makeDivider("Chapter 14", "Right-side panel", "Handbook · Hotkeys · What's New.") },
+  { id: "ch14-1", chapter: "Chapter 14", title: "Right panel — UI", Component: Ch14S1 },
+  { id: "ch14-2", chapter: "Chapter 14", title: "Tabs & data", Component: Ch14S2 },
+
+  { id: "ch15-divider", chapter: "Chapter 15", title: "App menu, themes, settings", Component: makeDivider("Chapter 15", "App menu & Settings", "Theme · font · density · per-user prefs.") },
+  { id: "ch15-1", chapter: "Chapter 15", title: "App menu (⋮)", Component: Ch15S1 },
+  { id: "ch15-2", chapter: "Chapter 15", title: "Settings page", Component: Ch15S2 },
+  { id: "ch15-3", chapter: "Chapter 15", title: "Endpoints & DB", Component: Ch15S3 },
+
+  { id: "ch16-divider", chapter: "Chapter 16", title: "Concurrency, sync, offline", Component: makeDivider("Chapter 16", "Concurrency & Sync", "Edit offline, replay on reconnect.") },
+  { id: "ch16-1", chapter: "Chapter 16", title: "Concurrency model", Component: Ch16S1 },
+  { id: "ch16-2", chapter: "Chapter 16", title: "Sync flow", Component: Ch16S2 },
+  { id: "ch16-3", chapter: "Chapter 16", title: "Endpoints & DB", Component: Ch16S3 },
+
+  { id: "ch17-divider", chapter: "Chapter 17", title: "User management", Component: makeDivider("Chapter 17", "User Management", "Auth · roles · admin console.") },
+  { id: "ch17-1", chapter: "Chapter 17", title: "Auth flow", Component: Ch17S1 },
+  { id: "ch17-2", chapter: "Chapter 17", title: "RBAC roles", Component: Ch17S2 },
+  { id: "ch17-3", chapter: "Chapter 17", title: "Admin UI", Component: Ch17S3 },
+  { id: "ch17-4", chapter: "Chapter 17", title: "Endpoints & DB", Component: Ch17S4 },
 ];
