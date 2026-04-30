@@ -119,6 +119,24 @@ export default function TrashReaper() {
             </Button>
           </div>
 
+          <div className="flex items-center justify-between rounded border border-border p-2 bg-muted/30">
+            <div className="text-xs">
+              <div className="font-medium">Shared virtual clock</div>
+              <div className="text-muted-foreground font-mono">
+                {clock.Running ? "running" : "paused"} · {clock.MsPerVirtualDay}ms = 1 virtual day · auto-reap retention {clock.RetentionDays}d
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="autoReap" className="text-xs">Auto-reap</Label>
+                <Switch id="autoReap" checked={clock.AutoReap} onCheckedChange={(v) => virtualClock.setState({ AutoReap: v, RetentionDays: retentionDays })} />
+              </div>
+              <Button size="sm" variant="outline" onClick={() => virtualClock.setState({ Running: !clock.Running })}>
+                {clock.Running ? "Pause" : "Run"}
+              </Button>
+            </div>
+          </div>
+
           <div className="border-t border-border pt-3 space-y-2">
             <Label className="text-xs">Seed trashed items (for demo)</Label>
             <div className="flex flex-wrap gap-2">
