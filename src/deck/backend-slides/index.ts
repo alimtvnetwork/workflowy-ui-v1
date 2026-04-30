@@ -68,5 +68,11 @@ export const backendSlides: SlideMeta[] = [
   { id: "b6-1", chapter: "Phase B-6", title: "Snapshot serialization", Component: B6S1 },
   { id: "b6-2", chapter: "Phase B-6", title: "Deep-copy on instantiate", Component: B6S2 },
   { id: "b6-3", chapter: "Phase B-6", title: "Cascading permissions", Component: B6S3 },
+
+  { id: "b7-divider", chapter: "Phase B-7", title: "Background jobs", Component: makeDivider("Phase B-7", "Background jobs", "Job runner · trash reaper · activity purge · SSE fan-out.") },
+  { id: "b7-1", chapter: "Phase B-7", title: "Job runner architecture", Component: B7S1 },
+  { id: "b7-2", chapter: "Phase B-7", title: "Trash reaper", Component: B7S2 },
+  { id: "b7-3", chapter: "Phase B-7", title: "Activity purge", Component: B7S3 },
+  { id: "b7-4", chapter: "Phase B-7", title: "SSE fan-out", Component: B7S4 },
 ];
 
