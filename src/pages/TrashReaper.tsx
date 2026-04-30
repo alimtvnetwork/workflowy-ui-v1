@@ -22,11 +22,22 @@ export default function TrashReaper() {
   const [batchSize, setBatchSize] = useState(1000);
   const [virtualOffsetDays, setVirtualOffsetDays] = useState(0);
 
+  const [clock, setClock] = useState<ClockState>(virtualClock.getState());
+
   const refresh = async () => {
     const env = await listItems({ includeTrashed: true });
     setItems(env.Results);
   };
   useEffect(() => { void refresh(); }, []);
+
+  useEffect(() => {
+    const offState = virtualClock.subscribe(setClock);
+    const offReap = virtualClock.subscribeReap((run) => {
+      setRuns((r) => [run, ...r]);
+      void refresh();
+    });
+    return () => { offState(); offReap(); };
+  }, []);
 
   const nowMs = Date.now() + virtualOffsetDays * 86400_000;
   const cutoffIso = new Date(nowMs - retentionDays * 86400_000).toISOString();
