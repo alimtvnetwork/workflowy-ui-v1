@@ -12,6 +12,8 @@ import { applyOp, listItems } from "@/lib/applyOp";
 import type { Item } from "@/lib/applyOp/types";
 import { runReaper, type ReaperRun } from "@/lib/applyOp/reaper";
 import { itemsStore } from "@/lib/applyOp/db";
+import { virtualClock, type ClockState } from "@/lib/applyOp/virtualClock";
+import { Switch } from "@/components/ui/switch";
 
 export default function TrashReaper() {
   const [items, setItems] = useState<Item[]>([]);
@@ -20,11 +22,22 @@ export default function TrashReaper() {
   const [batchSize, setBatchSize] = useState(1000);
   const [virtualOffsetDays, setVirtualOffsetDays] = useState(0);
 
+  const [clock, setClock] = useState<ClockState>(virtualClock.getState());
+
   const refresh = async () => {
     const env = await listItems({ includeTrashed: true });
     setItems(env.Results);
   };
   useEffect(() => { void refresh(); }, []);
+
+  useEffect(() => {
+    const offState = virtualClock.subscribe(setClock);
+    const offReap = virtualClock.subscribeReap((run) => {
+      setRuns((r) => [run, ...r]);
+      void refresh();
+    });
+    return () => { offState(); offReap(); };
+  }, []);
 
   const nowMs = Date.now() + virtualOffsetDays * 86400_000;
   const cutoffIso = new Date(nowMs - retentionDays * 86400_000).toISOString();
@@ -104,6 +117,24 @@ export default function TrashReaper() {
             <Button variant="ghost" size="sm" onClick={() => { setRuns([]); setVirtualOffsetDays(0); }}>
               <RotateCcw className="w-4 h-4 mr-1" /> Reset sim
             </Button>
+          </div>
+
+          <div className="flex items-center justify-between rounded border border-border p-2 bg-muted/30">
+            <div className="text-xs">
+              <div className="font-medium">Shared virtual clock</div>
+              <div className="text-muted-foreground font-mono">
+                {clock.Running ? "running" : "paused"} · {clock.MsPerVirtualDay}ms = 1 virtual day · auto-reap retention {clock.RetentionDays}d
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="autoReap" className="text-xs">Auto-reap</Label>
+                <Switch id="autoReap" checked={clock.AutoReap} onCheckedChange={(v) => virtualClock.setState({ AutoReap: v, RetentionDays: retentionDays })} />
+              </div>
+              <Button size="sm" variant="outline" onClick={() => virtualClock.setState({ Running: !clock.Running })}>
+                {clock.Running ? "Pause" : "Run"}
+              </Button>
+            </div>
           </div>
 
           <div className="border-t border-border pt-3 space-y-2">

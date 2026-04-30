@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label";
 import { applyOp, listItems, resetPlayground } from "@/lib/applyOp";
 import type { Item } from "@/lib/applyOp/types";
 import { syncQueue, type QueuedOp, type ResolutionStrategy } from "@/lib/applyOp/syncQueue";
+import { virtualClock, type ClockState } from "@/lib/applyOp/virtualClock";
 import { toast } from "sonner";
-import { Plus, RotateCcw, Zap, AlertTriangle, Clock, Check, X } from "lucide-react";
+import { Plus, RotateCcw, Zap, AlertTriangle, Clock, Check, X, Play, Pause } from "lucide-react";
 
 const statusColor: Record<QueuedOp["Status"], "default" | "secondary" | "destructive" | "outline"> = {
   queued: "secondary",
@@ -78,6 +79,21 @@ export default function SyncSimulator() {
   useEffect(() => { syncQueue.latencyMs = latency; }, [latency]);
   useEffect(() => { syncQueue.injectConflictForNext = armConflict; }, [armConflict]);
 
+  const [clock, setClock] = useState<ClockState>(virtualClock.getState());
+  const [virtualDay, setVirtualDay] = useState(virtualClock.virtualDay());
+  useEffect(() => {
+    const unsubState = virtualClock.subscribe((s) => {
+      setClock(s);
+      setVirtualDay(virtualClock.virtualDay());
+    });
+    const unsubReap = virtualClock.subscribeReap((run) => {
+      if (run.RowsDeleted > 0) {
+        toast.info(`Reaper auto-tick — purged ${run.RowsDeleted} row(s)`);
+      }
+    });
+    return () => { unsubState(); unsubReap(); };
+  }, []);
+
   async function handleResolve(q: QueuedOp, strategy: ResolutionStrategy) {
     await syncQueue.resolve(q.QueueId, strategy);
     toast.success(`Resolved with ${strategy}`);
@@ -93,11 +109,24 @@ export default function SyncSimulator() {
             <code className="text-xs">spec/31-app/01-features/14-concurrency-and-sync</code>.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <Badge variant={clock.Running ? "default" : "outline"} className="font-mono text-xs">
+            <Clock className="w-3 h-3 mr-1" /> day +{virtualDay}
+            {clock.AutoReap && <span className="ml-1">· reap</span>}
+          </Badge>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => virtualClock.setState({ Running: !clock.Running, AutoReap: true })}
+            title="Start/pause virtual clock with auto-reaper"
+          >
+            {clock.Running ? <Pause className="w-4 h-4 mr-1" /> : <Play className="w-4 h-4 mr-1" />}
+            {clock.Running ? "Pause clock" : "Run clock"}
+          </Button>
           <Link to="/"><Button variant="ghost" size="sm">Home</Button></Link>
           <Link to="/api-playground"><Button variant="ghost" size="sm">Playground</Button></Link>
           <Button variant="outline" size="sm"
-            onClick={async () => { syncQueue.clear(); await resetPlayground(); await refresh(); toast.info("Reset"); }}>
+            onClick={async () => { syncQueue.clear(); await resetPlayground(); virtualClock.reset(); await refresh(); toast.info("Reset"); }}>
             <RotateCcw className="w-4 h-4 mr-1" /> Reset
           </Button>
         </div>
