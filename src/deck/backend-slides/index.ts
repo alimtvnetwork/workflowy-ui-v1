@@ -94,5 +94,11 @@ export const backendSlides: SlideMeta[] = [
   { id: "b9-1", chapter: "Phase B-9", title: "Versioning & runner", Component: B9S1 },
   { id: "b9-2", chapter: "Phase B-9", title: "v2 example: add mirrorOfItemId", Component: B9S2 },
   { id: "b9-3", chapter: "Phase B-9", title: "Query plans & hot indexes", Component: B9S3 },
+
+  { id: "b10-divider", chapter: "Phase B-10", title: "Enforcement & deployment", Component: makeDivider("Phase B-10", "Enforcement & deployment", "Zod boundary · ESLint walls · runbook.") },
+  { id: "b10-1", chapter: "Phase B-10", title: "Zod at the boundary", Component: B10S1 },
+  { id: "b10-2", chapter: "Phase B-10", title: "ESLint boundary rules", Component: B10S2 },
+  { id: "b10-3", chapter: "Phase B-10", title: "Deployment runbook", Component: B10S3 },
+  { id: "b10-closing", chapter: "Closing", title: "That's the backend", Component: B10S4 },
 ];
 
