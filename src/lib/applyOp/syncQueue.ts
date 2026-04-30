@@ -30,6 +30,13 @@ export interface QueuedOp {
 }
 
 type Listener = (snapshot: QueuedOp[]) => void;
+export interface LwwLossEvent {
+  QueueId: string;
+  ItemId: string;
+  Reason: "keep-remote" | "lww-local-lost";
+  At: string;
+}
+type LossListener = (ev: LwwLossEvent) => void;
 
 const SEQ_KEY = "spec-applyop-localseq";
 
