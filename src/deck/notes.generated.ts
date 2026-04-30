@@ -1023,4 +1023,79 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- CI step in .github/workflows/*.yml running all four enforcement layers
 
 -- Source: spec/35-enforcement-rules/00-overview.md`,
+  "u-cover": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- PHP REST controllers under wp-plugin/src/Rest/Me/*.php (settings, password, email, MFA, account, backups, referrals, feedback) per the endpoint table in ./01-account-and-settings.md §REST Surface Summary.
+-- SQLite migrations under wp-plugin/migrations/ for User, UserRole, UserSetting, UserBackup, UserMfaCredential, UserReferral tables (PascalCase per spec/04-database-conventions/).
+-- React components under src/components/settings/ (SettingsPanel, SetPasswordForm, ChangeEmailForm, MfaEnrollDialog, DeleteAccountDialog, BackupRestoreDialog, ThemePicker, LabsPanel, ReferralsPanel, HelpOverlay, BugReportForm, HandbookPanel).
+-- Vitest specs mirroring the AT-USR-* IDs registered in 97-acceptance-criteria.md.
+-- Per-item sharing ACLs → spec/31-app/01-features/08-share-dialog.md F4 appendix and mem://features/sharing-model.
+
+-- Source: spec/36-user-management/00-overview.md`,
+  "u-guide": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- PHP REST controllers under wp-plugin/src/Rest/Me/*.php (settings, password, email, MFA, account, backups, referrals, feedback) per the endpoint table in ./01-account-and-settings.md §REST Surface Summary.
+-- SQLite migrations under wp-plugin/migrations/ for User, UserRole, UserSetting, UserBackup, UserMfaCredential, UserReferral tables (PascalCase per spec/04-database-conventions/).
+-- React components under src/components/settings/ (SettingsPanel, SetPasswordForm, ChangeEmailForm, MfaEnrollDialog, DeleteAccountDialog, BackupRestoreDialog, ThemePicker, LabsPanel, ReferralsPanel, HelpOverlay, BugReportForm, HandbookPanel).
+-- Vitest specs mirroring the AT-USR-* IDs registered in 97-acceptance-criteria.md.
+-- Per-item sharing ACLs → spec/31-app/01-features/08-share-dialog.md F4 appendix and mem://features/sharing-model.
+
+-- Source: spec/36-user-management/00-overview.md`,
+  "u1-1": `user-management · account · settings · auth · mfa · referrals · theme · email-summary · labs · help · handbook · bug-report · delete-account · restore-from-backup
+
+-- Settings Panel — A single dialog (or full-screen view on narrow viewports) reached from the sidebar account chrome (avatar → Settings). The panel is organised as a left sub-nav with the categories listed below; each row links to a sub-panel rendered to the right. ⌘,
+-- Save Behaviour — Every setting auto-saves on blur / toggle change; there is no global Save button. A transient settings-save-toast confirms each write.
+-- Backend Contract — All settings are stored in the UserSetting table (UserId + Key PK, Value TEXT JSON), exposed via GET/PATCH /wp-json/workflowy/v1/me/settings with the standard PascalCase envelope (Status, Attributes, Results).
+-- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
+-- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
+
+-- Source: spec/36-user-management/01-account-and-settings.md`,
+  "u2-1": `auth · login · registration · passkey · webauthn · session · jwt · argon2id · mfa · recovery-codes · solo-mode · sync-mode
+
+-- ./00-overview.md §"Functional Requirements" (FR-3, FR-4, FR-6) and §"Anti-Patterns".
+-- ./97-acceptance-criteria.md (AT-USERMANAGEMENT-07..10, AT-USR-03).
+-- anonymous → active directly without /auth/login or /auth/register + /confirm
+-- mfa-pending → active without /mfa/verify
+-- Any → active while Session.RevokedAt IS NOT NULL
+
+-- Source: spec/36-user-management/02-auth-flow.md`,
+  "u2-2": `POST /wp-json/workflowy/v1/auth/login
+
+-- Source: spec/36-user-management/02-auth-flow.md # login`,
+  "u2-4": `If MfaRequired: true in the login response, Results[0] carries an opaque MfaChallengeToken instead of SessionToken.
+
+-- Source: spec/36-user-management/02-auth-flow.md # mfa`,
+  "u3-1": `rbac · has-role · require-role · security-definer · authorization · capability-check · role-cache · auth-helper
+
+-- ./00-overview.md FR-5 ("All RBAC checks via central hasRole"), FR-6, §"Anti-Patterns" rows 2/5/6, §"Worked Example" §2–§4.
+-- ./97-acceptance-criteria.md AT-USERMANAGEMENT-04, -05, -06.
+-- ./97a-acceptance-criteria-fixtures.md AT-USERMANAGEMENT-04..06 linter commands.
+-- PHP class Auth\\Rbac under wp-plugin/src/Auth/Rbac.php.
+-- SQLite security-definer-equivalent function has_role (since SQLite has no SECURITY DEFINER, see §4 for the WP-plugin-equivalent pattern).
+
+-- Source: spec/36-user-management/03-rbac-helpers.md`,
+  "u3-2": `Every REST handler that requires authorization MUST call requireRole as its first executable line after argument validation [gate: G-36-VIA-HAS-ROLE].
+
+-- Source: spec/36-user-management/03-rbac-helpers.md # require`,
+  "u4-1": `Define the admin-only React UI surfaces for managing other users — invite, list, role-assign, deactivate, reactivate, delete, audit. md).
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 04)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/36-user-management/04-admin-ui.md`,
+  "u4-2": `Form fields: Email (required, RFC 5322), Roles (checkbox group: user/moderator/admin — at least one), SendWelcomeEmail (boolean, default true), Note (optional, ≤500 chars).
+
+-- Source: spec/36-user-management/04-admin-ui.md # invite`,
+  "u4-3": `Read-only chronological feed of AdminAudit rows scoped to one user. Columns: OccurredAt, ActorEmail, Action (enum: invited/role-added/role-removed/deactivated/reactivated/deleted/session-revoked), Detail (JSON pretty-printed).
+
+-- Source: spec/36-user-management/04-admin-ui.md # audit`,
+  "u9-closing": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- PHP REST controllers under wp-plugin/src/Rest/Me/*.php (settings, password, email, MFA, account, backups, referrals, feedback) per the endpoint table in ./01-account-and-settings.md §REST Surface Summary.
+-- SQLite migrations under wp-plugin/migrations/ for User, UserRole, UserSetting, UserBackup, UserMfaCredential, UserReferral tables (PascalCase per spec/04-database-conventions/).
+-- React components under src/components/settings/ (SettingsPanel, SetPasswordForm, ChangeEmailForm, MfaEnrollDialog, DeleteAccountDialog, BackupRestoreDialog, ThemePicker, LabsPanel, ReferralsPanel, HelpOverlay, BugReportForm, HandbookPanel).
+-- Vitest specs mirroring the AT-USR-* IDs registered in 97-acceptance-criteria.md.
+-- Per-item sharing ACLs → spec/31-app/01-features/08-share-dialog.md F4 appendix and mem://features/sharing-model.
+
+-- Source: spec/36-user-management/00-overview.md`,
 };

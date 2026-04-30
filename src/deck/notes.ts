@@ -705,6 +705,92 @@ Questions?`,
 3. Parse at the boundary, mint the brand at the parse, throw a typed error on failure. Three lines, three layers.
 
 Cross-reference: spec/35-enforcement-rules/97-acceptance-criteria.md and 97a-acceptance-criteria-fixtures.md. Questions?`,
+
+  // ============================================================
+  // USER-MANAGEMENT DECK
+  // ============================================================
+  "u-cover": `This deck covers identity end-to-end: who you are, how we know it, and what you're allowed to do.
+
+-- Audience: anyone touching auth, settings, or admin code.
+-- 18 slides across 4 phases (Account, Auth, RBAC, Admin); ~20 minutes.
+-- One principle threads through: every permission decision goes through hasRole. No exceptions.`,
+
+  "u-guide": `Read in order. Phase U-1 is what the user sees in their settings panel. U-2 is the auth state machine behind it. U-3 is the helper layer that gates everything else. U-4 is the admin surface built on top.
+
+-- If you only have 5 minutes, jump to U-3 (hasRole / requireRole).
+-- Solo mode is real and supported — every flow has a "no server" branch.`,
+
+  "u1-divider": `The owner's view: what a logged-in user can do to their own account.`,
+  "u1-1": `Settings panel is one page with sections, not a wizard. Sections: Profile, Security, MFA, Sessions, Danger Zone.
+
+-- Every section is independently saveable; no global "Save" button.
+-- Server returns the whole settings object on each PATCH so the client doesn't drift.`,
+  "u1-2": `Password change requires current password (re-auth). Email change requires re-auth AND a confirm-link sent to the NEW address — the old address is notified but not asked to confirm.
+
+-- Until the new email is confirmed, the old one is still the login.
+-- All sessions except the current one are revoked on success.`,
+  "u1-3": `MFA enrolment is TOTP-first; recovery codes generated once and shown once. WebAuthn is opt-in second factor.
+
+-- Enrolment flow: show QR → user enters 6-digit code → server verifies → recovery codes displayed → user must download/copy before close.
+-- Disabling MFA requires both current password AND a current TOTP code.`,
+  "u1-4": `Delete is soft for 30 days, then a reaper hard-deletes. Restore within the window is a single click and brings back everything including shared docs.
+
+-- Soft-delete revokes all tokens immediately; restore does NOT auto-reissue them.
+-- Cross-reference: spec/31-app/01-features/11b-trash-reaper.md.`,
+
+  "u2-divider": `The state machine behind the lock icon.`,
+  "u2-1": `Solo mode = local SQLite, no server, no tokens, single implicit user. Sync mode = server, tokens, real users. The same UI runs both; a single \`mode\` flag in app config switches the auth provider.
+
+-- Never check \`mode\` inside features — check it once at the auth boundary.
+-- Solo mode still runs hasRole; the resolver just always returns "owner".`,
+  "u2-2": `Login is a small state machine: idle → submitting → mfa-required → success | error. MFA is a step, not a separate page — same URL, different state.
+
+-- Wrong password and unknown email return the same error message and same timing (constant-time compare).
+-- Rate-limit is per-IP AND per-account; the stricter wins.`,
+  "u2-3": `Two tokens: short-lived access (15 min, in memory) and long-lived refresh (30 days, httpOnly cookie). Refresh rotates on every use; reuse of an old refresh = full session kill.
+
+-- Access token is never persisted. Page reload = silent refresh on first request.
+-- Logout revokes the refresh family server-side, not just the cookie.`,
+  "u2-4": `MFA challenge is its own short-lived token (\`mfa_pending\`, 5 min). It can ONLY exchange for real tokens by presenting a valid TOTP or recovery code.
+
+-- Recovery code is single-use; consumed even on failed subsequent attempts in the same window.
+-- WebAuthn challenge replaces TOTP step entirely when registered.`,
+
+  "u3-divider": `One helper. One guard. One escalation path. Everything else is built on these three.`,
+  "u3-1": `\`hasRole(userId, role)\` is the single source of truth. It hits the user_roles table via a SECURITY DEFINER function so RLS doesn't recurse. Every permission check in the app — UI, API, jobs — calls this.
+
+-- Never store roles on the user/profile row. Privilege-escalation bait.
+-- Cache per-request, never per-session — roles can change mid-session.`,
+  "u3-2": `\`requireRole(role)\` is the loader/route guard. It calls hasRole, and on false throws a typed \`ForbiddenError\` that the error boundary renders as 403.
+
+-- Use it in route loaders, not in components. Components should already trust the loader.
+-- For optional UI gating (show/hide a button), use hasRole directly — don't throw.`,
+  "u3-3": `Role escalation (user → moderator → admin) is a lifecycle event, not a settings toggle. It writes an audit row, revokes all sessions for the target user, and emails them.
+
+-- De-escalation follows the same path. Symmetry matters for audit.
+-- Self-promotion is forbidden at the DB level via a CHECK constraint, not just app code.`,
+
+  "u4-divider": `The admin surface. Small on purpose — every action here is audited and reversible.`,
+  "u4-1": `Admin routes live under /admin/* and every loader calls \`requireRole("admin")\`. There is no "admin mode" toggle — you're admin or you're not, the route guards do the rest.
+
+-- /admin/users, /admin/audit, /admin/jobs are the three top-level routes.
+-- A non-admin hitting /admin gets a 403 page, not a redirect — redirects hide bugs.`,
+  "u4-2": `Invite creates a pending user with a single-use signup token (7 day TTL). Deactivate is reversible (sets status=disabled, revokes tokens); delete is the soft-delete path.
+
+-- Invite emails are queued, not sent inline — admin UI shows "queued" not "sent".
+-- Deactivating yourself is blocked at the API.`,
+  "u4-3": `Audit log is append-only, indexed by actor, target, and action. Surfaced as a virtualised table with filters; export is CSV with a server-signed checksum row.
+
+-- Retention: 2 years hot, 5 years cold. See spec/31-app/05-conventions/09-audit-log-policy.md.
+-- Never edit or delete audit rows from the UI. Ever.`,
+
+  "u9-closing": `Three things:
+
+1. Identity is a state machine, not a flag. Solo, logging in, MFA-pending, authenticated, expired — name the states, draw the transitions.
+2. \`hasRole\` is the only permission primitive. Everything else — requireRole, admin guards, UI gates — composes it.
+3. Every account-changing action is audited and reversible within a window. Soft-delete, session revocation, role changes — symmetry beats cleverness.
+
+Cross-reference: spec/36-user-management/97-acceptance-criteria.md. Questions?`,
 };
 
 // Merge with auto-extracted notes from spec markdown.
