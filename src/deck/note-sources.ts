@@ -203,18 +203,21 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "u-guide", spec: "spec/36-user-management/00-overview.md" },
 
   { slideId: "u1-1", spec: "spec/36-user-management/01-account-and-settings.md" },
-  { slideId: "u1-2", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "password" },
-  { slideId: "u1-3", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "mfa" },
-  { slideId: "u1-4", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "delete" },
+  // Section 2 covers Set Password, MFA enrol, Delete Account in three bullets.
+  { slideId: "u1-2", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity" },
+  { slideId: "u1-3", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity" },
+  { slideId: "u1-4", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity" },
 
   { slideId: "u2-1", spec: "spec/36-user-management/02-auth-flow.md" },
   { slideId: "u2-2", spec: "spec/36-user-management/02-auth-flow.md", anchor: "login" },
-  { slideId: "u2-3", spec: "spec/36-user-management/02-auth-flow.md", anchor: "token" },
+  // No "token" heading — Session Lifecycle covers cookie/refresh/rotation tokens.
+  { slideId: "u2-3", spec: "spec/36-user-management/02-auth-flow.md", anchor: "Session Lifecycle" },
   { slideId: "u2-4", spec: "spec/36-user-management/02-auth-flow.md", anchor: "mfa" },
 
   { slideId: "u3-1", spec: "spec/36-user-management/03-rbac-helpers.md" },
   { slideId: "u3-2", spec: "spec/36-user-management/03-rbac-helpers.md", anchor: "require" },
-  { slideId: "u3-3", spec: "spec/36-user-management/03-rbac-helpers.md", anchor: "escalation" },
+  // "Forbidden Patterns" enumerates the privilege-escalation traps.
+  { slideId: "u3-3", spec: "spec/36-user-management/03-rbac-helpers.md", anchor: "Forbidden Patterns" },
 
   { slideId: "u4-1", spec: "spec/36-user-management/04-admin-ui.md" },
   { slideId: "u4-2", spec: "spec/36-user-management/04-admin-ui.md", anchor: "invite" },
