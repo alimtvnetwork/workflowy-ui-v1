@@ -53,6 +53,26 @@ import Ch11S2 from "./ch11-02-templates-tech";
 import Ch12S1 from "./ch12-01-share-ui";
 import Ch12S2 from "./ch12-02-permissions";
 import Ch12S3 from "./ch12-03-share-tech";
+// Chapter 13
+import Ch13S1 from "./ch13-01-trash-ui";
+import Ch13S2 from "./ch13-02-trash-flow";
+import Ch13S3 from "./ch13-03-trash-tech";
+// Chapter 14
+import Ch14S1 from "./ch14-01-right-panel-ui";
+import Ch14S2 from "./ch14-02-right-panel-tech";
+// Chapter 15
+import Ch15S1 from "./ch15-01-app-menu-ui";
+import Ch15S2 from "./ch15-02-settings-ui";
+import Ch15S3 from "./ch15-03-settings-tech";
+// Chapter 16
+import Ch16S1 from "./ch16-01-concurrency-ui";
+import Ch16S2 from "./ch16-02-sync-flow";
+import Ch16S3 from "./ch16-03-sync-tech";
+// Chapter 17
+import Ch17S1 from "./ch17-01-auth-ui";
+import Ch17S2 from "./ch17-02-rbac";
+import Ch17S3 from "./ch17-03-admin-ui";
+import Ch17S4 from "./ch17-04-auth-tech";
 
 export const slides: SlideMeta[] = [
   { id: "cover", chapter: "Cover", title: "WorkFlowy — Frontend Deck", Component: CoverSlide },
