@@ -11,9 +11,18 @@ import {
   exportOverridesAsJson,
   getAllOverrides,
   getOverride,
+  importOverridesFromJson,
   setOverride,
 } from "@/deck/noteOverrides";
 import type { SlideMeta } from "@/deck/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: string }> = {
   frontend:    { title: "Frontend Deck",     slides: attachNotes(frontendSlides),    audience: "deck" },
@@ -31,6 +40,11 @@ export default function Presenter() {
   const [index, setIndex] = useState(() => Number(params.get("i") ?? 0));
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importDraft, setImportDraft] = useState("");
+  const [importMode, setImportMode] = useState<"merge" | "replace">("merge");
+  const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [refreshTick, forceTick] = useState(0);
 
   // Sync index → URL (so refresh keeps position)
   useEffect(() => {
@@ -105,6 +119,13 @@ export default function Presenter() {
         >
           Export edits
         </button>
+        <button
+          onClick={() => { setImportDraft(""); setImportMsg(null); setImportOpen(true); }}
+          className="px-2 py-1 rounded bg-muted hover:bg-muted/70"
+          title="Paste exported JSON to restore note overrides"
+        >
+          Import edits
+        </button>
         <Link to={`/${DECKS[which].audience}`}
               className="text-muted-foreground hover:text-foreground underline ml-2">
           Open audience view →
@@ -117,7 +138,7 @@ export default function Presenter() {
           <div className="relative flex-1 min-h-0 rounded-lg border border-border bg-muted/20 overflow-hidden">
             <ScaledSlide><Cur /></ScaledSlide>
           </div>
-          <NotesPanel slide={cur} />
+          <NotesPanel slide={cur} key={`${cur.id}:${refreshTick}`} />
         </div>
 
         {/* Right column: next slide + nav */}
@@ -143,6 +164,69 @@ export default function Presenter() {
           </div>
         </div>
       </div>
+
+      <Dialog open={importOpen} onOpenChange={setImportOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Import note overrides</DialogTitle>
+            <DialogDescription>
+              Paste JSON exported from another machine ({"{ \"slideId\": \"text\", … }"}).
+              {" "}<strong>Merge</strong> keeps existing edits and adds/overwrites by key;
+              {" "}<strong>Replace</strong> wipes current overrides first.
+            </DialogDescription>
+          </DialogHeader>
+          <textarea
+            value={importDraft}
+            onChange={(e) => setImportDraft(e.target.value)}
+            placeholder='{ "ch1-01-what-is-workflowy": "My talk track …" }'
+            className="w-full h-56 resize-none rounded border border-border bg-background p-3 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-primary"
+            spellCheck={false}
+          />
+          <div className="flex items-center gap-4 text-sm">
+            <label className="flex items-center gap-1.5">
+              <input type="radio" name="import-mode" checked={importMode === "merge"}
+                     onChange={() => setImportMode("merge")} />
+              Merge
+            </label>
+            <label className="flex items-center gap-1.5">
+              <input type="radio" name="import-mode" checked={importMode === "replace"}
+                     onChange={() => setImportMode("replace")} />
+              Replace
+            </label>
+            {importMsg && (
+              <span className={importMsg.startsWith("✓") ? "text-primary" : "text-destructive"}>
+                {importMsg}
+              </span>
+            )}
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setImportOpen(false)}
+              className="px-3 py-1.5 rounded bg-muted hover:bg-muted/70 text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                const r = importOverridesFromJson(importDraft, { mode: importMode });
+                if (!r.ok) {
+                  setImportMsg(`✗ ${r.error ?? "Import failed"}`);
+                  return;
+                }
+                setImportMsg(
+                  `✓ Imported ${r.imported} of ${r.total}` +
+                    (r.skipped ? ` (${r.skipped} skipped)` : "") +
+                    (importMode === "replace" ? " · replaced" : " · merged"),
+                );
+                forceTick((n) => n + 1); // re-render NotesPanel for current slide
+              }}
+              className="px-3 py-1.5 rounded bg-primary text-primary-foreground hover:opacity-90 text-sm"
+            >
+              Import
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

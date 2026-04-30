@@ -51,3 +51,57 @@ export function clearAllOverrides() {
 export function exportOverridesAsJson(): string {
   return JSON.stringify(read(), null, 2);
 }
+
+export interface ImportResult {
+  ok: boolean;
+  imported: number;
+  skipped: number;
+  total: number;
+  error?: string;
+}
+
+/**
+ * Merge or replace overrides from a JSON blob. Accepts either:
+ *   { "<slideId>": "<note text>", ... }
+ * or the same shape nested under a top-level `overrides` key (forward-compat).
+ *
+ * Skips entries whose key or value is not a non-empty string.
+ */
+export function importOverridesFromJson(
+  json: string,
+  opts: { mode: "merge" | "replace" } = { mode: "merge" },
+): ImportResult {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch (e) {
+    return { ok: false, imported: 0, skipped: 0, total: 0, error: "Invalid JSON" };
+  }
+  const raw =
+    parsed && typeof parsed === "object" && !Array.isArray(parsed) && "overrides" in (parsed as Record<string, unknown>)
+      ? (parsed as { overrides: unknown }).overrides
+      : parsed;
+
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return { ok: false, imported: 0, skipped: 0, total: 0, error: "Expected an object of slideId → text" };
+  }
+
+  const incoming = raw as Record<string, unknown>;
+  const next: Map = opts.mode === "replace" ? {} : { ...read() };
+  let imported = 0;
+  let skipped = 0;
+  const total = Object.keys(incoming).length;
+
+  for (const [k, v] of Object.entries(incoming)) {
+    if (typeof k !== "string" || !k.trim() || typeof v !== "string" || !v.trim()) {
+      skipped++;
+      continue;
+    }
+    next[k] = v;
+    imported++;
+  }
+
+  write(next);
+  return { ok: true, imported, skipped, total };
+}
+
