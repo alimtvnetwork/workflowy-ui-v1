@@ -1,8 +1,8 @@
-// Tiny IndexedDB wrapper — no deps. Two stores: `items`, `ops` (the journal).
-import type { Item, Op } from "./types";
+// Tiny IndexedDB wrapper — no deps. Stores: items, ops, mirrorMembers, shares, boardColumns.
+import type { BoardColumn, Item, MirrorMember, Op, ShareGrant } from "./types";
 
 const DB_NAME = "spec-applyop-playground";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let _db: IDBDatabase | null = null;
 
@@ -18,6 +18,19 @@ export function openDb(): Promise<IDBDatabase> {
       }
       if (!db.objectStoreNames.contains("ops")) {
         db.createObjectStore("ops", { keyPath: "OpId" });
+      }
+      if (!db.objectStoreNames.contains("mirrorMembers")) {
+        const s = db.createObjectStore("mirrorMembers", { keyPath: ["PeerGroupId", "ItemId"] });
+        s.createIndex("PeerGroupId", "PeerGroupId", { unique: false });
+        s.createIndex("ItemId", "ItemId", { unique: false });
+      }
+      if (!db.objectStoreNames.contains("shares")) {
+        const s = db.createObjectStore("shares", { keyPath: "ShareId" });
+        s.createIndex("ItemId", "ItemId", { unique: false });
+      }
+      if (!db.objectStoreNames.contains("boardColumns")) {
+        const s = db.createObjectStore("boardColumns", { keyPath: "ColumnId" });
+        s.createIndex("BoardItemId", "BoardItemId", { unique: false });
       }
     };
     req.onsuccess = () => {
@@ -69,7 +82,31 @@ export const opsStore = {
   clear: () => tx(["ops"], "readwrite", (t) => wrap(t.objectStore("ops").clear())),
 };
 
+export const mirrorMembersStore = {
+  getAll: () => tx(["mirrorMembers"], "readonly", (t) => wrap(t.objectStore("mirrorMembers").getAll() as IDBRequest<MirrorMember[]>)),
+  put: (m: MirrorMember) => tx(["mirrorMembers"], "readwrite", (t) => wrap(t.objectStore("mirrorMembers").put(m))),
+  delete: (peerGroupId: string, itemId: string) =>
+    tx(["mirrorMembers"], "readwrite", (t) => wrap(t.objectStore("mirrorMembers").delete([peerGroupId, itemId]))),
+  clear: () => tx(["mirrorMembers"], "readwrite", (t) => wrap(t.objectStore("mirrorMembers").clear())),
+};
+
+export const sharesStore = {
+  getAll: () => tx(["shares"], "readonly", (t) => wrap(t.objectStore("shares").getAll() as IDBRequest<ShareGrant[]>)),
+  get: (id: string) => tx(["shares"], "readonly", (t) => wrap(t.objectStore("shares").get(id) as IDBRequest<ShareGrant | undefined>)),
+  put: (s: ShareGrant) => tx(["shares"], "readwrite", (t) => wrap(t.objectStore("shares").put(s))),
+  clear: () => tx(["shares"], "readwrite", (t) => wrap(t.objectStore("shares").clear())),
+};
+
+export const boardColumnsStore = {
+  getAll: () => tx(["boardColumns"], "readonly", (t) => wrap(t.objectStore("boardColumns").getAll() as IDBRequest<BoardColumn[]>)),
+  put: (c: BoardColumn) => tx(["boardColumns"], "readwrite", (t) => wrap(t.objectStore("boardColumns").put(c))),
+  clear: () => tx(["boardColumns"], "readwrite", (t) => wrap(t.objectStore("boardColumns").clear())),
+};
+
 export async function resetAll() {
   await itemsStore.clear();
   await opsStore.clear();
+  await mirrorMembersStore.clear();
+  await sharesStore.clear();
+  await boardColumnsStore.clear();
 }
