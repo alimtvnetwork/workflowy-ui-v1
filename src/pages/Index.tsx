@@ -4,6 +4,7 @@ import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
 import { enforcementSlides } from "@/deck/enforcement-slides";
 import { userSlides } from "@/deck/user-slides";
+import { feedbackSlides } from "@/deck/feedback-slides";
 
 const Index = () => {
   const fePhases = countChapters(frontendSlides);
@@ -11,6 +12,7 @@ const Index = () => {
   const opsPhases = countChapters(opsSlides);
   const enfPhases = countChapters(enforcementSlides);
   const usrPhases = countChapters(userSlides);
+  const fbPhases = countChapters(feedbackSlides);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -45,6 +47,9 @@ const Index = () => {
           <DeckCard to="/user-deck" kicker="User Mgmt" title="Who you are. What you can do."
             blurb="Settings, password & MFA, login state machine, tokens, RBAC helpers, role escalation, admin UI, audit."
             stats={[{ label: "Slides", value: userSlides.length }, { label: "Phases", value: usrPhases }]} />
+          <DeckCard to="/feedback-deck" kicker="Feedback" title="One inbox. Closed enums. 90-day reaper."
+            blurb="Dedicated feedback.db, transition matrix as SSOT, single-egress submit, atomic GDPR delete, streamed CSV export."
+            stats={[{ label: "Slides", value: feedbackSlides.length }, { label: "Phases", value: fbPhases }]} />
         </div>
 
         <footer className="mt-20 pt-8 border-t border-border text-sm text-muted-foreground space-y-2">
