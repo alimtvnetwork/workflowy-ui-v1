@@ -32,6 +32,9 @@ import B7S4 from "./b7-04-sse-fanout";
 import B8S1 from "./b8-01-fts5";
 import B8S2 from "./b8-02-operator-parser";
 import B8S3 from "./b8-03-write-hooks";
+import B9S1 from "./b9-01-versioning";
+import B9S2 from "./b9-02-v2-example";
+import B9S3 from "./b9-03-query-plans";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
@@ -82,5 +85,10 @@ export const backendSlides: SlideMeta[] = [
   { id: "b8-1", chapter: "Phase B-8", title: "FTS5 virtual table", Component: B8S1 },
   { id: "b8-2", chapter: "Phase B-8", title: "Operator parser", Component: B8S2 },
   { id: "b8-3", chapter: "Phase B-8", title: "Write-path hooks", Component: B8S3 },
+
+  { id: "b9-divider", chapter: "Phase B-9", title: "Migrations & indexes", Component: makeDivider("Phase B-9", "Migrations & indexes", "Versioning · v2 example · query plans.") },
+  { id: "b9-1", chapter: "Phase B-9", title: "Versioning & runner", Component: B9S1 },
+  { id: "b9-2", chapter: "Phase B-9", title: "v2 example: add mirrorOfItemId", Component: B9S2 },
+  { id: "b9-3", chapter: "Phase B-9", title: "Query plans & hot indexes", Component: B9S3 },
 ];
 
