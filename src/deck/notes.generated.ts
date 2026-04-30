@@ -3,7 +3,7 @@
 // Hand-written entries in `notes.ts` always win over these.
 
 export const GENERATED_NOTES: Record<string, string> = {
-  "ch1-01": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+  "ch1-01-what-is-workflowy": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
 
 -- Frontend: src/components/<feature>/*.tsx, src/state/<feature>Store.ts, src/api/<feature>.ts (typed Axios calls from spec/32-ui-design/skeletons/ts/api-client.generated.ts).
 -- Backend: wp-plugin/src/Rest/<Feature>Controller.php (signatures from spec/15-wp-plugin-how-to/skeletons/php/RestRoutes.generated.php), wp-plugin/src/Domain/<Feature>/*, wp-plugin/migrations/NNN-<feature>.sql.
@@ -12,12 +12,379 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Visual styling tokens → 07-design-system/ and 32-ui-design/03-design-system/.
 
 -- Source: spec/31-app/00-overview.md`,
-  "ch1-02": `ItemType is a closed enum of exactly 12 values. No 13th value may be added without a superseding ADR.
+  "ch1-02-item-model": `ItemType is a closed enum of exactly 12 values. No 13th value may be added without a superseding ADR.
 
 -- mirror — Mirrors are rows in the Mirrors table referencing a source Items row. Mirror is a peer-group relation, not a turn-into target. Forbidden as an ItemType literal anywhere in spec/31-app/.
 -- Root, root, page, document, note, task, project, embed, image, file, link, heading, template — none of these are members of ItemType. If any such literal appears in App-folder spec text, it is a bug (see §3).
 
 -- Source: spec/31-app/00-itemtype-canonical.md`,
+  "ch1-03-views-over-tree": `The layout shell is the persistent chrome around every page: the NavBar at top, the optional Sidebar sliding from the left, and the scrollable Page content area. Every other feature renders inside this shell.
+
+-- The app MUST consist of two main zones: NavBar (fixed top bar) and Page (scrollable content area below) (gate G-LAYOUT-TWO-ZONE-SHELL).
+-- A collapsible Sidebar MUST slide in from the left when the Menu button is clicked (gate G-LAYOUT-SIDEBAR-LEFT-SLIDE).
+-- The layout MUST be responsive: sidebar overlays on mobile, side-by-side on desktop (gate G-LAYOUT-RESPONSIVE-SIDEBAR-MODE).
+-- ❌ Hard-coded string keys (get_option('workflowy_theme')) — anti-pattern #1 in 13-anti-patterns.md.
+-- ❌ Reading these keys without going through the Settings facade.
+
+-- Source: spec/31-app/01-features/03-layout-structure.md`,
+  "ch2-01-app-shell-ui": `The app wraps everything in a query cache provider, authentication provider, and router. A global toast notification system is available throughout.
+
+-- NavBar (fixed at top, ~48px height)
+-- NavBar Left: Menu toggle, back arrow, forward arrow, home button, breadcrumbs with overflow
+-- NavBar Right: Search button, share button (hidden on home), clipboard/copy button, favorite button (hidden on home), checkmark (complete), layout toggle (list/board), settings menu dropdown
+-- Sidebar (~240px, collapsible from left, shortcut: ^L)
+-- Collapse/expand arrow at top
+
+-- Source: spec/32-ui-design/01-architecture/03-component-hierarchy.md`,
+  "ch2-02-navbar": `---
+
+-- Breadcrumb internals → see 02-breadcrumb.md.
+-- Routing/URL structure → see 03-routing.md.
+-- Keyboard shortcut table → see 04-keyboard-shortcuts.md.
+-- Mobile gesture handling → deferred to Phase 10 (../10-mobile/).
+
+-- Source: spec/32-ui-design/06-workflowy-ui/01-navbar/01-layout.md`,
+  "ch2-03-sidebar": `The layout shell is the persistent chrome around every page: the NavBar at top, the optional Sidebar sliding from the left, and the scrollable Page content area. Every other feature renders inside this shell.
+
+-- The app MUST consist of two main zones: NavBar (fixed top bar) and Page (scrollable content area below) (gate G-LAYOUT-TWO-ZONE-SHELL).
+-- A collapsible Sidebar MUST slide in from the left when the Menu button is clicked (gate G-LAYOUT-SIDEBAR-LEFT-SLIDE).
+-- The layout MUST be responsive: sidebar overlays on mobile, side-by-side on desktop (gate G-LAYOUT-RESPONSIVE-SIDEBAR-MODE).
+-- ❌ Hard-coded string keys (get_option('workflowy_theme')) — anti-pattern #1 in 13-anti-patterns.md.
+-- ❌ Reading these keys without going through the Settings facade.
+
+-- Source: spec/31-app/01-features/03-layout-structure.md`,
+  "ch3-01-recursive-ui": `The Page is the scrollable content area below the NavBar where the user's outline lives. Every bullet item is one row composed of expand toggle, bullet dot, content, note, badges, and hover-revealed action buttons.
+
+-- Renders below the content area, aligned with the content (not the bullet dot).
+-- Has a light background with a subtle left border accent.
+-- Uses smaller, muted text.
+-- Editable inline.
+-- Toggle visibility via the note indicator icon or the ⇧↵ shortcut.
+
+-- Source: spec/31-app/01-features/04-page-content-area.md`,
+  "ch3-02-zoom": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | — | Zoom is a UI-state operation. | | App DB (per workspace) | Items (read subtree for zoomed view) | Read-only.
+
+-- ❌ Persistent virtual scopes (saved views) — future
+-- ❌ Sharing a virtual scope as a unit — future
+-- ❌ Cross-account virtual scopes — never (security boundary)
+-- spec/31-app/01-features/12-multi-select.md (parent SSOT)
+-- spec/31-app/01-features/05-interactions.md (zoom hotkey)
+
+-- Source: spec/31-app/01-features/12b-multi-select-zoom.md`,
+  "ch3-03-recursive-tech": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Workspace, User, WorkspaceMember, RoleType, Share, PendingInvites, Template (catalog) | Membership + workspace-level metadata. | | App DB (per workspace) | Items, MirrorGroup, MirrorMember, Comment, ItemTags, Favorite | All item-tree content lives here.
+
+-- Root always exists. Every user has exactly one root item created on signup.
+-- Root cannot be deleted.
+-- Root is the destination for the Home button.
+-- Root renders the top-level item list.
+-- Deleting a parent item cascades deletion to all children.
+
+-- Source: spec/31-app/01-features/01-information-model.md`,
+  "ch4-01-editor-ui": `ui-design · editor
+
+-- 01-rich-text-format.md — Rich Text Format
+-- 02-enter-key-rules.md — Enter Key Rules
+-- 03-drag-and-drop.md — Drag And Drop
+-- 04-interaction-clarifications.md — Interaction Clarifications
+-- 05-additional-behaviors.md — Additional Behaviors
+
+-- Source: spec/32-ui-design/04-editor/00-overview.md`,
+  "ch4-02-keys": `When Enter is pressed, the item's content is split at the caret position into two items:
+
+-- Source: spec/32-ui-design/04-editor/02-enter-key-rules.md`,
+  "ch4-03-slash-menu": `Undoable actions (all are reversible with ⌘Z):
+
+-- Permanent trash deletion
+-- Share/unshare actions
+-- Comment creation/deletion
+-- File upload/deletion
+-- Mirror creation/deletion
+
+-- Source: spec/32-ui-design/04-editor/05-additional-behaviors.md`,
+  "ch4-04-toolbar": `(gate G-22-BOUNDARY-NAMES-CLOSED) The rich_content field stores a sanitized HTML subset. The content field stores the plain text equivalent (all HTML tags stripped).
+
+-- Source: spec/32-ui-design/04-editor/01-rich-text-format.md`,
+  "ch4-05-editor-tech": `Visible items are computed by a depth-first pre-order traversal of the item tree, skipping the entire subtree of any collapsed node.
+
+-- Collapsed items are still themselves visible — only their children are skipped.
+-- Mirror items follow the same traversal as regular items.
+-- In board view, arrow keys are disabled (board uses its own navigation).
+-- Shift+click selects all items between the anchor (first click) and the target (shift+click) in visual order, inclusive of both endpoints.
+-- This includes items at any nesting depth that fall between the two points in visual order.
+
+-- Source: spec/32-ui-design/04-editor/04-interaction-clarifications.md`,
+  "ch5-01-bullet-anatomy": `| Slot | Width | Visible When | Purpose | |------|-------|--------------|---------| | Left ⋯ | 16 px | Hover on row | Opens per-row action menu | | Expand ▸/▾ | 16 px | Has children + inline (not focused-root) | Toggle child visibility | | Dot ● | 16 px | Always | Drag, zoom, select | | Content | flex (fills) | Always | Editable text + inline formatting | | Comment + | 24 px | Hover OR has comments | Add/view comments |
+
+-- All hover affordances fade out (100ms ease-out).
+-- Background returns to transparent.
+-- Inherits font from app settings (default Inter, monospace if Code Block type).
+-- Editable inline (contenteditable surface).
+-- Supports inline formatting: bold, italic, ~~strike~~, code, link, @mention, #tag.
+
+-- Source: spec/32-ui-design/06-workflowy-ui/04-bullet/01-anatomy.md`,
+  "ch5-02-row-menu": `| Trigger | Result | |---------|--------| | Click left ⋯ icon (hover-revealed) | Opens menu anchored to ⋯ icon | | Right-click anywhere on row | Opens menu at pointer position | | Long-press on row (touch) | Opens menu (deferred to Phase 10) |
+
+-- Convert to: lists the 12 item types (see Phase 5 03-item-types.md).
+-- Color: 11 text colors (top row) + 11 highlight colors (bottom row) — see Phase 5 04-color-palettes.md.
+-- Export: 4 format options.
+-- "Delete" → "Delete N items"
+-- "Mirror" → "Mirror N items"
+
+-- Source: spec/32-ui-design/06-workflowy-ui/04-bullet/02-three-dot-menu.md`,
+  "ch5-03-bullet-tech": `The item context menu is the dropdown that opens from the ⋮ trigger on every item row. It exposes type conversions, item-level actions (complete, note, date, comment, move, mirror, share, export, sort, archive, tag, delete), and read-only metadata.
+
+-- Duplicate — Create a sibling copy of the item and its entire subtree. Copies preserve content, type, and attachments; tags retain their literal text but become independent. (item-menu)
+-- Copy Internal Link — Copy a wf://item/<id> URL to the clipboard. Pasting it elsewhere in WorkFlowy creates an inline link that resolves on click; pasting it externally yields a normal URL. (item-menu)
+-- Move To — Open the move-target picker; selecting a destination re-parents the item (and its subtree). Cycle-protected. ⌘+Shift+M
+-- Move Here — When triggered from a destination's + slot during multi-select, moves the current selection to this anchor. (multi-select chrome)
+-- Mirror — Create a mirror peer of the item. The new peer joins the source's peer group; if the item had no group, a new group is created. See ./09-mirrors.md F3 appendix. (item-menu)
+
+-- Source: spec/31-app/01-features/06-item-context-menu.md`,
+  "ch6-01-multiselect": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | (read) WorkspaceMember for capability check | Selection scope cannot cross workspace. | | App DB (per workspace) | Items (bulk move/delete/tag writes), ItemTags, MirrorGroup (when bulk affects sources) | All bulk operations batched into a single App-DB transaction.
+
+-- Selected items show a light accent background highlight across the full row.
+-- A floating selection count badge appears at the bottom of the screen: "X items selected".
+-- The badge includes a "Clear" button to deselect all.
+-- Bulk Move To — Open the move-target picker; selected items (and their subtrees) are moved as a contiguous block under the chosen destination, preserving sibling order. Cycle-protected. ⌘+Shift+M
+-- Bulk Mirror To — Create a mirror peer for each selected item at the chosen destination. Each mirror joins the corresponding source's peer group (or creates a new singleton-then-pair group). ⌘+Shift+L
+
+-- Source: spec/31-app/01-features/12-multi-select.md`,
+  "ch6-02-dnd": `Each item row is divided into three vertical zones based on the cursor's Y position within the row:
+
+-- Source: spec/32-ui-design/04-editor/03-drag-and-drop.md`,
+  "ch6-03-multiselect-tech": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | — | Zoom is a UI-state operation. | | App DB (per workspace) | Items (read subtree for zoomed view) | Read-only.
+
+-- ❌ Persistent virtual scopes (saved views) — future
+-- ❌ Sharing a virtual scope as a unit — future
+-- ❌ Cross-account virtual scopes — never (security boundary)
+-- spec/31-app/01-features/12-multi-select.md (parent SSOT)
+-- spec/31-app/01-features/05-interactions.md (zoom hotkey)
+
+-- Source: spec/31-app/01-features/12b-multi-select-zoom.md`,
+  "ch7-01-search-ui": `ui-design · workflowy-ui · search · phase
+
+-- Open/close & focus — AT-WF02-OC-01..04
+-- Tab rail — AT-WF02-TAB-05..06
+-- Hint & jump-to-menu — AT-WF02-HINT-07..08
+-- Token system — AT-WF02-TOK-09..12
+-- Results & highlighting — AT-WF02-RES-13..16
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/00-overview.md`,
+  "ch7-02-search-flow": `md describes the 5-tier match-kind score × field-weight formula. md describes Auth::hasRole().
+
+-- Auth::isAuthenticated($userId) returns true (anonymous users get 401).
+-- q.length >= 2 (single-char queries return 400).
+-- q.length <= 256 (longer queries return 400 to bound regex cost).
+-- The user has at least one View-grant on at least one item in the workspace; otherwise the result set is empty (200 with items: []).
+-- ❌ Resolving permissions per row (calling Auth::hasRole() inside the result loop). Use the precomputed visibility set.
+
+-- Source: spec/31-app/02-workflows/06-search-query-flow.md`,
+  "ch7-03-search-tech": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | WorkspaceMember | Determine accessible workspaces for search fan-out. Content + ItemTags; ranking inputs (UpdatedAt, Favorite) | Search executes against each accessible App DB sequentially.
+
+-- I-SR-01 Ranking is deterministic — same query + same DB snapshot always yields identical order.
+-- I-SR-02 Recency never beats relevance across buckets — a relevance-100 item from last year ranks above a relevance-20 item edited 5 s ago.
+-- I-SR-03 Recency always wins inside a bucket — no secondary lexical sort.
+-- I-SR-04 The 250-item viewport cap (L4) applies; result count beyond 250 is reported but not rendered.
+-- AT-SR-01 Title-exact match outranks note-substring match regardless of recency.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md`,
+  "ch8-01-today-calendar-ui": `The Today view is a date-driven filter that surfaces every item assigned to today (and an Overdue band for anything past). Items render with full inline-edit parity, grouped by parent breadcrumb so users can act on tasks without losing the surrounding project context.
+
+-- Clicking the 📅 Today button in the navbar filters to all items where the assigned date is today.
+-- Items are grouped by parent context — each group shows the breadcrumb path above it.
+-- Items are fully editable in place (same interactions as the normal view).
+-- Overdue items (items with past dates) appear in a separate "Overdue" section above the today section, styled in a warning/red color.
+-- ❌ get_option('workflowy_user_timezone') — must go through the Settings facade.
+
+-- Source: spec/31-app/01-features/10-today-view.md`,
+  "ch8-02-today-flow": `---
+
+-- Today View — A virtual page listing every item whose date chip resolves to the current calendar day (user's local TZ). Reached via the 📅 Today chrome button (see ./03-layout-structure.md F2 appendix) or the sidebar Today shortcut.
+-- Add Date — Insert a date chip into any item's content. Date chips power Today view, date-keyword search, and the has:date operator. ⌘+Shift+. on macOS / Ctrl+Shift+. on Windows
+-- Date Search — Find items by date using keywords (today, yesterday, this-week, last-week, next-week) or absolute dates (MM/DD/YYYY, YYYY-MM-DD). Combine with has:date for explicit chip-only filtering. See ./16-search-ranking.md F2 appendix for the operator table.
+-- Jump To Today — Pressing T while focused in Jump-To overlay (⌘P) snaps the cursor to the Today entry. ⌘P then today ↵
+-- Recurring Dates (out of scope, v1) — Workflowy supports recurring date chips. WorkFlowy v1 does NOT; deferred to a post-v1 ambiguity entry. Tracked under .lovable/question-and-ambiguity/ (F7 reconciliation candidate).
+
+-- Source: spec/31-app/01-features/10-today-view.md # Flow`,
+  "ch8-03-today-tech": `Read: App DB (per-workspace; one SQLite file per workspace) — Items WHERE DueAt = today(). Read: Root DB (per-user / workspace-membership scope) — user TZ via OptionNameType::USER_TIMEZONE.
+
+-- Auth: user.
+-- Query params:
+-- Timezone (IANA, optional — defaults to EP-ME's Timezone)
+-- IncludeOverdue (boolean, default true)
+-- Limit (int, ≤ 250, default 250)
+
+-- Source: spec/31-app/06-endpoints/10-today-view.md`,
+  "ch9-01-board-ui": `Board view is a Kanban-style presentation mode of the current item's subtree. Direct children render as columns, grandchildren as cards.
+
+-- Tree: Project Launch > Todo > [Task A, Task B] + Project Launch > Doing > [Task D] + Project Launch > Done > [Task F]
+-- Board: Three columns (Todo, Doing, Done) with cards (A, B in Todo; D in Doing; F in Done).
+-- "Todo", "Doing", "Done"
+-- "Backlog", "In Review", "Approved", "Blocked"
+-- "Week 1", "Week 2", "Week 3"
+
+-- Source: spec/31-app/01-features/07-board-view.md`,
+  "ch9-02-dashboard-ui": `Dashboard view is a card-grid presentation mode of the current item's direct children. It is a presentation mode only — toggling between List, Board, and Dashboard never mutates tree structure.
+
+-- Title edit writes Items.Content of the child, not the dashboard item. Same op as bullet rename — flows through useTreeStore.updateContent() → Op.Update.
+-- Completion toggle writes Items.IsCompleted of the child. Same op as a todo checkbox.
+-- Deeper edits (notes body, sub-children, type change) require zoom-into the card — Dashboard surface does NOT expose them.
+-- ❌ No columns. No ItemType grouping.
+-- ❌ No grandchildren visible.
+
+-- Source: spec/31-app/01-features/07b-dashboard-view.md`,
+  "ch9-03-board-dash-tech": `Read: App DB (per-workspace; one SQLite file per workspace) only — Items (board is a view over the same rows the list view uses). SortOrder on drag.
+
+-- Path: id MUST be an Item whose ItemType is BoardProject. Otherwise ERR_NOT_BOARD (gate G-EP-BOARD-PROJECT-ONLY).
+-- Auth: user with read access.
+-- Request body: —
+-- Success (200) Results: { Columns: BoardColumn[], Cards: Item[] } where each BoardColumn = { Id, Title, Order } and Cards are the children grouped by their column-discriminator field (per 07-board-view.md).
+-- Errors: ERR_NOT_FOUND, ERR_FORBIDDEN, ERR_NOT_BOARD.
+
+-- Source: spec/31-app/06-endpoints/07-board-view.md`,
+  "ch10-01-mirrors-ui": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | — | Mirrors are workspace-local; no Root DB touch. | | App DB (per workspace) | MirrorGroup, MirrorMember, Items (members reference items) | All mirror state lives here.
+
+-- Mirror — Create an additional reference to the item elsewhere in the tree. The new entry shows the same content, children, and metadata as the original; editing any peer updates them all. (item-menu / slash: /mirror)
+-- Mirror To — Open a target picker; the new mirror peer is placed at the chosen destination. ⌘+Shift+L
+-- Mirror Here — During a multi-select drag, drop the selection as a mirror peer at the current anchor (rather than a move). (multi-select chrome)
+-- Detach Mirror — Remove the current item from its peer group. The other peers remain linked. If detaching reduces the group to a singleton, the group is dissolved entirely (per mem://features/mirroring). (item-menu, _conditional:_ peer-group size ≥ 2)
+-- See Mirrors — Open a panel listing every other peer of this item with its breadcrumb path; clicking a row jumps to that location. (item-menu, _conditional:_ peer-group size ≥ 2; component: mirror-peers-panel)
+
+-- Source: spec/31-app/01-features/09-mirrors.md`,
+  "ch10-02-mirrors-flow": `md describes the cycle-rejection algorithm. Neither file pins the end-to-end create sequence of "user picks target → cycle check → group lookup-or-create → membership insert × 2 → set PeerGroupId × 2 → SSE fan-out".
+
+-- Auth::hasRole($userId, 'Edit', 'Item', $sourceItemId) returns true (mirroring is an Edit-class operation on the source).
+-- Auth::hasRole($userId, 'Edit', 'Item', $targetParentId) returns true (creating a child requires Edit on the parent).
+-- $sourceItemId is not the workspace root (root cannot be mirrored — UI blocks per AT-MIRRORS-15; backend re-checks).
+-- $sourceItemId is not soft-deleted (Items.DeletedAt IS NULL).
+-- $targetParentId is not in the descendant subtree of $sourceItemId — enforced by the cycle-detection algorithm in step 3d.
+
+-- Source: spec/31-app/02-workflows/09-mirror-create-flow.md`,
+  "ch10-03-mirrors-tech": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | — | Peer-group state is workspace-local. sql.
+
+-- Each peer has its own ItemId, its own ParentItemId, its own FractionalIndex, its own IsCollapsed.
+-- All peers in a group share logically-identical content (Title, Notes, Children subtree, Completion, Attachments, Comments, Tags). Content is stored once on the canonical row (the lowest ItemId in the group is the convention) and read-through by all peers.
+-- The diamond (◇) badge renders on every peer where MirrorGroupId IS NOT NULL AND group size ≥ 2.
+-- ItemType is never mirror. Items keep their original type (bullet, todo, h1, etc.). "Being mirrored" is a relation, not a type. This permanently closes AUDIT-AI-07.
+-- Item.MirrorOfItemId column
+
+-- Source: spec/31-app/01-features/09b-mirror-peer-group-model.md`,
+  "ch11-01-templates-ui": `Templates serialize an item's full subtree (content, types, notes, children) into a reusable snapshot. Users apply a template to spawn a fresh independent copy under any target item — no link to the template, no shared edits.
+
+-- ❌ Hard-coding the 50 cap in PHP — must read OptionNameType::TEMPLATE_MAX_PER_WORKSPACE.
+-- ❌ Bare get_option('workflowy_template_picker_view') — go through the Settings facade.
+-- ❌ Skipping the confirm-apply check when the setting is true.
+-- Wire form: the string value (e.g., "recent") is what travels in the API envelope and persists in wp_options.
+-- PHP form: all comparisons, branches, and persistence calls MUST use the enum case (TemplatePickerViewType::RECENT) — never the bare string (gate G-WF-ENUM-NO-STRING-LITERALS).
+
+-- Source: spec/31-app/01-features/13-templates.md`,
+  "ch11-02-templates-tech": `Templates are snapshot copies (one-shot stamp).
+
+-- Position: instantiated subtree is appended to the end of target_parent_id's children.
+-- Mirrors inside the template: collapsed to plain items (peer-group not preserved across instantiation).
+-- Owner: always auth.uid() of the instantiating user, regardless of template author.
+-- ❌ Live templates / propagating edits → out of scope (could be modeled as mirrors in v2)
+-- ❌ Parameterised templates ({{date}}, {{user}}) → future
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md`,
+  "ch12-01-share-ui": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Share (grants), PendingInvites (email invites), WorkspaceMember (capability check) | Sharing surfaces are workspace-membership concerns. | | App DB (per workspace) | Items (validate target item exists; read content for share-preview) | Item ID validation only — no writes from share dialog.
+
+-- Share — Open the share dialog from the item-menu (or shortcut ⌘+Shift+S). The dialog has two tabs: Public link and Invite people.
+-- Public Link — Toggle generates a https://workflowy.app/s/<token> URL. Anyone with the link can view (default) or edit (if "Allow editing" is on). Revoke regenerates the token, invalidating the old link. (component: share-public-link-tab)
+-- Invite People — Add named users by email. Each invitee gets view or edit permission independently of the public-link state. Invitees see the item appear under a Shared with me sidebar group on next sync. (component: share-invite-tab)
+-- Permission Levels — view (read-only render, no toolbar / item-menu mutations), edit (full CRUD on the shared subtree, but cannot re-share or delete the share root), owner (the user who initiated the share; can delete the share root and revoke any invite).
+-- Stop Sharing — Removes the public token AND all invitee ACLs in one action. (component: share-stop-button)
+
+-- Source: spec/31-app/01-features/08-share-dialog.md`,
+  "ch12-02-permissions": `Defines the runtime-agnostic roles, permission grants, and authorization checks used everywhere a user acts on an item, share, comment, board, or workspace. Behavior and contracts only — no SQL, no WordPress capability mapping, no Supabase RLS code.
+
+-- Runs with elevated privileges (security-definer pattern).
+-- Is the only path RLS / capability checks use.
+-- Returns false on any error rather than throwing.
+-- true — user holds the requested role or higher at the given scope. Action MAY proceed.
+-- false — denied for any reason (no grant, unknown user, internal error). Caller MUST reject the action with HTTP 403 (or equivalent) [gate: G-USER-HASROLE-CENTRAL].
+
+-- Source: spec/31-app/01-features/15-roles-and-permissions.md`,
+  "ch12-03-share-tech": `Read: Root DB (per-user / workspace-membership scope) — Share, PendingInvites, WorkspaceMember. Read: App DB (per-workspace; one SQLite file per workspace) — Items (target item metadata only).
+
+-- Auth: user with read access on the item (any role can see who else has access).
+-- Success (200) Results: { Grants: Share[], PublicSlug?: string, IsPublicEnabled: boolean } (boolean field carries Is prefix per coding-guidelines boolean naming convention).
+-- Errors: ERR_NOT_FOUND, ERR_FORBIDDEN.
+-- Side effects: none.
+-- Auth: owner (per Auth::hasRole).
+
+-- Source: spec/31-app/06-endpoints/08-share-dialog.md`,
+  "ch13-01-trash-ui": `The Trash view is the safety net for deletions. Every soft-deleted item lives here for 30 days, sorted newest-first, with restore and permanent-delete affordances.
+
+-- ❌ Hard-coding 30 in the reaper — must read OptionNameType::TRASH_RETENTION_DAYS.
+-- ❌ Skipping the confirm-permanent-delete check when the setting is true.
+-- ❌ Bare get_option('workflowy_trash_retention_days') — go through the Settings facade.
+-- Delete — Soft-delete an item and its entire subtree. Items move to Trash; nothing is permanently removed at this step. ⌘⌫
+-- Bulk Delete — Multi-select equivalent. Single batch confirmation toast covers the whole selection with one Undo. → ./12-multi-select.md F3 appendix.
+
+-- Source: spec/31-app/01-features/11-trash-view.md`,
+  "ch13-02-trash-flow": `md describes Trash UI and the 30-day reaper. BrokenAt LWW.
+
+-- Auth::hasRole($userId, 'Edit', 'Item', $itemId) returns true.
+-- The item is in Trash (Items.DeletedAt IS NOT NULL) AND has not been hard-deleted by the 30-day reaper.
+-- OptionNameType::TRASH_CONFIRM_PERMANENT_DELETE does NOT apply here — that key gates permanent delete, not restore. Restore is always one-click.
+-- ❌ Restoring without the ancestor walk (step 3e) — produces orphaned items in a phantom parent.
+-- ❌ Healing mirrors without the LWW guard (step 3g) — produces zombie mirrors when racing with a hard-delete.
+
+-- Source: spec/31-app/02-workflows/04-trash-restore-flow.md`,
+  "ch13-03-trash-tech": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Workspace (iterate list of workspaces to reap) | Reaper enumerates all workspaces from Root DB. | | App DB (per workspace) | Items WHERE DeletedAt < now() - retention; reads OptionNameType::TRASH_RETENTION_DAYS | Hard-delete cascades Mirror, Comment per FKs.
+
+-- Days 0–30 in trash: item is recoverable via Trash view → "Restore".
+-- Day 30+: item silently gone on next reaper run (≤ 24h after expiry).
+-- No warning email on imminent reap (v1 scope).
+-- Manual "Empty Trash" button still available — performs the same hard delete on demand for items the user owns, regardless of age.
+-- Configurable retention per account
+
+-- Source: spec/31-app/01-features/11b-trash-reaper.md`,
+  "ch14-01-right-panel-ui": `ui-design · workflowy-ui · right-panel · phase · right-side
+
+-- Handbook: entry template = heading + shortcut + ⚡ + screenshot slot + paragraph + grey slash-command callout.
+-- Hotkeys: ~30 entries from img-65 verbatim (Cmd on Mac / Ctrl elsewhere).
+-- What's New: dated entries, 👍/👎 per entry, Pro upsell banner, opened from app menu.
+-- ../00-overview.md — Workflowy UI parent
+-- ../01-navbar/04-keyboard-shortcuts.md — ⌘/ panel toggle
+
+-- Source: spec/32-ui-design/06-workflowy-ui/03-right-panel/00-overview.md`,
+  "ch14-02-right-panel-tech": `---
+
+-- Location: Top-right, next to close button (gear icon dropdown).
+-- Current: English (only option, disabled state).
+-- Future: i18n expansion — Spanish, French, German, Japanese (post-v1).
+-- Visual: Dropdown chevron, greyed until multiple options available.
+
+-- Source: spec/32-ui-design/06-workflowy-ui/03-right-panel/01-handbook-content.md`,
+  "ch15-01-app-menu-ui": `The breadcrumb shows the absolute path from the user's root node to the currently focused node. It is the primary visual indicator of "where you are" in the tree.
+
+-- Separator: › (U+203A), surrounded by single spaces on each side.
+-- Each segment: clickable text link, no underline at rest, underline on hover.
+-- First segment is always Home (or the user-defined root label).
+-- Last segment (focused node) is rendered with the same styling as other segments — NOT bold in the breadcrumb. The bold/H1 rendering happens below the navbar in the focused-node title (see 01-layout.md → focused-node title).
+-- Click the focused-node title (the H1 below the navbar) and edit inline.
+
+-- Source: spec/32-ui-design/06-workflowy-ui/01-navbar/02-breadcrumb.md`,
+  "ch15-02-settings-ui": `user-management · account · settings · auth · mfa · referrals · theme · email-summary · labs · help · handbook · bug-report · delete-account · restore-from-backup
+
+-- Settings Panel — A single dialog (or full-screen view on narrow viewports) reached from the sidebar account chrome (avatar → Settings). The panel is organised as a left sub-nav with the categories listed below; each row links to a sub-panel rendered to the right. ⌘,
+-- Save Behaviour — Every setting auto-saves on blur / toggle change; there is no global Save button. A transient settings-save-toast confirms each write.
+-- Backend Contract — All settings are stored in the UserSetting table (UserId + Key PK, Value TEXT JSON), exposed via GET/PATCH /wp-json/workflowy/v1/me/settings with the standard PascalCase envelope (Status, Attributes, Results).
+-- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
+-- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
+
+-- Source: spec/36-user-management/01-account-and-settings.md`,
+  "ch15-03-settings-tech": `rbac · has-role · require-role · security-definer · authorization · capability-check · role-cache · auth-helper
+
+-- ./00-overview.md FR-5 ("All RBAC checks via central hasRole"), FR-6, §"Anti-Patterns" rows 2/5/6, §"Worked Example" §2–§4.
+-- ./97-acceptance-criteria.md AT-USERMANAGEMENT-04, -05, -06.
+-- ./97a-acceptance-criteria-fixtures.md AT-USERMANAGEMENT-04..06 linter commands.
+-- PHP class Auth\\Rbac under wp-plugin/src/Auth/Rbac.php.
+-- SQLite security-definer-equivalent function has_role (since SQLite has no SECURITY DEFINER, see §4 for the WP-plugin-equivalent pattern).
+
+-- Source: spec/36-user-management/03-rbac-helpers.md`,
   "ch16-01-concurrency-ui": `This file is the single source of truth for how concurrent edits resolve across tabs, devices, and collaborators. Every other feature (mirrors, sharing, multi-select, today, board) defers to the rules here.
 
 -- ❌ Mutating BrokenAt without also writing BrokenAtUpdatedAt = serverNow and BrokenAtUpdatedBy.
@@ -27,19 +394,237 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- A successful §14.2 LWW write MUST emit exactly one SSE event in the same transaction commit phase (no separate publish step that can drift) [gate: G-25-SSE-TX-ATOMIC-EMIT].
 
 -- Source: spec/31-app/01-features/14-concurrency-and-sync.md`,
-  "b3-1": `This file is the single source of truth for how concurrent edits resolve across tabs, devices, and collaborators. Every other feature (mirrors, sharing, multi-select, today, board) defers to the rules here.
+  "ch16-02-sync-flow": `md describes the FIFO queue and LWW reconciliation. md describes the EP-SYNC-REPLAY request/response shape.
 
--- ❌ Mutating BrokenAt without also writing BrokenAtUpdatedAt = serverNow and BrokenAtUpdatedBy.
--- ❌ Resolving "broken vs healthy" with MAX(BrokenAt) — the comparison is on BrokenAtUpdatedAt, not on BrokenAt itself.
--- ❌ Letting a stale restore re-heal a mirror whose source has since been hard-deleted (rule 5 rejects it).
--- ❌ Treating 'system' writes as authoritative over human writes at exact ties — they are not (rule 4b).
--- A successful §14.2 LWW write MUST emit exactly one SSE event in the same transaction commit phase (no separate publish step that can drift) [gate: G-25-SSE-TX-ATOMIC-EMIT].
+-- The local mirror is initialized (AT-APP-97).
+-- The queue has ≥1 pending mutation (AT-APP-98); idle reconnects are no-ops.
+-- navigator.onLine === true AND the auth session is still valid (refresh token has not expired during offline period).
+-- No prior drain is in flight (drain is single-threaded per session — enforced by client-side mutex).
+-- ❌ Parallel drain (multiple concurrent POST /sync/replay from the same client). Breaks FIFO and corrupts cross-mutation causality. Use a client-side mutex.
 
--- Source: spec/31-app/01-features/14-concurrency-and-sync.md`,
-  "b5-1": `This spec is the algorithmic SSOT for detecting mirror cycles. md (ERR_CYCLE on EP-ITEMS-MOVE).
+-- Source: spec/31-app/02-workflows/07-sync-replay-flow.md`,
+  "ch16-03-sync-tech": `Read: App DB (per-workspace; one SQLite file per workspace) — Items for replay-after-restart materialization. Write: App DB (per-workspace; one SQLite file per workspace) — drained queue mutations write to Items per the originating endpoint's routing.
 
--- Source: spec/31-app/01-features/09a-mirror-cycle-detection.md # Overview`,
-  "b5-2": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | — | Cycle detection is workspace-local. ParentId graph | Algorithm is a recursive CTE on App DB only.
+-- Auth: user. Per-mutation ACLs are re-validated server-side; offline edits to since-revoked items are rejected individually, not fatally.
+-- Request body:
+-- Mutations MUST be in FIFO order as queued on the client (per mem://features/offline-resilience) (per AT-APP-100 + ADR-0023).
+-- Max 500 mutations per batch; clients chunk larger queues.
+-- Success (200) Results:
+
+-- Source: spec/31-app/06-endpoints/14b-sync-replay.md`,
+  "ch17-01-auth-ui": `auth · login · registration · passkey · webauthn · session · jwt · argon2id · mfa · recovery-codes · solo-mode · sync-mode
+
+-- ./00-overview.md §"Functional Requirements" (FR-3, FR-4, FR-6) and §"Anti-Patterns".
+-- ./97-acceptance-criteria.md (AT-USERMANAGEMENT-07..10, AT-USR-03).
+-- anonymous → active directly without /auth/login or /auth/register + /confirm
+-- mfa-pending → active without /mfa/verify
+-- Any → active while Session.RevokedAt IS NOT NULL
+
+-- Source: spec/36-user-management/02-auth-flow.md`,
+  "ch17-02-rbac": `rbac · has-role · require-role · security-definer · authorization · capability-check · role-cache · auth-helper
+
+-- ./00-overview.md FR-5 ("All RBAC checks via central hasRole"), FR-6, §"Anti-Patterns" rows 2/5/6, §"Worked Example" §2–§4.
+-- ./97-acceptance-criteria.md AT-USERMANAGEMENT-04, -05, -06.
+-- ./97a-acceptance-criteria-fixtures.md AT-USERMANAGEMENT-04..06 linter commands.
+-- PHP class Auth\\Rbac under wp-plugin/src/Auth/Rbac.php.
+-- SQLite security-definer-equivalent function has_role (since SQLite has no SECURITY DEFINER, see §4 for the WP-plugin-equivalent pattern).
+
+-- Source: spec/36-user-management/03-rbac-helpers.md`,
+  "ch17-03-admin-ui": `Define the admin-only React UI surfaces for managing other users — invite, list, role-assign, deactivate, reactivate, delete, audit. md).
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 04)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/36-user-management/04-admin-ui.md`,
+  "ch17-04-auth-tech": `WordPress provides cookies; the WorkFlowy plugin layers a typed token system on top for REST + SSE channels.
+
+-- Token kinds and what each one authorizes
+-- Issuance, refresh, rotation, and revocation flow
+-- Idle vs. absolute timeouts
+-- Server-side TokenRevocationList semantics
+-- Session ↔ token ↔ user invariants
+
+-- Source: spec/31-app/05-conventions/11-session-token-lifecycle.md`,
+  "ch18-01-feedback-ui": `Purpose — Define the Admin-role-gated review UI: route mounting, role gating, inbox list with filters/search/pagination, detail drawer, status-transition controls, and the read-side REST endpoints. md — no duplicate definition is permitted here.
+
+-- src/features/feedback/admin/FeedbackInbox.tsx (list + filters + pagination)
+-- src/features/feedback/admin/FeedbackDetailDrawer.tsx (read-only detail + transition control)
+-- src/features/feedback/admin/transitionFeedback.ts (sole writer for status transitions)
+-- src/features/feedback/admin/loaders.ts (mirror-first loaders per ADR-0023)
+-- wp-plugin/includes/Rest/FeedbackController.php — GET /feedback, POST /feedback/{id}/transition
+
+-- Source: spec/33-feedback-report/03-admin-review-ui.md`,
+  "ch18-02-feedback-tech": `Purpose — Define the end-to-end submission flow from Navbar entry point to server persistence: form composition, client-side validation, optional screenshot capture, diagnostics auto-attachment, optimistic UI, retry behavior, and the single REST endpoint contract.
+
+-- src/features/feedback/FeedbackButton.tsx (Navbar entry)
+-- src/features/feedback/FeedbackForm.tsx (Dialog + form fields)
+-- src/features/feedback/captureDiagnostics.ts (pure function, clock-injected)
+-- src/features/feedback/captureScreenshot.ts (consent-gated, opaque blob upload)
+-- src/features/feedback/submitFeedback.ts (single egress, action-tier per ADR-0023)
+
+-- Source: spec/33-feedback-report/02-submission-flow.md`,
+  "ch19-01-activity-ui": `Define the read-only React surfaces that render the activity feed for a page or a user, plus the typed restore-action surface (the only write in this UI). md Stage 1).
+
+-- EventType === 'ItemDeleted'
+-- OccurredAt > now() - 30 days (still within trash retention per mem://features/trash-logic)
+-- The row's TargetItemId is still present in the Trash table
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 03)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/34-activity-feed/03-feed-ui.md`,
+  "ch19-02-activity-tech": `Define the single deterministic path from a user action in the editor to a persisted ActivityEvent row + an emitted SSE frame. Every event MUST flow through one capture pipeline; ad-hoc emitters anywhere else in the codebase are forbidden.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 02)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/34-activity-feed/02-capture-pipeline.md`,
+  "ch20-01-enforcement": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- eslint-plugins/coding-guidelines/rules/<rule-name>.ts — one file per rule with meta.docs.url pointing to the source guideline
+-- <feature>/<feature>.schema.ts — Zod schemas co-located with each boundary consumer
+-- tsconfig.json — strict: true, noImplicitAny: true, noUncheckedIndexedAccess: true
+-- *.type-test.ts — expectTypeOf tests for every public generic helper
+-- CI step in .github/workflows/*.yml running all four enforcement layers
+
+-- Source: spec/35-enforcement-rules/00-overview.md`,
+  "ch21-01-endpoint-catalogue": `A single matrix mapping every one of the 49 REST + SSE endpoints in this folder to the acceptance-test IDs that must pass before the endpoint can ship. md.
+
+-- Source: spec/31-app/06-endpoints/16-endpoint-at-matrix.md`,
+  "ch22-01-db-map": `Every table in both Root DB and App DB, with primary keys, foreign keys, and the cross-DB boundary marked. Use this as the canonical "show me everything" view.
+
+-- Source: spec/31-app/07-db-diagram/01-master-erd.md`,
+  "ch22-02-constraints": `---
+
+-- Source: spec/31-app/07-db-diagram/06-indexes.md`,
+  "ch23-01-closing": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- Frontend: src/components/<feature>/*.tsx, src/state/<feature>Store.ts, src/api/<feature>.ts (typed Axios calls from spec/32-ui-design/skeletons/ts/api-client.generated.ts).
+-- Backend: wp-plugin/src/Rest/<Feature>Controller.php (signatures from spec/15-wp-plugin-how-to/skeletons/php/RestRoutes.generated.php), wp-plugin/src/Domain/<Feature>/*, wp-plugin/migrations/NNN-<feature>.sql.
+-- Tests: one Vitest + one PHPUnit test per AT-* row in 97-acceptance-criteria.md and per-feature 97-acceptance-criteria.md files; test names MUST start with the AT id.
+-- Fixtures: one JSON envelope per endpoint listed in 06-endpoints/ under 04a-fixtures/.
+-- Visual styling tokens → 07-design-system/ and 32-ui-design/03-design-system/.
+
+-- Source: spec/31-app/00-overview.md`,
+  "b1-01-process-model": `21).
+
+-- G-21 (gate discovery) cannot validate that referenced paths exist.
+-- G-23..G-28 implementations would each invent slightly different scan roots.
+-- P1.5 implementation would begin with a path-rename refactor instead of code.
+-- The composer autoloader (composer.json autoload.psr-4) cannot be authored deterministically.
+
+-- Source: spec/31-app/05-conventions/31-wp-plugin-folder-skeleton.md`,
+  "b1-02-two-db": `| Term | DB File | Scope | Owner | Lifetime | |------|---------|-------|-------|----------| | Root DB (root.db) | one per WordPress install | Cross-workspace identity, sessions, workspace registry, billing | Site admin | Install lifetime | | App DB (app-{workspace_id}.db) | one per workspace | All per-workspace item data: nodes, mirrors, shares, trash, templates, search index, queue ledger | Workspace owner | Workspace lifetime |
+
+-- [db-scope: root] — touches only root.db (e.g., login, workspace switch)
+-- [db-scope: app] — touches only the active workspace's app-{id}.db (default for item operations)
+-- [db-scope: cross-db] — orchestrates both; MUST cite the cross-DB contract section (gate G-24-DDL-SINGULAR-LOCKED)
+-- ADR-0019 — Split-DB scope and cross-DB orchestration
+-- ADR-0023 — Loader↔queue contract (writes target app-DB only)
+
+-- Source: spec/31-app/07-db-diagram/00b-split-db-anchor.md`,
+  "b1-03-request-lifecycle": `mjs — do not edit by hand inside the AUTO-TOC sentinels.
+
+-- Behavior of each feature lives in ../01-features/.
+-- Wire contract (URL, method, request, response, errors) lives here.
+-- The two folders mirror each other 1:1: file 01-features/07-board-view.md ↔ 06-endpoints/07-board-view.md.
+-- ID — stable identifier (e.g. EP-ITEMS-CREATE).
+-- Method + Path — including path/query parameters with types.
+
+-- Source: spec/31-app/06-endpoints/00-overview.md`,
+  "b2-01-password-storage": `auth · login · registration · passkey · webauthn · session · jwt · argon2id · mfa · recovery-codes · solo-mode · sync-mode
+
+-- ./00-overview.md §"Functional Requirements" (FR-3, FR-4, FR-6) and §"Anti-Patterns".
+-- ./97-acceptance-criteria.md (AT-USERMANAGEMENT-07..10, AT-USR-03).
+-- anonymous → active directly without /auth/login or /auth/register + /confirm
+-- mfa-pending → active without /mfa/verify
+-- Any → active while Session.RevokedAt IS NOT NULL
+
+-- Source: spec/36-user-management/02-auth-flow.md`,
+  "b2-02-sessions": `WordPress provides cookies; the WorkFlowy plugin layers a typed token system on top for REST + SSE channels.
+
+-- Token kinds and what each one authorizes
+-- Issuance, refresh, rotation, and revocation flow
+-- Idle vs. absolute timeouts
+-- Server-side TokenRevocationList semantics
+-- Session ↔ token ↔ user invariants
+
+-- Source: spec/31-app/05-conventions/11-session-token-lifecycle.md`,
+  "b2-04-rbac": `rbac · has-role · require-role · security-definer · authorization · capability-check · role-cache · auth-helper
+
+-- ./00-overview.md FR-5 ("All RBAC checks via central hasRole"), FR-6, §"Anti-Patterns" rows 2/5/6, §"Worked Example" §2–§4.
+-- ./97-acceptance-criteria.md AT-USERMANAGEMENT-04, -05, -06.
+-- ./97a-acceptance-criteria-fixtures.md AT-USERMANAGEMENT-04..06 linter commands.
+-- PHP class Auth\\Rbac under wp-plugin/src/Auth/Rbac.php.
+-- SQLite security-definer-equivalent function has_role (since SQLite has no SECURITY DEFINER, see §4 for the WP-plugin-equivalent pattern).
+
+-- Source: spec/36-user-management/03-rbac-helpers.md`,
+  "b3-01-op-shapes": `md, this file provides a canonical JSON request/response envelope fixture that satisfies AT-ENV-01, AT-ENV-02, and the per-endpoint AT row.
+
+-- Casing: PascalCase end-to-end (DB → ORM → JSON → frontend).
+-- Results is ALWAYS an array — singletons return [{...}], deletes return [].
+-- Timestamps are ISO-8601 UTC.
+-- Attributes.HasAnyErrors is false on success, true when Errors is present.
+-- Error fixtures follow 2.6 in the SSOT (sample reproduced once below; per-endpoint variants only differ in Status.Code, Status.Message, and Errors.Backend).
+
+-- Source: spec/31-app/06-endpoints/97b-endpoint-envelope-fixtures.md`,
+  "b3-04-sequence": `md describes the FIFO queue and LWW reconciliation. md describes the EP-SYNC-REPLAY request/response shape.
+
+-- The local mirror is initialized (AT-APP-97).
+-- The queue has ≥1 pending mutation (AT-APP-98); idle reconnects are no-ops.
+-- navigator.onLine === true AND the auth session is still valid (refresh token has not expired during offline period).
+-- No prior drain is in flight (drain is single-threaded per session — enforced by client-side mutex).
+-- ❌ Parallel drain (multiple concurrent POST /sync/replay from the same client). Breaks FIFO and corrupts cross-mutation causality. Use a client-side mutex.
+
+-- Source: spec/31-app/02-workflows/07-sync-replay-flow.md`,
+  "b3-05-sse": `sse · php · streaming · gc · fastcgi-finish · output-buffering · keepalive
+
+-- Source: spec/31-app/05-conventions/32-sse-php-implementation.md`,
+  "b3-06-offline-replay": `WorkFlowy ships with a full local mirror of the user's account so the app behaves identically online and offline. 2 to resolve any conflicts.
+
+-- I-OQ-01 Local mirror is a complete copy of every item the user
+-- I-OQ-02 Queue ops are persisted (survive tab close, reload, OS
+-- I-OQ-03 Replay is deterministic: identical queues replayed against
+-- I-OQ-04 A queued op never blocks the UI; the user keeps editing
+-- I-OQ-05 No manual conflict prompt is shown — LWW is silent except
+
+-- Source: spec/31-app/01-features/14b-offline-queue.md`,
+  "b4-01-move-atomicity": `The item context menu is the dropdown that opens from the ⋮ trigger on every item row. It exposes type conversions, item-level actions (complete, note, date, comment, move, mirror, share, export, sort, archive, tag, delete), and read-only metadata.
+
+-- Duplicate — Create a sibling copy of the item and its entire subtree. Copies preserve content, type, and attachments; tags retain their literal text but become independent. (item-menu)
+-- Copy Internal Link — Copy a wf://item/<id> URL to the clipboard. Pasting it elsewhere in WorkFlowy creates an inline link that resolves on click; pasting it externally yields a normal URL. (item-menu)
+-- Move To — Open the move-target picker; selecting a destination re-parents the item (and its subtree). Cycle-protected. ⌘+Shift+M
+-- Move Here — When triggered from a destination's + slot during multi-select, moves the current selection to this anchor. (multi-select chrome)
+-- Mirror — Create a mirror peer of the item. The new peer joins the source's peer group; if the item had no group, a new group is created. See ./09-mirrors.md F3 appendix. (item-menu)
+
+-- Source: spec/31-app/01-features/06-item-context-menu.md`,
+  "b4-02-fractional-index": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Workspace, User, WorkspaceMember, RoleType, Share, PendingInvites, Template (catalog) | Membership + workspace-level metadata. | | App DB (per workspace) | Items, MirrorGroup, MirrorMember, Comment, ItemTags, Favorite | All item-tree content lives here.
+
+-- Root always exists. Every user has exactly one root item created on signup.
+-- Root cannot be deleted.
+-- Root is the destination for the Home button.
+-- Root renders the top-level item list.
+-- Deleting a parent item cascades deletion to all children.
+
+-- Source: spec/31-app/01-features/01-information-model.md`,
+  "b4-04-soft-delete": `The Trash view is the safety net for deletions. Every soft-deleted item lives here for 30 days, sorted newest-first, with restore and permanent-delete affordances.
+
+-- ❌ Hard-coding 30 in the reaper — must read OptionNameType::TRASH_RETENTION_DAYS.
+-- ❌ Skipping the confirm-permanent-delete check when the setting is true.
+-- ❌ Bare get_option('workflowy_trash_retention_days') — go through the Settings facade.
+-- Delete — Soft-delete an item and its entire subtree. Items move to Trash; nothing is permanently removed at this step. ⌘⌫
+-- Bulk Delete — Multi-select equivalent. Single batch confirmation toast covers the whole selection with one Undo. → ./12-multi-select.md F3 appendix.
+
+-- Source: spec/31-app/01-features/11-trash-view.md`,
+  "b5-01-peer-groups": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | — | Peer-group state is workspace-local. sql.
+
+-- Each peer has its own ItemId, its own ParentItemId, its own FractionalIndex, its own IsCollapsed.
+-- All peers in a group share logically-identical content (Title, Notes, Children subtree, Completion, Attachments, Comments, Tags). Content is stored once on the canonical row (the lowest ItemId in the group is the convention) and read-through by all peers.
+-- The diamond (◇) badge renders on every peer where MirrorGroupId IS NOT NULL AND group size ≥ 2.
+-- ItemType is never mirror. Items keep their original type (bullet, todo, h1, etc.). "Being mirrored" is a relation, not a type. This permanently closes AUDIT-AI-07.
+-- Item.MirrorOfItemId column
+
+-- Source: spec/31-app/01-features/09b-mirror-peer-group-model.md`,
+  "b5-02-cycle-detection": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | — | Cycle detection is workspace-local. ParentId graph | Algorithm is a recursive CTE on App DB only.
 
 -- Anchor: 07-db-diagram/00b-split-db-anchor.md
 -- Scope: [db-scope: app]
@@ -48,6 +633,141 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- ADR-0023 — Loader↔Queue Contract: Loaders MUST read the local IndexedDB mirror first (≤16 ms p95, never fetch). Mutations MUST write {mirror, queue_ledger} in a single IDB transaction; the queue worker is the sole egress to the WordPress REST surface. SSE frames are read-signals only and MUST NOT enqueue to the FIFO (gates G-23-LOADER-MIRROR-FIRST, G-23-LOADER-NO-MUTATE, G-23-ACTION-ENQUEUE-ONLY). See spec/30-architecture/adr/0023-loader-queue-contract.md.
 
 -- Source: spec/31-app/01-features/09a-mirror-cycle-detection.md # Algorithm`,
+  "b5-03-broken-at": `md describes the peer-group model and pins AT-APP-61 ("detach removes peer; if surviving count = 1, group auto-dissolves"). md describes the EP-MIRRORS-DETACH request shape.
+
+-- Auth::hasRole($userId, 'Edit', 'Item', $itemId) returns true for the peer being detached.
+-- The item is currently a peer (Items.PeerGroupId IS NOT NULL AND a MirrorPeerGroupMembers row exists).
+-- Detaching is independent of share-grants: a viewer with no Edit on the peer but with Edit on a different peer of the same group cannot detach the first peer (per AT-APP-60 — permissions are per-peer, not per-group).
+-- ❌ Performing the dissolve check in PHP instead of the DB trigger. Splits the dissolve guarantee across two code paths and creates a TOCTOU window where a concurrent detach could leave a singleton group.
+-- ❌ Skipping Items.PeerGroupId = NULL on the detached item. Leaves a dangling FK pointer to a now-deleted group row (or a still-valid group the item is no longer in).
+
+-- Source: spec/31-app/02-workflows/08-mirror-detach-flow.md`,
+  "b6-01-snapshot": `Templates are snapshot copies (one-shot stamp).
+
+-- Position: instantiated subtree is appended to the end of target_parent_id's children.
+-- Mirrors inside the template: collapsed to plain items (peer-group not preserved across instantiation).
+-- Owner: always auth.uid() of the instantiating user, regardless of template author.
+-- ❌ Live templates / propagating edits → out of scope (could be modeled as mirrors in v2)
+-- ❌ Parameterised templates ({{date}}, {{user}}) → future
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md`,
+  "b6-02-deep-copy": `md describes what a template is and what the apply UI looks like. It does NOT describe the end-to-end sequence of "user picks a template → snapshot resolves → items materialize → realtime broadcasts to peers".
+
+-- User holds at least Edit on the target parent item (Auth::hasRole($userId, 'Edit', 'Item', $parentItemId) returns true — see 15-roles-and-permissions.md §PHP Authorization Helper Contract).
+-- The template's WorkspaceId matches the target workspace (catalog is workspace-scoped per 13-templates.md §Storage).
+-- OptionNameType::TEMPLATE_MAX_PER_WORKSPACE cap is not exceeded for the resulting children count (read via Settings facade; see 13-templates.md §Settings Keys).
+-- ❌ Reading SnapshotJson and the target App DB in the same SQL statement (no cross-DB joins — see 13-templates.md §Storage).
+-- ❌ Hard-coding the cap from OptionNameType::TEMPLATE_MAX_PER_WORKSPACE.
+
+-- Source: spec/31-app/02-workflows/02-template-application-flow.md`,
+  "b6-03-cascading-perms": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Share | Read share grants to determine if a mirrored item's source is share-visible. | | App DB (per workspace) | Items, MirrorGroup, MirrorMember | Mirror peer-group reads to find all members of a shared item's group.
+
+-- Recipient U sees P₁ (as part of R's subtree).
+-- U does not automatically gain access to P₂.
+-- Edits U makes to P₁'s content do propagate to P₂ (via peer-group sync), but U cannot navigate to P₂.
+-- spec/31-app/01-features/08-share-dialog.md (parent SSOT)
+-- spec/31-app/01-features/09b-mirror-peer-group-model.md (peer-group identity)
+
+-- Source: spec/31-app/01-features/08b-sharing-mirror-interaction.md`,
+  "b7-01-job-runner": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
+
+-- What is backed up (and what isn't)
+-- RPO / RTO objectives per data class
+-- Schedule, retention, encryption, and off-site placement
+-- Restore procedure and mandatory quarterly drill
+-- Audit and alerting contract
+
+-- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "b7-02-trash-reaper": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Workspace (iterate list of workspaces to reap) | Reaper enumerates all workspaces from Root DB. | | App DB (per workspace) | Items WHERE DeletedAt < now() - retention; reads OptionNameType::TRASH_RETENTION_DAYS | Hard-delete cascades Mirror, Comment per FKs.
+
+-- Days 0–30 in trash: item is recoverable via Trash view → "Restore".
+-- Day 30+: item silently gone on next reaper run (≤ 24h after expiry).
+-- No warning email on imminent reap (v1 scope).
+-- Manual "Empty Trash" button still available — performs the same hard delete on demand for items the user owns, regardless of age.
+-- Configurable retention per account
+
+-- Source: spec/31-app/01-features/11b-trash-reaper.md`,
+  "b7-03-activity-purge": `Purpose — Define the 30-day retention policy for ActivityEvent rows and the deterministic purge job that enforces it on both the WordPress-plugin SQLite store and the per-tab IndexedDB mirror.
+
+-- wp-plugin/includes/Activity/PurgeJob.php (WP-Cron handler)
+-- wp-plugin/includes/Activity/PurgeJob.test.php (PHPUnit, retention boundary cases)
+-- src/lib/activity/purgeMirror.ts (IDB-mirror compactor)
+-- src/lib/activity/purgeMirror.test.ts (Vitest, cursor-stability cases)
+-- Trash retention (covered by mem://features/trash-logic and spec/31-app/01-features/19-trash-logic/)
+
+-- Source: spec/34-activity-feed/04-retention-and-purge.md`,
+  "b8-01-fts5": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | WorkspaceMember | Determine accessible workspaces for search fan-out. Content + ItemTags; ranking inputs (UpdatedAt, Favorite) | Search executes against each accessible App DB sequentially.
+
+-- I-SR-01 Ranking is deterministic — same query + same DB snapshot always yields identical order.
+-- I-SR-02 Recency never beats relevance across buckets — a relevance-100 item from last year ranks above a relevance-20 item edited 5 s ago.
+-- I-SR-03 Recency always wins inside a bucket — no secondary lexical sort.
+-- I-SR-04 The 250-item viewport cap (L4) applies; result count beyond 250 is reported but not rendered.
+-- AT-SR-01 Title-exact match outranks note-substring match regardless of recency.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md`,
+  "b8-02-operator-parser": `Define the complete query grammar (EBNF), enumerate every keyword and its value format, specify combination semantics (AND / negation / in: union exception), and provide a test-vector table any implementer can use as a parser conformance suite.
+
+-- Grammar is whitespace-separated and case-insensitive for keys and standalone keywords (IS:TODO ≡ is:todo).
+-- Mention handles are case-insensitive at parse time; display preserves original casing.
+-- text: and link: values may contain spaces only when wrapped in double quotes.
+-- Date shortcuts use the user's local timezone for "today/tomorrow/etc."
+-- changed: and created: accept either a date shortcut or a literal YYYY-MM-DD.
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md`,
+  "b8-03-write-hooks": `Content + ItemTags. Cross-workspace search: opt-in via Scope=*; sequential fan-out across user's accessible App DBs (workspace_members from Root DB → iterate App DBs sequentially, no cross-DB JOIN).
+
+-- Auth: user. Server filters results to items the caller can read (own + shared with read or higher).
+-- Query:
+-- Q (string, required, 1–256 chars) — query text. Tokenised on whitespace + punctuation.
+-- Scope (string, optional) — Item ID to constrain to a subtree. Default = entire workspace.
+-- Types (csv, optional) — filter by ItemType (bullet, board, dashboard, mirror).
+
+-- Source: spec/31-app/06-endpoints/15b-search.md`,
+  "b9-01-versioning": `This document defines the strict version control policy for the Axios HTTP client dependency. A known security issue affects specific Axios versions, requiring exact version pinning and manual upgrade approval.
+
+-- Specify Axios version exactly — no range operators allowed
+-- Never use caret (^) or tilde (~) symbols
+-- Never allow automated dependency update tools to modify the Axios version
+-- Validate package.json Axios entry during every code review
+-- Reject any pull request that updates the Axios version without explicit approval
+
+-- Source: spec/31-app/05-conventions/01-axios-version-control.md`,
+  "b9-02-v2-example": `A single matrix mapping every one of the 49 REST + SSE endpoints in this folder to the acceptance-test IDs that must pass before the endpoint can ship. md.
+
+-- Source: spec/31-app/06-endpoints/16-endpoint-at-matrix.md`,
+  "b9-03-query-plans": `---
+
+-- Source: spec/31-app/07-db-diagram/06-indexes.md`,
+  "b10-01-zod": `Define where, when, and how to add runtime validation (Zod schemas) so that every value crossing a trust boundary is parsed — never trusted as-typed. Compile-time generic rules (sibling 01-…) only protect in-process types; everything that comes from the network, user input, persistent storage, or another process is unknown until a Zod schema parses it.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 02)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/02-runtime-validation.md`,
+  "b10-02-eslint-boundary": `Define the single chokepoint through which every value crossing a trust boundary MUST pass, and the gates that prove no caller bypassed it. md defines how a rule is authored, this sub-spec defines the architectural funnel: every B1–B5 boundary has exactly one allowed chokepoint module, and every other module is forbidden from importing the underlying primitive (axios, idb, EventSource, localStorage).
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 04 — closes the cluster)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/04-boundary-enforcement.md`,
+  "b10-03-runbook": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
+
+-- What is backed up (and what isn't)
+-- RPO / RTO objectives per data class
+-- Schedule, retention, encryption, and off-site placement
+-- Restore procedure and mandatory quarterly drill
+-- Audit and alerting contract
+
+-- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "b10-04-closing": `mjs — do not edit by hand inside the AUTO-TOC sentinels.
+
+-- 01-axios-version-control.md — Axios Version Control
+-- 02-ci-quality-gates.md — CI Quality Gates runner contract
+-- 03-github-actions-workflow.md — GitHub Actions workflow contract
+-- 04-g19-workflow-contract-gate.md — G-19 workflow contract drift gate
+-- 05-precommit-hook-contract.md — Pre-commit hook + installer contract
+
+-- Source: spec/31-app/05-conventions/00-overview.md`,
   "o1-01-slos": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
 
 -- What is backed up (and what isn't)
@@ -57,6 +777,102 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Audit and alerting contract
 
 -- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "o2-01-metrics-surface": `Three audiences consume backend events; each needs a different stream:
+
+-- Item content edits (title / note / type changes) — activity feed
+-- Drag-reorder operations — activity feed
+-- Search queries — operational log only, never persisted with PII
+-- SSE keepalive / poll metrics — operational log only
+-- Salt lives in the WP-options table key riseup_audit_ip_salt_<YYYYMMDD>.
+
+-- Source: spec/31-app/05-conventions/09-audit-log-policy.md`,
+  "o2-02-logs-traces": `Three audiences consume backend events; each needs a different stream:
+
+-- Item content edits (title / note / type changes) — activity feed
+-- Drag-reorder operations — activity feed
+-- Search queries — operational log only, never persisted with PII
+-- SSE keepalive / poll metrics — operational log only
+-- Salt lives in the WP-options table key riseup_audit_ip_salt_<YYYYMMDD>.
+
+-- Source: spec/31-app/05-conventions/09-audit-log-policy.md`,
+  "o2-03-health-checks": `This document is the Single Source of Truth for how the API rejects, slows, and recovers from excessive request volume. It defines the budget per identity, the response shape when the limit is hit, the headers every successful response must carry, and the client-side behaviour that respects the budget.
+
+-- Source: spec/31-app/05-conventions/08-api-rate-limiting.md`,
+  "o3-01-pages": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
+
+-- What is backed up (and what isn't)
+-- RPO / RTO objectives per data class
+-- Schedule, retention, encryption, and off-site placement
+-- Restore procedure and mandatory quarterly drill
+-- Audit and alerting contract
+
+-- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "o3-02-tickets": `Three audiences consume backend events; each needs a different stream:
+
+-- Item content edits (title / note / type changes) — activity feed
+-- Drag-reorder operations — activity feed
+-- Search queries — operational log only, never persisted with PII
+-- SSE keepalive / poll metrics — operational log only
+-- Salt lives in the WP-options table key riseup_audit_ip_salt_<YYYYMMDD>.
+
+-- Source: spec/31-app/05-conventions/09-audit-log-policy.md`,
+  "o4-01-overview-dashboard": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
+
+-- What is backed up (and what isn't)
+-- RPO / RTO objectives per data class
+-- Schedule, retention, encryption, and off-site placement
+-- Restore procedure and mandatory quarterly drill
+-- Audit and alerting contract
+
+-- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "o4-02-sync-deep-dive": `This file is the single source of truth for how concurrent edits resolve across tabs, devices, and collaborators. Every other feature (mirrors, sharing, multi-select, today, board) defers to the rules here.
+
+-- ❌ Mutating BrokenAt without also writing BrokenAtUpdatedAt = serverNow and BrokenAtUpdatedBy.
+-- ❌ Resolving "broken vs healthy" with MAX(BrokenAt) — the comparison is on BrokenAtUpdatedAt, not on BrokenAt itself.
+-- ❌ Letting a stale restore re-heal a mirror whose source has since been hard-deleted (rule 5 rejects it).
+-- ❌ Treating 'system' writes as authoritative over human writes at exact ties — they are not (rule 4b).
+-- A successful §14.2 LWW write MUST emit exactly one SSE event in the same transaction commit phase (no separate publish step that can drift) [gate: G-25-SSE-TX-ATOMIC-EMIT].
+
+-- Source: spec/31-app/01-features/14-concurrency-and-sync.md`,
+  "o4-03-storage-jobs": `| Database | Tables read/written | Notes | |---|---|---| | Root DB | Workspace (iterate list of workspaces to reap) | Reaper enumerates all workspaces from Root DB. | | App DB (per workspace) | Items WHERE DeletedAt < now() - retention; reads OptionNameType::TRASH_RETENTION_DAYS | Hard-delete cascades Mirror, Comment per FKs.
+
+-- Days 0–30 in trash: item is recoverable via Trash view → "Restore".
+-- Day 30+: item silently gone on next reaper run (≤ 24h after expiry).
+-- No warning email on imminent reap (v1 scope).
+-- Manual "Empty Trash" button still available — performs the same hard delete on demand for items the user owns, regardless of age.
+-- Configurable retention per account
+
+-- Source: spec/31-app/01-features/11b-trash-reaper.md`,
+  "o5-01-on-call": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
+
+-- What is backed up (and what isn't)
+-- RPO / RTO objectives per data class
+-- Schedule, retention, encryption, and off-site placement
+-- Restore procedure and mandatory quarterly drill
+-- Audit and alerting contract
+
+-- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "o5-02-playbook-sync-errors": `md describes the FIFO queue and LWW reconciliation. md describes the EP-SYNC-REPLAY request/response shape.
+
+-- The local mirror is initialized (AT-APP-97).
+-- The queue has ≥1 pending mutation (AT-APP-98); idle reconnects are no-ops.
+-- navigator.onLine === true AND the auth session is still valid (refresh token has not expired during offline period).
+-- No prior drain is in flight (drain is single-threaded per session — enforced by client-side mutex).
+-- ❌ Parallel drain (multiple concurrent POST /sync/replay from the same client). Breaks FIFO and corrupts cross-mutation causality. Use a client-side mutex.
+
+-- Source: spec/31-app/02-workflows/07-sync-replay-flow.md`,
+  "o5-03-playbook-db-locked": `This document is the Single Source of Truth for how the API rejects, slows, and recovers from excessive request volume. It defines the budget per identity, the response shape when the limit is hit, the headers every successful response must carry, and the client-side behaviour that respects the budget.
+
+-- Source: spec/31-app/05-conventions/08-api-rate-limiting.md`,
+  "o5-04-playbook-rollback": `This document defines the strict version control policy for the Axios HTTP client dependency. A known security issue affects specific Axios versions, requiring exact version pinning and manual upgrade approval.
+
+-- Specify Axios version exactly — no range operators allowed
+-- Never use caret (^) or tilde (~) symbols
+-- Never allow automated dependency update tools to modify the Axios version
+-- Validate package.json Axios entry during every code review
+-- Reject any pull request that updates the Axios version without explicit approval
+
+-- Source: spec/31-app/05-conventions/01-axios-version-control.md`,
   "o5-05-playbook-restore": `The plugin runs against SQLite databases bundled inside wp-content/uploads/workflowy/. Loss of a single host means total data loss unless backups exist, are off-site, are encrypted, and have been proven restorable.
 
 -- What is backed up (and what isn't)
@@ -66,4 +882,76 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Audit and alerting contract
 
 -- Source: spec/31-app/05-conventions/14-backup-and-dr-policy.md`,
+  "o5-06-closing": `mjs — do not edit by hand inside the AUTO-TOC sentinels.
+
+-- 01-axios-version-control.md — Axios Version Control
+-- 02-ci-quality-gates.md — CI Quality Gates runner contract
+-- 03-github-actions-workflow.md — GitHub Actions workflow contract
+-- 04-g19-workflow-contract-gate.md — G-19 workflow contract drift gate
+-- 05-precommit-hook-contract.md — Pre-commit hook + installer contract
+
+-- Source: spec/31-app/05-conventions/00-overview.md`,
+  "e1-01-no-any": `Define the generic-first signature rules that every public function, hook, and helper MUST follow. The rules below mechanically forbid any/unknown from leaking out of any callable surface, force callers to pin a concrete type at the call-site, and make every return value structurally inferable without runtime probing.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 01)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/01-generic-return-types.md`,
+  "e1-02-no-unknown": `parse(input: unknown)), but never as a return type from a public surface. Forces the parser owner to narrow before exposing.
+
+-- Source: spec/35-enforcement-rules/01-generic-return-types.md # unknown`,
+  "e1-04-preserve-brand": `Per ADR-0020, raw string IDs are forbidden. Generic helpers MUST preserve the brand through the return type.
+
+-- Source: spec/35-enforcement-rules/01-generic-return-types.md # brand`,
+  "e2-01-parse-boundary": `Define where, when, and how to add runtime validation (Zod schemas) so that every value crossing a trust boundary is parsed — never trusted as-typed. Compile-time generic rules (sibling 01-…) only protect in-process types; everything that comes from the network, user input, persistent storage, or another process is unknown until a Zod schema parses it.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 02)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/02-runtime-validation.md`,
+  "e2-02-envelope": `md, this file provides a canonical JSON request/response envelope fixture that satisfies AT-ENV-01, AT-ENV-02, and the per-endpoint AT row.
+
+-- Casing: PascalCase end-to-end (DB → ORM → JSON → frontend).
+-- Results is ALWAYS an array — singletons return [{...}], deletes return [].
+-- Timestamps are ISO-8601 UTC.
+-- Attributes.HasAnyErrors is false on success, true when Errors is present.
+-- Error fixtures follow 2.6 in the SSOT (sample reproduced once below; per-endpoint variants only differ in Status.Code, Status.Message, and Errors.Backend).
+
+-- Source: spec/31-app/06-endpoints/97b-endpoint-envelope-fixtures.md`,
+  "e2-03-brand-ids": `The Zod schema MUST mint the brand at the parse boundary, so downstream code receives an already-branded value.
+
+-- Source: spec/35-enforcement-rules/02-runtime-validation.md # brand`,
+  "e2-04-strict-and-fail": `A parse failure at a boundary MUST throw a BoundaryParseError that maps to one of the canonical error codes (USR-35-PARSE, USR-35-ENVELOPE, USR-35-BRAND). Silent recovery (try/catch returning null) is forbidden.
+
+-- Source: spec/35-enforcement-rules/02-runtime-validation.md # fail`,
+  "e3-01-plugin-layout": `Define how to add a new lint rule to the in-tree plugin eslint-plugins/coding-guidelines/. Every gate prefix G-35- (and many G-NN- from sibling sections) is enforced by exactly one rule in this plugin.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 03)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/03-eslint-rule-authoring.md`,
+  "e3-02-naming-registration": `| Pattern | Use when | Example | |---|---|---| | no-<thing> | Rule forbids a syntax/identifier | no-any, no-phantom-generic, no-localstorage | | require-<thing> | Rule mandates presence of a syntax | require-strict-schema, require-error-boundary | | prefer-<a>-over-<b> | Rule recommends one of two valid forms | prefer-discriminated-union-over-intersection |
+
+-- Source: spec/35-enforcement-rules/03-eslint-rule-authoring.md # naming`,
+  "e4-01-chokepoint": `Define the single chokepoint through which every value crossing a trust boundary MUST pass, and the gates that prove no caller bypassed it. md defines how a rule is authored, this sub-spec defines the architectural funnel: every B1–B5 boundary has exactly one allowed chokepoint module, and every other module is forbidden from importing the underlying primitive (axios, idb, EventSource, localStorage).
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 04 — closes the cluster)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/35-enforcement-rules/04-boundary-enforcement.md`,
+  "e4-02-loader-parse": `---
+
+-- Source: spec/35-enforcement-rules/04-boundary-enforcement.md # loader`,
+  "e4-03-pipeline": `This document is the Single Source of Truth for what must pass before any change to the spec or to code can land. It defines the contract for the hygiene-script suite under scripts/spec-hygiene/, the exit-code convention every gate must follow, when each gate runs (local pre-commit vs.
+
+-- Source: spec/31-app/05-conventions/02-ci-quality-gates.md`,
+  "e9-closing": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- eslint-plugins/coding-guidelines/rules/<rule-name>.ts — one file per rule with meta.docs.url pointing to the source guideline
+-- <feature>/<feature>.schema.ts — Zod schemas co-located with each boundary consumer
+-- tsconfig.json — strict: true, noImplicitAny: true, noUncheckedIndexedAccess: true
+-- *.type-test.ts — expectTypeOf tests for every public generic helper
+-- CI step in .github/workflows/*.yml running all four enforcement layers
+
+-- Source: spec/35-enforcement-rules/00-overview.md`,
 };
