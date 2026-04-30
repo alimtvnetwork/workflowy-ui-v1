@@ -1,10 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { ScaledSlide } from "@/deck/ScaledSlide";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
 import { attachNotes } from "@/deck/notes";
+import {
+  clearOverride,
+  exportOverridesAsJson,
+  getAllOverrides,
+  getOverride,
+  setOverride,
+} from "@/deck/noteOverrides";
 import type { SlideMeta } from "@/deck/types";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: string }> = {
@@ -96,20 +103,7 @@ export default function Presenter() {
           <div className="relative flex-1 min-h-0 rounded-lg border border-border bg-muted/20 overflow-hidden">
             <ScaledSlide><Cur /></ScaledSlide>
           </div>
-          <div className="h-56 shrink-0 rounded-lg border border-border bg-card p-5 overflow-y-auto">
-            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-              Speaker notes · {cur.chapter} · {cur.title}
-            </div>
-            {cur.notes ? (
-              <pre className="whitespace-pre-wrap font-sans text-[15px] leading-relaxed text-foreground">
-                {cur.notes}
-              </pre>
-            ) : (
-              <div className="text-muted-foreground italic text-sm">
-                No notes for this slide. Add to <code>src/deck/notes.ts</code> under id <code>{cur.id}</code>.
-              </div>
-            )}
-          </div>
+          <NotesPanel slide={cur} />
         </div>
 
         {/* Right column: next slide + nav */}
