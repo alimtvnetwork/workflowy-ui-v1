@@ -25,6 +25,10 @@ import B5S3 from "./b5-03-broken-at";
 import B6S1 from "./b6-01-snapshot";
 import B6S2 from "./b6-02-deep-copy";
 import B6S3 from "./b6-03-cascading-perms";
+import B7S1 from "./b7-01-job-runner";
+import B7S2 from "./b7-02-trash-reaper";
+import B7S3 from "./b7-03-activity-purge";
+import B7S4 from "./b7-04-sse-fanout";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
