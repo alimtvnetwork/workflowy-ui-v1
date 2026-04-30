@@ -35,6 +35,10 @@ import B8S3 from "./b8-03-write-hooks";
 import B9S1 from "./b9-01-versioning";
 import B9S2 from "./b9-02-v2-example";
 import B9S3 from "./b9-03-query-plans";
+import B10S1 from "./b10-01-zod";
+import B10S2 from "./b10-02-eslint-boundary";
+import B10S3 from "./b10-03-runbook";
+import B10S4 from "./b10-04-closing";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
