@@ -1,4 +1,4 @@
-import { SlideLayout } from "../../SlideLayout";
+import { SlideLayout } from "../SlideLayout";
 
 export default function Slide() {
   return (

@@ -1,5 +1,5 @@
-import { SlideLayout } from "../../SlideLayout";
-import { SqlBlock } from "../../components/SqlBlock";
+import { SlideLayout } from "../SlideLayout";
+import { SqlBlock } from "../components/SqlBlock";
 
 export default function Slide() {
   return (
