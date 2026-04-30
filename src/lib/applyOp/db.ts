@@ -40,7 +40,11 @@ function tx<T>(
         let result: T;
         t.oncomplete = () => resolve(result);
         t.onerror = () => reject(t.error);
-        Promise.resolve(fn(t)).then((r) => (result = r));
+        t.onabort = () => reject(t.error ?? new Error("tx aborted"));
+        Promise.resolve(fn(t)).then(
+          (r) => { result = r; },
+          (err) => { try { t.abort(); } catch { /* noop */ } reject(err); },
+        );
       }),
   );
 }
