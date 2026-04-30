@@ -3,17 +3,20 @@ import { useSearchParams, Link } from "react-router-dom";
 import { ScaledSlide } from "@/deck/ScaledSlide";
 import { slides as frontendSlides } from "@/deck/slides";
 import { backendSlides } from "@/deck/backend-slides";
+import { opsSlides } from "@/deck/ops-slides";
 import { attachNotes } from "@/deck/notes";
 import type { SlideMeta } from "@/deck/types";
 
-const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
-  frontend: { title: "Frontend Deck", slides: attachNotes(frontendSlides) },
-  backend:  { title: "Backend Deck",  slides: attachNotes(backendSlides) },
+const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: string }> = {
+  frontend: { title: "Frontend Deck", slides: attachNotes(frontendSlides), audience: "deck" },
+  backend:  { title: "Backend Deck",  slides: attachNotes(backendSlides),  audience: "backend-deck" },
+  ops:      { title: "Operations",    slides: attachNotes(opsSlides),      audience: "ops-deck" },
 };
 
 export default function Presenter() {
   const [params, setParams] = useSearchParams();
-  const which = params.get("deck") === "backend" ? "backend" : "frontend";
+  const q = params.get("deck");
+  const which = q === "backend" || q === "ops" ? q : "frontend";
   const { title, slides } = DECKS[which];
 
   const [index, setIndex] = useState(() => Number(params.get("i") ?? 0));

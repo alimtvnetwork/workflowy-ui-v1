@@ -51,10 +51,9 @@ export default function PrintDeck() {
         <strong className="text-foreground">{title}</strong>
         <span className="text-muted-foreground">{slides.length} slides</span>
         <div className="flex-1" />
-        <a href={which === "frontend" ? "/print?deck=backend" : "/print?deck=frontend"}
-           className="text-muted-foreground hover:text-foreground underline">
-          Switch to {which === "frontend" ? "backend" : "frontend"} deck
-        </a>
+        <a href="/print?deck=frontend" className="text-muted-foreground hover:text-foreground underline">Frontend</a>
+        <a href="/print?deck=backend"  className="text-muted-foreground hover:text-foreground underline">Backend</a>
+        <a href="/print?deck=ops"      className="text-muted-foreground hover:text-foreground underline">Ops</a>
         <button onClick={() => window.print()}
                 className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:opacity-90">
           Print / Save as PDF
