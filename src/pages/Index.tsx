@@ -23,12 +23,12 @@ const Index = () => {
           </p>
         </header>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-3">
           <DeckCard
             to="/deck"
             kicker="Frontend"
             title="Product walkthrough"
-            blurb="Item model, views, sync UX, mirrors, templates, sharing, trash, settings, admin — every screen and interaction."
+            blurb="Item model, views, sync UX, mirrors, templates, sharing, trash, settings, admin."
             stats={[
               { label: "Slides", value: frontendSlides.length },
               { label: "Chapters", value: fePhases },
@@ -38,10 +38,20 @@ const Index = () => {
             to="/backend-deck"
             kicker="Backend"
             title="Systems deep-dive"
-            blurb="Process model, auth, sync protocol, item ops, mirrors, templates, jobs, search, migrations, deployment."
+            blurb="Process model, auth, sync protocol, item ops, mirrors, jobs, search, migrations, deployment."
             stats={[
               { label: "Slides", value: backendSlides.length },
               { label: "Phases", value: bePhases },
+            ]}
+          />
+          <DeckCard
+            to="/ops-deck"
+            kicker="Operations"
+            title="Run it in production"
+            blurb="SLOs, metrics, alerts, dashboards, on-call rotation, incident playbooks."
+            stats={[
+              { label: "Slides", value: opsSlides.length },
+              { label: "Phases", value: opsPhases },
             ]}
           />
         </div>
