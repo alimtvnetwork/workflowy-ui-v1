@@ -26,7 +26,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Check, Trash2, Plus, RotateCcw, Undo2, Diamond, X, Link2 } from "lucide-react";
+import { Check, Trash2, Plus, RotateCcw, Undo2, Diamond, X, Link2, AlertTriangle } from "lucide-react";
 
 function envelopeSummary(e: Envelope<unknown>) {
   return `${e.Status.Code} ${e.Status.Message} · ${e.Attributes.TotalRecords} record(s)`;
