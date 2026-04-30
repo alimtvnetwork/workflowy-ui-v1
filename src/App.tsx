@@ -11,6 +11,7 @@ import EnforcementDeck from "./pages/EnforcementDeck.tsx";
 import PrintDeck from "./pages/PrintDeck.tsx";
 import Presenter from "./pages/Presenter.tsx";
 import ApiPlayground from "./pages/ApiPlayground.tsx";
+import SyncSimulator from "./pages/SyncSimulator.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/print" element={<PrintDeck />} />
           <Route path="/presenter" element={<Presenter />} />
           <Route path="/api-playground" element={<ApiPlayground />} />
+          <Route path="/sync-simulator" element={<SyncSimulator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

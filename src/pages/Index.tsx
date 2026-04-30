@@ -97,7 +97,8 @@ const Index = () => {
           <div>
             Reference implementation:{" "}
             <Link to="/api-playground" className="underline hover:text-foreground">applyOp playground</Link>
-            {" "}— interactive items + op-journal in IndexedDB, mirrors the universal envelope.
+            {" · "}<Link to="/sync-simulator" className="underline hover:text-foreground">sync simulator</Link>
+            {" "}— interactive items + op-journal in IndexedDB, plus latency + conflict resolution.
           </div>
         </footer>
       </div>
