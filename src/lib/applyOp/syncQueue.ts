@@ -30,12 +30,20 @@ export interface QueuedOp {
 }
 
 type Listener = (snapshot: QueuedOp[]) => void;
+export interface LwwLossEvent {
+  QueueId: string;
+  ItemId: string;
+  Reason: "keep-remote" | "lww-local-lost";
+  At: string;
+}
+type LossListener = (ev: LwwLossEvent) => void;
 
 const SEQ_KEY = "spec-applyop-localseq";
 
 class SyncQueue {
   private queue: QueuedOp[] = [];
   private listeners = new Set<Listener>();
+  private lossListeners = new Set<LossListener>();
   private hydrated = false;
   private hydratePromise: Promise<void> | null = null;
   private nextSeq = 1;
@@ -79,6 +87,15 @@ class SyncQueue {
   private emit() {
     const snap = [...this.queue];
     this.listeners.forEach((l) => l(snap));
+  }
+
+  subscribeLoss(fn: LossListener) {
+    this.lossListeners.add(fn);
+    return () => { this.lossListeners.delete(fn); };
+  }
+
+  private emitLoss(ev: LwwLossEvent) {
+    this.lossListeners.forEach((l) => l(ev));
   }
 
   list() { return [...this.queue]; }
@@ -195,10 +212,12 @@ class SyncQueue {
     if (!entry || entry.Status !== "conflict") return;
     entry.Resolution = strategy;
     if (strategy === "keep-remote") {
-      // Drop the local change entirely.
+      // Drop the local change entirely — local user's edit was overwritten.
       entry.Status = "applied";
       entry.ResultEnvelope = null;
       await this.persist(entry);
+      const itemId = (entry.Payload as UpdatePayload)?.Id ?? entry.BaseSnapshot?.Id ?? "";
+      this.emitLoss({ QueueId: entry.QueueId, ItemId: itemId, Reason: "keep-remote", At: nowIso() });
       this.emit();
       return;
     }
