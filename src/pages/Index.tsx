@@ -27,7 +27,7 @@ const Index = () => {
           </p>
         </header>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <DeckCard
             to="/deck"
             kicker="Frontend"
@@ -58,6 +58,16 @@ const Index = () => {
               { label: "Phases", value: opsPhases },
             ]}
           />
+          <DeckCard
+            to="/enforcement-deck"
+            kicker="Enforcement"
+            title="Make CI fail before review"
+            blurb="The four-layer enforcement model: compile-time generics, Zod runtime, ESLint authoring, boundary chokepoints."
+            stats={[
+              { label: "Slides", value: enforcementSlides.length },
+              { label: "Phases", value: enfPhases },
+            ]}
+          />
         </div>
 
         <footer className="mt-20 pt-8 border-t border-border text-sm text-muted-foreground space-y-2">
@@ -73,6 +83,7 @@ const Index = () => {
             <Link to="/print?deck=frontend" className="underline hover:text-foreground">frontend</Link>
             {" · "}<Link to="/print?deck=backend" className="underline hover:text-foreground">backend</Link>
             {" · "}<Link to="/print?deck=ops" className="underline hover:text-foreground">ops</Link>
+            {" · "}<Link to="/print?deck=enforcement" className="underline hover:text-foreground">enforcement</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
           <div>
@@ -80,6 +91,7 @@ const Index = () => {
             <Link to="/presenter?deck=frontend" className="underline hover:text-foreground">frontend</Link>
             {" · "}<Link to="/presenter?deck=backend" className="underline hover:text-foreground">backend</Link>
             {" · "}<Link to="/presenter?deck=ops" className="underline hover:text-foreground">ops</Link>
+            {" · "}<Link to="/presenter?deck=enforcement" className="underline hover:text-foreground">enforcement</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
           <div>
