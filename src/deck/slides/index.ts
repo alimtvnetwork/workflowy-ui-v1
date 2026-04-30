@@ -139,4 +139,29 @@ export const slides: SlideMeta[] = [
   { id: "ch12-1", chapter: "Chapter 12", title: "Share dialog", Component: Ch12S1 },
   { id: "ch12-2", chapter: "Chapter 12", title: "Permissions model", Component: Ch12S2 },
   { id: "ch12-3", chapter: "Chapter 12", title: "Endpoints & DB", Component: Ch12S3 },
+
+  { id: "ch13-divider", chapter: "Chapter 13", title: "Trash", Component: makeDivider("Chapter 13", "Trash", "Soft-delete + 30-day reaper.") },
+  { id: "ch13-1", chapter: "Chapter 13", title: "Trash — UI", Component: Ch13S1 },
+  { id: "ch13-2", chapter: "Chapter 13", title: "Restore & reaper", Component: Ch13S2 },
+  { id: "ch13-3", chapter: "Chapter 13", title: "Endpoints & DB", Component: Ch13S3 },
+
+  { id: "ch14-divider", chapter: "Chapter 14", title: "Right-side panel", Component: makeDivider("Chapter 14", "Right-side panel", "Handbook · Hotkeys · What's New.") },
+  { id: "ch14-1", chapter: "Chapter 14", title: "Right panel — UI", Component: Ch14S1 },
+  { id: "ch14-2", chapter: "Chapter 14", title: "Tabs & data", Component: Ch14S2 },
+
+  { id: "ch15-divider", chapter: "Chapter 15", title: "App menu, themes, settings", Component: makeDivider("Chapter 15", "App menu & Settings", "Theme · font · density · per-user prefs.") },
+  { id: "ch15-1", chapter: "Chapter 15", title: "App menu (⋮)", Component: Ch15S1 },
+  { id: "ch15-2", chapter: "Chapter 15", title: "Settings page", Component: Ch15S2 },
+  { id: "ch15-3", chapter: "Chapter 15", title: "Endpoints & DB", Component: Ch15S3 },
+
+  { id: "ch16-divider", chapter: "Chapter 16", title: "Concurrency, sync, offline", Component: makeDivider("Chapter 16", "Concurrency & Sync", "Edit offline, replay on reconnect.") },
+  { id: "ch16-1", chapter: "Chapter 16", title: "Concurrency model", Component: Ch16S1 },
+  { id: "ch16-2", chapter: "Chapter 16", title: "Sync flow", Component: Ch16S2 },
+  { id: "ch16-3", chapter: "Chapter 16", title: "Endpoints & DB", Component: Ch16S3 },
+
+  { id: "ch17-divider", chapter: "Chapter 17", title: "User management", Component: makeDivider("Chapter 17", "User Management", "Auth · roles · admin console.") },
+  { id: "ch17-1", chapter: "Chapter 17", title: "Auth flow", Component: Ch17S1 },
+  { id: "ch17-2", chapter: "Chapter 17", title: "RBAC roles", Component: Ch17S2 },
+  { id: "ch17-3", chapter: "Chapter 17", title: "Admin UI", Component: Ch17S3 },
+  { id: "ch17-4", chapter: "Chapter 17", title: "Endpoints & DB", Component: Ch17S4 },
 ];
