@@ -1,5 +1,5 @@
 import { SlideLayout } from "../SlideLayout";
-import { Wireframe } from "../components/Wireframe";
+
 
 export default function Slide() {
   return (
