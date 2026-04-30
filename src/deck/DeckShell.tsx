@@ -2,10 +2,11 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, Grid3x3, Maximize, Moon, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScaledSlide } from "./ScaledSlide";
-import { slides } from "./slides";
+import { slides as defaultSlides } from "./slides";
+import type { SlideMeta } from "./types";
 import { useDeckNav } from "./useDeckNav";
 
-export function DeckShell() {
+export function DeckShell({ slides = defaultSlides, title = "Deck" }: { slides?: SlideMeta[]; title?: string } = {}) {
   const { index, setIndex, next, prev, grid, setGrid } = useDeckNav(slides.length);
   const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -29,6 +30,7 @@ export function DeckShell() {
         <Button variant="ghost" size="sm" onClick={() => setSidebarOpen((s) => !s)}>
           {sidebarOpen ? "Hide thumbnails" : "Show thumbnails"}
         </Button>
+        <div className="text-sm font-medium text-muted-foreground ml-2">{title}</div>
         <div className="flex-1" />
         <Button variant="ghost" size="icon" onClick={prev} aria-label="Previous slide">
           <ChevronLeft />
