@@ -1,8 +1,9 @@
-// Tiny IndexedDB wrapper — no deps. Stores: items, ops, mirrorMembers, shares, boardColumns.
+// Tiny IndexedDB wrapper — no deps. Stores: items, ops, mirrorMembers, shares, boardColumns, syncQueue.
 import type { BoardColumn, Item, MirrorMember, Op, ShareGrant } from "./types";
+import type { QueuedOp } from "./syncQueue";
 
 const DB_NAME = "spec-applyop-playground";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 let _db: IDBDatabase | null = null;
 
@@ -31,6 +32,10 @@ export function openDb(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains("boardColumns")) {
         const s = db.createObjectStore("boardColumns", { keyPath: "ColumnId" });
         s.createIndex("BoardItemId", "BoardItemId", { unique: false });
+      }
+      if (!db.objectStoreNames.contains("syncQueue")) {
+        const s = db.createObjectStore("syncQueue", { keyPath: "QueueId" });
+        s.createIndex("LocalSeq", "LocalSeq", { unique: false });
       }
     };
     req.onsuccess = () => {
@@ -103,10 +108,18 @@ export const boardColumnsStore = {
   clear: () => tx(["boardColumns"], "readwrite", (t) => wrap(t.objectStore("boardColumns").clear())),
 };
 
+export const syncQueueStore = {
+  getAll: () => tx(["syncQueue"], "readonly", (t) => wrap(t.objectStore("syncQueue").getAll() as IDBRequest<QueuedOp[]>)),
+  put: (q: QueuedOp) => tx(["syncQueue"], "readwrite", (t) => wrap(t.objectStore("syncQueue").put(q))),
+  delete: (queueId: string) => tx(["syncQueue"], "readwrite", (t) => wrap(t.objectStore("syncQueue").delete(queueId))),
+  clear: () => tx(["syncQueue"], "readwrite", (t) => wrap(t.objectStore("syncQueue").clear())),
+};
+
 export async function resetAll() {
   await itemsStore.clear();
   await opsStore.clear();
   await mirrorMembersStore.clear();
   await sharesStore.clear();
   await boardColumnsStore.clear();
+  await syncQueueStore.clear();
 }
