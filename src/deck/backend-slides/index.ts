@@ -15,6 +15,10 @@ import B3S3 from "./b3-03-cursors";
 import B3S4 from "./b3-04-sequence";
 import B3S5 from "./b3-05-sse";
 import B3S6 from "./b3-06-offline-replay";
+import B4S1 from "./b4-01-move-atomicity";
+import B4S2 from "./b4-02-fractional-index";
+import B4S3 from "./b4-03-rebalance";
+import B4S4 from "./b4-04-soft-delete";
 
 export const backendSlides: SlideMeta[] = [
   { id: "b-cover", chapter: "Cover", title: "WorkFlowy — Backend Deck", Component: Cover },
@@ -38,5 +42,11 @@ export const backendSlides: SlideMeta[] = [
   { id: "b3-4", chapter: "Phase B-3", title: "Sync sequence", Component: B3S4 },
   { id: "b3-5", chapter: "Phase B-3", title: "SSE transport", Component: B3S5 },
   { id: "b3-6", chapter: "Phase B-3", title: "Offline replay (outbox)", Component: B3S6 },
+
+  { id: "b4-divider", chapter: "Phase B-4", title: "Item operations", Component: makeDivider("Phase B-4", "Item operations", "Move atomicity · fractional indexing · rebalance · soft-delete.") },
+  { id: "b4-1", chapter: "Phase B-4", title: "Move / indent / outdent atomicity", Component: B4S1 },
+  { id: "b4-2", chapter: "Phase B-4", title: "Fractional indexing math", Component: B4S2 },
+  { id: "b4-3", chapter: "Phase B-4", title: "Rebalance & conflict cases", Component: B4S3 },
+  { id: "b4-4", chapter: "Phase B-4", title: "Soft-delete & restore", Component: B4S4 },
 ];
 
