@@ -469,6 +469,119 @@ Backend deck is at /backend-deck if you want the systems story.`,
 3. Boundaries enforced by the type system and the linter, not by discipline. If you can write the wrong code, eventually someone will.
 
 Questions?`,
+
+  // ============================================================
+  // OPS DECK
+  // ============================================================
+
+  "o-cover": `Welcome to the ops deck. This is what it takes to keep the WorkFlowy backend healthy in production.
+
+-- Audience: on-call engineers, SREs, and anyone shipping changes that touch the running service.
+-- 19 slides, ~25 minutes. Pairs with the backend deck — same single binary, same two SQLite files.`,
+
+  "o-guide": `We assume the backend deck has been seen — one Go process, two SQLite files (data + activity), ops journal as the source of truth.
+
+-- Stack assumed: Prometheus + Alertmanager, Grafana, Loki for logs, OpenTelemetry traces to Tempo, PagerDuty for paging.
+-- If your stack differs, the shape of the alerts and dashboards still applies; swap the tooling.`,
+
+  // ----- O-1: SLOs & error budget -----
+  "o1-divider": `Three SLOs, one budget policy. Everything downstream — alerts, dashboards, on-call urgency — derives from these numbers.`,
+
+  "o1-1": `Three SLOs: 99.9% availability on read endpoints, p99 < 300ms on applyOp, < 0.1% sync failure rate over 28 days.
+
+-- Read availability is the user-facing one — if reads are down, the app is down.
+-- applyOp latency is the write SLO; the 300ms includes WAL fsync.
+-- Sync failure rate is per-op, not per-batch — one bad op shouldn't burn the budget for 99 good ones.`,
+
+  "o1-2": `Error budget is 0.1% of 28 days ≈ 40 minutes. Policy is binary: budget remaining → ship freely; budget exhausted → freeze non-critical deploys until it recovers.
+
+-- "Critical" = security fixes and rollbacks only. Everything else waits.
+-- The freeze is automatic, not a debate. Removes the political tax.`,
+
+  // ----- O-2: Metrics, logs, health -----
+  "o2-divider": `What we expose, how we read it, and what "healthy" means to a load balancer.`,
+
+  "o2-1": `Prometheus surface is small on purpose: http_requests_total, http_request_duration_seconds, applyop_duration_seconds, sync_failures_total, sqlite_busy_total, backup_age_seconds.
+
+-- Histograms not summaries — we need to aggregate across instances even though there's only one today.
+-- Every metric has a unit suffix. Future-you will thank present-you.`,
+
+  "o2-2": `Logs are JSON, one line per request, with trace_id. Traces are OTel, sampled at 1% baseline + 100% on errors. Logs and traces share the same trace_id so you can pivot between them in one click.
+
+-- Don't log PII. Item content is PII. Log item IDs and operation types only.
+-- Tail-based sampling at the collector means we keep all error traces without paying for 100% of happy-path traces.`,
+
+  "o2-3": `Two health endpoints. /healthz is liveness — returns 200 if the process can answer HTTP. /readyz is readiness — checks DB writable, activity DB writable, backup age < 24h, ops queue not stalled.
+
+-- Load balancer uses /readyz. Kubernetes-style liveness restarts use /healthz.
+-- Readyz failing during a backup is fine and expected — backup pauses writes for ~2s.`,
+
+  // ----- O-3: Alerts -----
+  "o3-divider": `Two tiers, hard line between them. If it pages, it has a playbook. If it doesn't have a playbook, it's a ticket.`,
+
+  "o3-1": `Page-worthy: availability SLO burning > 14x (10% of monthly budget in 1h), applyOp p99 > 1s for 5min, sync failure rate > 1% for 5min, backup_age > 26h, disk > 90%.
+
+-- Burn-rate alerts not threshold alerts — fewer false pages, faster real ones.
+-- Every page links to a playbook. No playbook → not a page.`,
+
+  "o3-2": `Ticket-worthy: backup_age > 12h, p95 latency creeping up week-over-week, sqlite_busy_total spiking but recovering, deploy duration > 90s.
+
+-- These go to a Slack channel and an issue, not a phone. They're trend signals, not fires.
+-- Review weekly. If a ticket alert fires three weeks running, either fix it or delete it.`,
+
+  // ----- O-4: Dashboards -----
+  "o4-divider": `Three dashboards. Overview for the daily glance, sync deep-dive when sync misbehaves, storage & jobs for the slow stuff.`,
+
+  "o4-1": `Overview is the one tab that's always open. Top row: SLO burn rates. Middle: RPS, latency p50/p99, error rate. Bottom: process CPU/memory, ops queue depth.
+
+-- If something looks wrong here, you drill into one of the other two dashboards.
+-- No alert is allowed to fire without a panel here that shows the underlying signal.`,
+
+  "o4-2": `Sync deep-dive: applyOp latency by op type, sync_failures_total by reason, conflict resolution counts, SSE connection count, ops journal lag.
+
+-- "By reason" is what makes this dashboard useful — knowing failures rose isn't enough, you need to know they're all CONFLICT vs all SCHEMA_MISMATCH.
+-- SSE connection count drops cliff-like during deploys; that's the rolling restart, not an outage.`,
+
+  "o4-3": `Storage & jobs: DB file size, WAL size, checkpoint rate, backup duration & age, FTS rebuild time, vacuum duration, disk free.
+
+-- WAL size growing without checkpoints = SQLite can't fsync. Usually disk pressure.
+-- Backup duration trending up means data growth; budget the maintenance window accordingly.`,
+
+  // ----- O-5: On-call & playbooks -----
+  "o5-divider": `One rotation, four playbooks, then we close out.`,
+
+  "o5-1": `Weekly rotation, primary + secondary. Handoff Monday 10am with a 15-minute review of the week's pages and tickets. Compensation policy is written down and non-negotiable.
+
+-- Secondary is real backup, not decorative — primary can hand off mid-incident if they're cooked.
+-- Pages outside business hours have a 15-min ack SLA; daytime is 5 min.`,
+
+  "o5-2": `Sync errors spiking. Step 1: check sync_failures_total by reason on the deep-dive dashboard. Step 2: if one reason dominates, jump to that reason's sub-playbook. Step 3: if mixed, suspect a deploy — check deploy timeline, consider rollback.
+
+-- Don't restart the process first. You'll lose the in-flight ops queue and make it worse.
+-- CONFLICT spikes are usually a client bug, not a server bug. Check client version distribution.`,
+
+  "o5-3": `SQLite busy / locked. Almost always one of: long-running read txn, backup in progress, or a runaway analytic query. Check sqlite_busy_total rate and active connections.
+
+-- Quick mitigation: kill the longest-running read connection. Acceptable to lose one user's request.
+-- Real fix: find the query that's holding the lock. WAL mode means writers don't block readers, so a busy is suspicious.`,
+
+  "o5-4": `Bad deploy rollback. Single command: systemctl restart workflowy@previous. Atomic swap because each version is its own systemd unit pointing at its own binary.
+
+-- Pre-flight checks on the new binary run BEFORE the swap, so if you got this page the bad version did pass pre-flight — capture artifacts before rolling back.
+-- Rollback is expected to be < 10 seconds. If it isn't, we have a deeper problem.`,
+
+  "o5-5": `Restore from backup. Stop the service, copy the most recent verified backup over data.db, run integrity_check, start the service in read-only mode, verify, then promote to read-write.
+
+-- Activity DB restores separately and is allowed to lag — it's a log, not a source of truth.
+-- We test this monthly in staging. If you've never run it, find the runbook entry and do a dry run before you need it for real.`,
+
+  "o5-closing": `That's ops in 19 slides. Three takeaways:
+
+1. SLOs first, alerts second, dashboards third. Don't build dashboards for vibes — build them to answer alerts.
+2. Pages have playbooks. No playbook → ticket, not page.
+3. Boring deploys: atomic swap, pre-flight, automatic rollback. Excitement is a smell.
+
+Questions?`,
 };
 
 export function attachNotes<T extends SlideMeta>(slides: T[]): T[] {
