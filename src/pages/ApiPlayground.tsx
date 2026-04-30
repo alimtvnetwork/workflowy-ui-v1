@@ -102,17 +102,17 @@ export default function ApiPlayground() {
             size="sm"
             onClick={async () => {
               await resetPlayground();
-              const a = await applyOp("items.create", { ParentId: null, Content: "Cycle A", ItemType: "Task" });
+              const op = applyOp as (k: string, p: unknown) => Promise<Envelope<unknown>>;
+              const a = await op("items.create", { ParentId: null, Content: "Cycle A", ItemType: "Task" });
               const aId = (a.Results[0] as Item)?.Id;
-              const b = await applyOp("items.create", { ParentId: aId, Content: "Cycle B", ItemType: "Task" });
+              const b = await op("items.create", { ParentId: aId, Content: "Cycle B", ItemType: "Task" });
               const bId = (b.Results[0] as Item)?.Id;
-              const c = await applyOp("items.create", { ParentId: bId, Content: "Cycle C", ItemType: "Task" });
+              const c = await op("items.create", { ParentId: bId, Content: "Cycle C", ItemType: "Task" });
               const cId = (c.Results[0] as Item)?.Id;
-              // Attempt to move A under C → should fail with ERR_CYCLE
-              const env = await applyOp("items.move", { Id: aId, NewParentId: cId });
+              const env = await op("items.move", { Id: aId, NewParentId: cId });
               setLastEnvelope(env);
               await refresh();
-              if (env.Status.Code === "ERR_CYCLE") {
+              if (String(env.Status.Code) === "ERR_CYCLE") {
                 toast.error(`ERR_CYCLE blocked: ${envelopeSummary(env)}`);
               } else {
                 toast.warning(`Expected ERR_CYCLE, got ${env.Status.Code}`);
