@@ -1487,6 +1487,13 @@ export const GENERATED_NOTES: Record<string, string> = {
   "t1-1": `Templates are snapshot copies (one-shot stamp).
 
 -- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Decision`,
+  "t1-2": `| Surface | Component path | data-testid | Acceptance tests | |---------|---------------|---------------|------------------| | Template instantiation procedure | wp-plugin/src/Templates/Instantiate.php | n/a (server-side) | AT-TPL-01, AT-TPL-02, AT-TPL-03 | | Template payload storage | wp-plugin/src/Templates/PayloadRepository.php | n/a (server-side) | AT-TPL-04, AT-TPL-05 |
+
+-- Storage: Templates.PayloadJson (full subtree, JSON-serialised).
+-- Instantiation surface: server-side procedure (DFS clone) — no client orchestrates the multi-row insert.
+-- Trash interaction: templates are unaffected by the reaper (per 11b AT cross-link); independent lifecycle.
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Component Contract`,
   "t2-1": `---
 
 -- Position: instantiated subtree is appended to the end of target_parent_id's children.
@@ -1495,6 +1502,9 @@ export const GENERATED_NOTES: Record<string, string> = {
 
 -- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Instantiation algorithm`,
   "t2-2": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Edge Cases`,
+  "t2-3": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
 
 -- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Edge Cases`,
   "t2-4": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
@@ -1507,6 +1517,9 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Owner: always auth.uid() of the instantiating user, regardless of template author.
 
 -- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Instantiation algorithm`,
+  "t3-2": `| ID | Given | When | Then | |---|---|---|---| | AT-TPL-01 | Template T with 5 nodes | User instantiates T under P | 5 new Items exist under P with fresh UUIDs | | AT-TPL-02 | Instance I created from T | User edits T's payload | I is unchanged | | AT-TPL-03 | Instance I created from T | User edits I | T's payload is unchanged | | AT-TPL-04 | Template T contains a mirror peer-group | User instantiates T | Instances are plain items, no peer-group created | | AT-TPL-05 | User A's template T | User B instantiates T | New items have OwnerId = B |
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Acceptance tests`,
   "t3-3": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
 
 -- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Edge Cases`,
