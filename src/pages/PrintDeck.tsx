@@ -5,20 +5,26 @@ import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
 import { enforcementSlides } from "@/deck/enforcement-slides";
 import { userSlides } from "@/deck/user-slides";
+import { feedbackSlides } from "@/deck/feedback-slides";
+import { activitySlides } from "@/deck/activity-slides";
 import type { SlideMeta } from "@/deck/types";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
-  frontend:    { title: "WorkFlowy — Frontend Deck",    slides: frontendSlides },
-  backend:     { title: "WorkFlowy — Backend Deck",     slides: backendSlides },
-  ops:         { title: "WorkFlowy — Operations",       slides: opsSlides },
+  frontend:    { title: "WorkFlowy — Frontend Deck",     slides: frontendSlides },
+  backend:     { title: "WorkFlowy — Backend Deck",      slides: backendSlides },
+  ops:         { title: "WorkFlowy — Operations",        slides: opsSlides },
   enforcement: { title: "WorkFlowy — Enforcement Rules", slides: enforcementSlides },
-  user:        { title: "WorkFlowy — User Management",  slides: userSlides },
+  user:        { title: "WorkFlowy — User Management",   slides: userSlides },
+  feedback:    { title: "WorkFlowy — Feedback Reports",  slides: feedbackSlides },
+  activity:    { title: "WorkFlowy — Activity Feed",     slides: activitySlides },
 };
+
+const DECK_KEYS = Object.keys(DECKS);
 
 export default function PrintDeck() {
   const [params] = useSearchParams();
-  const q = params.get("deck");
-  const which = q === "backend" || q === "ops" || q === "enforcement" || q === "user" ? q : "frontend";
+  const q = params.get("deck") ?? "";
+  const which = DECK_KEYS.includes(q) ? q : "frontend";
   const { title, slides } = DECKS[which];
 
   useEffect(() => { document.title = title + " — Print"; }, [title]);
