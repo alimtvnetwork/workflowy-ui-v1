@@ -76,7 +76,7 @@ export const SEED_ITEMS: Item[] = [
   mk("s-15", "Old draft about ranking",                     { daysOld: 40, trashed: true }),
 
   // Today / yesterday / this-week fixtures (date-keyword tests)
-  mk("s-16", "Read the spec",                               { daysOld: 0, hour: 9 } as never),
+  mk("s-16", "Read the spec",                               { daysOld: 0 }),
   mk("s-17", "Yesterday's notes",                           { daysOld: 1 }),
   mk("s-18", "Last week's retro",                           { daysOld: 9 }),
 
