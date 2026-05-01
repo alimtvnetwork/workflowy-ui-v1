@@ -66,6 +66,8 @@ export default function PrintDeck() {
         <a href="/print?deck=ops"         className="text-muted-foreground hover:text-foreground underline">Ops</a>
         <a href="/print?deck=enforcement" className="text-muted-foreground hover:text-foreground underline">Enforcement</a>
         <a href="/print?deck=user"        className="text-muted-foreground hover:text-foreground underline">User</a>
+        <a href="/print?deck=feedback"    className="text-muted-foreground hover:text-foreground underline">Feedback</a>
+        <a href="/print?deck=activity"    className="text-muted-foreground hover:text-foreground underline">Activity</a>
         <button onClick={() => window.print()}
                 className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:opacity-90">
           Print / Save as PDF
