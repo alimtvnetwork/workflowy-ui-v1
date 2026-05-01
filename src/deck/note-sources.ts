@@ -325,15 +325,15 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "tp-guide", spec: "spec/31-app/01-features/13-templates.md" },
 
   { slideId: "t1-1", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Decision" },
-  { slideId: "t1-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Inputs" },
+  { slideId: "t1-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Component Contract" },
 
   { slideId: "t2-1", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Instantiation algorithm" },
   { slideId: "t2-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
-  { slideId: "t2-3", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases", bullet: 1 },
+  { slideId: "t2-3", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
   { slideId: "t2-4", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
 
   { slideId: "t3-1", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Instantiation algorithm" },
-  { slideId: "t3-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Outputs" },
+  { slideId: "t3-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Acceptance tests" },
   { slideId: "t3-3", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
   { slideId: "t3-4", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Decision" },
 
