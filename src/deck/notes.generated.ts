@@ -1472,4 +1472,78 @@ export const GENERATED_NOTES: Record<string, string> = {
   "s9-closing": `UpdatedAt descending. This balances "the obviously correct match" with "the most recently touched note" without requiring a full BM25 implementation in MVP.
 
 -- Source: spec/31-app/01-features/16-search-ranking.md # Overview`,
+  "tp-cover": `Templates are snapshot copies (one-shot stamp).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Decision`,
+  "tp-guide": `Templates serialize an item's full subtree (content, types, notes, children) into a reusable snapshot. Users apply a template to spawn a fresh independent copy under any target item — no link to the template, no shared edits.
+
+-- ❌ Hard-coding the 50 cap in PHP — must read OptionNameType::TEMPLATE_MAX_PER_WORKSPACE.
+-- ❌ Bare get_option('workflowy_template_picker_view') — go through the Settings facade.
+-- ❌ Skipping the confirm-apply check when the setting is true.
+-- Wire form: the string value (e.g., "recent") is what travels in the API envelope and persists in wp_options.
+-- PHP form: all comparisons, branches, and persistence calls MUST use the enum case (TemplatePickerViewType::RECENT) — never the bare string (gate G-WF-ENUM-NO-STRING-LITERALS).
+
+-- Source: spec/31-app/01-features/13-templates.md`,
+  "t1-1": `Templates are snapshot copies (one-shot stamp).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Decision`,
+  "t1-2": `| Surface | Component path | data-testid | Acceptance tests | |---------|---------------|---------------|------------------| | Template instantiation procedure | wp-plugin/src/Templates/Instantiate.php | n/a (server-side) | AT-TPL-01, AT-TPL-02, AT-TPL-03 | | Template payload storage | wp-plugin/src/Templates/PayloadRepository.php | n/a (server-side) | AT-TPL-04, AT-TPL-05 |
+
+-- Storage: Templates.PayloadJson (full subtree, JSON-serialised).
+-- Instantiation surface: server-side procedure (DFS clone) — no client orchestrates the multi-row insert.
+-- Trash interaction: templates are unaffected by the reaper (per 11b AT cross-link); independent lifecycle.
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Component Contract`,
+  "t2-1": `---
+
+-- Position: instantiated subtree is appended to the end of target_parent_id's children.
+-- Mirrors inside the template: collapsed to plain items (peer-group not preserved across instantiation).
+-- Owner: always auth.uid() of the instantiating user, regardless of template author.
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Instantiation algorithm`,
+  "t2-2": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Edge Cases`,
+  "t2-3": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Edge Cases`,
+  "t2-4": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Edge Cases`,
+  "t3-1": `---
+
+-- Position: instantiated subtree is appended to the end of target_parent_id's children.
+-- Mirrors inside the template: collapsed to plain items (peer-group not preserved across instantiation).
+-- Owner: always auth.uid() of the instantiating user, regardless of template author.
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Instantiation algorithm`,
+  "t3-2": `| ID | Given | When | Then | |---|---|---|---| | AT-TPL-01 | Template T with 5 nodes | User instantiates T under P | 5 new Items exist under P with fresh UUIDs | | AT-TPL-02 | Instance I created from T | User edits T's payload | I is unchanged | | AT-TPL-03 | Instance I created from T | User edits I | T's payload is unchanged | | AT-TPL-04 | Template T contains a mirror peer-group | User instantiates T | Instances are plain items, no peer-group created | | AT-TPL-05 | User A's template T | User B instantiates T | New items have OwnerId = B |
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Acceptance tests`,
+  "t3-3": `§1 Decision table establishes the no-link invariant (template ↔ instance are fully independent in both directions); §2 Instantiation algorithm documents UUID re-stamping, ownership rewrite, and mirror collapse; §4 Non-goals fences out future variants (live templates, parameters, versioning).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Edge Cases`,
+  "t3-4": `Templates are snapshot copies (one-shot stamp).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Decision`,
+  "t4-1": `| ID | Given | When | Then | |---|---|---|---| | AT-TPL-01 | Template T with 5 nodes | User instantiates T under P | 5 new Items exist under P with fresh UUIDs | | AT-TPL-02 | Instance I created from T | User edits T's payload | I is unchanged | | AT-TPL-03 | Instance I created from T | User edits I | T's payload is unchanged | | AT-TPL-04 | Template T contains a mirror peer-group | User instantiates T | Instances are plain items, no peer-group created | | AT-TPL-05 | User A's template T | User B instantiates T | New items have OwnerId = B |
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Acceptance tests`,
+  "t4-2": `---
+
+-- ❌ Live templates / propagating edits → out of scope (could be modeled as mirrors in v2)
+-- ❌ Parameterised templates ({{date}}, {{user}}) → future
+-- ❌ Template versioning → future
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Non-goals`,
+  "t4-3": `| Surface | Component path | data-testid | Acceptance tests | |---------|---------------|---------------|------------------| | Template instantiation procedure | wp-plugin/src/Templates/Instantiate.php | n/a (server-side) | AT-TPL-01, AT-TPL-02, AT-TPL-03 | | Template payload storage | wp-plugin/src/Templates/PayloadRepository.php | n/a (server-side) | AT-TPL-04, AT-TPL-05 |
+
+-- Storage: Templates.PayloadJson (full subtree, JSON-serialised).
+-- Instantiation surface: server-side procedure (DFS clone) — no client orchestrates the multi-row insert.
+-- Trash interaction: templates are unaffected by the reaper (per 11b AT cross-link); independent lifecycle.
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Component Contract`,
+  "t9-closing": `Templates are snapshot copies (one-shot stamp).
+
+-- Source: spec/31-app/01-features/13b-templates-snapshot-semantics.md # Decision`,
 };

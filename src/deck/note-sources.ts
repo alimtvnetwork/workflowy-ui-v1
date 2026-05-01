@@ -317,4 +317,29 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "s4-6", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Backend Contract" },
 
   { slideId: "s9-closing", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Overview" },
+
+  // =========================================================================
+  // Templates & Snapshot deck (/template-deck) — tp-*, t1..t4, t9
+  // =========================================================================
+  { slideId: "tp-cover", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Decision" },
+  { slideId: "tp-guide", spec: "spec/31-app/01-features/13-templates.md" },
+
+  { slideId: "t1-1", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Decision" },
+  { slideId: "t1-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Component Contract" },
+
+  { slideId: "t2-1", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Instantiation algorithm" },
+  { slideId: "t2-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
+  { slideId: "t2-3", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
+  { slideId: "t2-4", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
+
+  { slideId: "t3-1", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Instantiation algorithm" },
+  { slideId: "t3-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Acceptance tests" },
+  { slideId: "t3-3", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Edge Cases" },
+  { slideId: "t3-4", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Decision" },
+
+  { slideId: "t4-1", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Acceptance tests" },
+  { slideId: "t4-2", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Non-goals" },
+  { slideId: "t4-3", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Component Contract" },
+
+  { slideId: "t9-closing", spec: "spec/31-app/01-features/13b-templates-snapshot-semantics.md", anchor: "Decision" },
 ];

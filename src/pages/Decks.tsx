@@ -17,6 +17,7 @@ import { userSlides } from "@/deck/user-slides";
 import { feedbackSlides } from "@/deck/feedback-slides";
 import { activitySlides } from "@/deck/activity-slides";
 import { searchSlides } from "@/deck/search-slides";
+import { templateSlides } from "@/deck/template-slides";
 
 interface DeckEntry {
   key: string;
@@ -114,6 +115,16 @@ const DECKS: DeckEntry[] = [
     Icon: Search,
     slides: searchSlides,
     related: [{ label: "Search simulator", route: "/search-sim" }],
+  },
+  {
+    key: "template",
+    route: "/template-deck",
+    title: "Templates & Snapshots",
+    audience: "Eng · product",
+    blurb: "One-shot stamp model: snapshot (T-2) → apply (T-3) → divergence proof. Cites /template-sim live.",
+    Icon: Camera,
+    slides: templateSlides,
+    related: [{ label: "Template simulator", route: "/template-sim" }],
   },
 ];
 
