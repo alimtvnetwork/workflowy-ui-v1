@@ -17,6 +17,7 @@ import { userSlides } from "@/deck/user-slides";
 import { feedbackSlides } from "@/deck/feedback-slides";
 import { activitySlides } from "@/deck/activity-slides";
 import { searchSlides } from "@/deck/search-slides";
+import { templateSlides } from "@/deck/template-slides";
 
 interface DeckEntry {
   key: string;
