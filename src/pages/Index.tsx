@@ -103,6 +103,7 @@ const Index = () => {
             {" · "}<Link to="/presenter?deck=feedback" className="underline hover:text-foreground">feedback</Link>
             {" · "}<Link to="/presenter?deck=activity" className="underline hover:text-foreground">activity</Link>
             {" · "}<Link to="/presenter?deck=search" className="underline hover:text-foreground">search</Link>
+            {" · "}<Link to="/presenter?deck=template" className="underline hover:text-foreground">template</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
           <div>
