@@ -283,4 +283,38 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "a4-3", spec: "spec/34-activity-feed/04-retention-and-purge.md", anchor: "Mirror Compaction" },
 
   { slideId: "a9-closing", spec: "spec/34-activity-feed/00-overview.md" },
+
+  // =========================================================================
+  // Search & Ranking deck (/search-deck) — sr-*, s1..s4, s9
+  // =========================================================================
+  { slideId: "sr-cover", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Overview" },
+  { slideId: "sr-guide", spec: "spec/32-ui-design/06-workflowy-ui/02-search/00-overview.md" },
+
+  { slideId: "s1-1", spec: "spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md", anchor: "EBNF" },
+  { slideId: "s1-2", spec: "spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md", anchor: "Keyword reference" },
+  { slideId: "s1-3", spec: "spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md", anchor: "Combination semantics" },
+  { slideId: "s1-4", spec: "spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md", anchor: "Test vectors" },
+  { slideId: "s1-5", spec: "spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md", anchor: "Error cases" },
+
+  { slideId: "s2-1", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Ranking Algorithm" },
+  { slideId: "s2-2", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Decisions at a Glance" },
+  { slideId: "s2-3", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Invariants", bullet: 1 },
+  { slideId: "s2-4", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Edge Cases" },
+  { slideId: "s2-5", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Acceptance Criteria" },
+
+  { slideId: "s3-1", spec: "spec/32-ui-design/06-workflowy-ui/02-search/01-popover-anatomy.md" },
+  { slideId: "s3-2", spec: "spec/32-ui-design/06-workflowy-ui/02-search/05-token-system.md" },
+  { slideId: "s3-3", spec: "spec/32-ui-design/06-workflowy-ui/02-search/03-hint-and-suggestions.md" },
+  { slideId: "s3-4", spec: "spec/32-ui-design/06-workflowy-ui/02-search/08-keyboard-shortcuts.md" },
+  { slideId: "s3-5", spec: "spec/32-ui-design/06-workflowy-ui/02-search/09-states-and-edge-cases.md" },
+  { slideId: "s3-6", spec: "spec/32-ui-design/06-workflowy-ui/02-search/07-results-and-highlighting.md" },
+
+  { slideId: "s4-1", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Database Contract" },
+  { slideId: "s4-2", spec: "spec/31-app/02-workflows/06-search-query-flow.md" },
+  { slideId: "s4-3", spec: "spec/31-app/06-endpoints/15b-search.md" },
+  { slideId: "s4-4", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Permissions Contract" },
+  { slideId: "s4-5", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "SSE / Realtime Contract" },
+  { slideId: "s4-6", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Backend Contract" },
+
+  { slideId: "s9-closing", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Overview" },
 ];

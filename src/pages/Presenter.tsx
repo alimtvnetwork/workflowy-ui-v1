@@ -8,6 +8,7 @@ import { enforcementSlides } from "@/deck/enforcement-slides";
 import { userSlides } from "@/deck/user-slides";
 import { feedbackSlides } from "@/deck/feedback-slides";
 import { activitySlides } from "@/deck/activity-slides";
+import { searchSlides } from "@/deck/search-slides";
 import { attachNotes } from "@/deck/notes";
 import {
   clearOverride,
@@ -35,6 +36,7 @@ const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: stri
   user:        { title: "User Management",   slides: attachNotes(userSlides),        audience: "user-deck" },
   feedback:    { title: "Feedback Reports",  slides: attachNotes(feedbackSlides),    audience: "feedback-deck" },
   activity:    { title: "Activity Feed",     slides: attachNotes(activitySlides),    audience: "activity-deck" },
+  search:      { title: "Search & Ranking",  slides: attachNotes(searchSlides),      audience: "search-deck" },
 };
 
 const DECK_KEYS = Object.keys(DECKS);

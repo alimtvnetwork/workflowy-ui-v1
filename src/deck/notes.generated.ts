@@ -1333,4 +1333,143 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Email/push notifications — covered separately by spec/36-user-management/
 
 -- Source: spec/34-activity-feed/00-overview.md`,
+  "sr-cover": `UpdatedAt descending. This balances "the obviously correct match" with "the most recently touched note" without requiring a full BM25 implementation in MVP.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Overview`,
+  "sr-guide": `ui-design · workflowy-ui · search · phase
+
+-- Open/close & focus — AT-WF02-OC-01..04
+-- Tab rail — AT-WF02-TAB-05..06
+-- Hint & jump-to-menu — AT-WF02-HINT-07..08
+-- Token system — AT-WF02-TOK-09..12
+-- Results & highlighting — AT-WF02-RES-13..16
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/00-overview.md`,
+  "s1-1": `Notes:
+
+-- Grammar is whitespace-separated and case-insensitive for keys and standalone keywords (IS:TODO ≡ is:todo).
+-- Mention handles are case-insensitive at parse time; display preserves original casing.
+-- text: and link: values may contain spaces only when wrapped in double quotes.
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md # EBNF`,
+  "s1-2": `| Key | Value format | Example | |-----|--------------|---------| | date: | YYYY-MM-DD | date:2026-04-23 | | date-before: | YYYY-MM-DD | date-before:2026-05-01 | | date-after: | YYYY-MM-DD | date-after:2026-04-01 | | day-of-week: | enum: mon tue wed thu fri sat sun weekday weekend | day-of-week:fri |
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md # Keyword reference`,
+  "s1-3": `| Combination | Operator | Notes | |-------------|----------|-------| | Multiple distinct tokens | AND | Default | | Multiple in: tokens | UNION (OR over scopes) | The only OR exception in the grammar | | -token | NOT | Applies to a single immediately-following token | | Free text + tokens | AND with substring | Free text matches node content |
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md # Combination semantics`,
+  "s1-4": `| # | Input | Parsed tokens (kind: value) | Expected semantics | |---|-------|-----------------------------|--------------------| | T1 | is:todo | [KV is=todo] | All todo items | | T2 | is:todo -is:complete | [KV is=todo, NOT KV is=complete] | Open todos | | T3 | @alice today | [Mention alice, Standalone today] | Today's items mentioning alice | | T4 | text:"deep work" date-after:2026-04-01 | [KV text="deep work", KV date-after=2026-04-01] | Phrase match after Apr 1 | | T5 | in:nodeA in:nodeB is:starred | [KV in=nodeA, KV in=nodeB, KV is=starred] | Starred items in (A ∪ B) | | T6 | has:image -has:video | [KV has=image, NOT KV has=video] | Has image, no video | | T7 | me changed:this-week | [Standalone me, KV changed=this-week] | My recent changes | | T8 | day-of-week:weekend has:date | [KV day-of-week=weekend, KV has=date] | Dated weekend items | | T9 | link:github.com | [KV link=github.com] | Items with github.com links | | T10 | highlight:yellow text:standup | [KV highlight=yellow, KV text=standup] | Yellow-highlighted standup mentions | | T11 | -@bob | [NOT Mention bob] | Items NOT mentioning bob | | T12 | meeting is:todo | [FreeText meeting, KV is=todo] | Todo items containing "meeting" |
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md # Test vectors`,
+  "s1-5": `| Input | Behavior | |-------|----------| | date:abc | Token rejected (invalid value); shown as invalid chip pre-commit | | unknown:value | Whole fragment treated as FreeText (silent fallback) | | Unclosed quote text:"hello | Token stays uncommitted; cursor inside string mode | | Empty value is: (no value) | Triggers value picker (Region 4); does NOT parse to a token until value provided |
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/06-query-grammar.md # Error cases`,
+  "s2-1": `For each item that satisfies the query (after #tag, is:, type:, date: filters from mem://features/search-functionality are applied):
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Ranking Algorithm`,
+  "s2-2": `UpdatedAt descending within each relevance bucket | | Bucket size | 20 score points (5 buckets total: 0–19, 20–39, 40–59, 60–79, 80–100) | | Tiebreak inside bucket | UpdatedAt desc, then OwnerId asc (deterministic) | | Mirror handling | Each peer-group instance ranks independently — searching surfaces the instance whose breadcrumb path matches the user's mental location. | | Trash / completed | Excluded by default; included only when query has is:trashed / is:complete.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Decisions at a Glance`,
+  "s2-3": `I-SR-01 Ranking is deterministic — same query + same DB snapshot always yields identical order.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Invariants (bullet 1)`,
+  "s2-4": `| Case | Behavior | |------|----------| | Query matches title exactly + 100 notes substring | Title-exact item ranks first (score 150) regardless of recency. | | Two items with identical scores | Sorted by UpdatedAt desc; further tied → OwnerId asc.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Edge Cases`,
+  "s2-5": `---
+
+-- AT-SR-01 Title-exact match outranks note-substring match regardless of recency.
+-- AT-SR-02 Within the same score bucket, more recently updated items appear first.
+-- AT-SR-03 Mirror instances appear individually with their own breadcrumbs.
+-- AT-SR-04 Trashed and completed items are excluded unless the query opts them in.
+-- AT-SR-05 Sub-300 ms response time for ≥5 000-item datasets is preserved (perf SLA from mem://features/search-functionality).
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Acceptance Criteria`,
+  "s3-1": `Define the structural regions of the search popover surface and the rules that govern its container, header row, focus ring, and region map. This file is structure-only — behaviors live in sibling files (tab rail → 02, hints → 03, icons → 04, tokens → 05).
+
+-- The popover container does not show a focus ring; only the input and individual interactive elements do.
+-- Initial focus on open: input field.
+-- Tab order: input → tab rail (cycles through 6 tabs) → suggestion chips (if any) → right-side icons (R1 → R2 → R3) → loops back to input.
+-- Shift+Tab reverses.
+-- Focus must remain trapped inside the popover until close (Esc / outside-click while unpinned). Trap rules detailed in 10-accessibility.md.
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/01-popover-anatomy.md`,
+  "s3-2": `Specify how typed text becomes inline token chips inside the search input — commit triggers, edit/delete behavior, paste-parse rules, and the visual contract for chip variants. md; this file is concerned with how tokens behave in the input.
+
+-- Typing - immediately before a key: or @ partial creates a negated token when committed.
+-- A committed chip can be toggled negated by pressing ! while the chip is selected (shortcut). Visual: chip variant flips to negated style.
+-- A chip context menu is NOT provided in v1; the ! shortcut is the only post-commit toggle.
+-- 03-hint-and-suggestions.md — value pickers that produce chips
+-- 06-query-grammar.md — what each chip means
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/05-token-system.md`,
+  "s3-3": `Specify the contents and behavior of Region 3 (suggestions) and Region 4 (value-picker listbox) of the popover. These regions react to: active tab, current cursor context inside the input, and presence/absence of a partial key: token.
+
+-- No chips. Hint copy only.
+-- Section A: Recent — last 5 @user tokens used in queries this session (FIFO eviction; session-scoped, not persisted).
+-- Section B: All people — alphabetical list of workspace members rendered as @name chips.
+-- Empty workspace fallback: hint "No collaborators yet. Share a node to mention people."
+-- Section A: Quick — today, tomorrow, yesterday, this-week, next-week, last-week, this-month, next-month, last-month.
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/03-hint-and-suggestions.md`,
+  "s3-4": `Single normative source for every keyboard shortcut owned by the search popover and the related footer pill. Cross-references throughout the search spec point here.
+
+-- When the search popover is open, ⌘K is a no-op (already open).
+-- When a value picker is open, Esc closes the picker first; a second Esc clears or closes the popover per § 2.
+-- Enter precedence: value-picker accept > query re-run > footer cycling (when popover closed).
+-- All shortcuts shown in this file are also registered in the global hotkeys panel (Phase 3 right-side panel — forward ref). This file remains the SSoT for the search-specific subset; the hotkeys panel mirrors them for discovery.
+-- 01-popover-anatomy.md § Open / close geometry
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/08-keyboard-shortcuts.md`,
+  "s3-5": `Enumerate the 8 popover states, then exhaustively cover edge cases (zero results, invalid tokens, long values, duplicates, pinned, mobile, RTL, reduced-motion, offline). This is the file an implementer reaches for "what should happen when …".
+
+-- Footer pill renders 0 matches (file 07).
+-- Region 3 hint copy: "No items match. Try removing a filter or relaxing your query."
+-- Suggestion: show a "Remove last filter" inline action when ≥1 chip exists.
+-- Input red underline on the failing fragment.
+-- Region 3 inline error: "Unknown filter <key>. Try is, has, date, in, text, link."
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/09-states-and-edge-cases.md`,
+  "s3-6": `Specify how the active query is applied to the live outline, how matches are visually marked, how ancestor expansion and result cycling work, and how the footer match-count pill behaves. Results are NOT rendered inside the popover — they live in the underlying outline behind it.
+
+-- For each match, walk up the parent chain and expand any collapsed ancestors.
+-- Auto-expansion is transient: when the query clears, ancestors return to their previous collapsed/expanded state.
+-- Expansion does NOT persist as a user action and does NOT enter the undo history.
+-- Text: N Matches (where N = total matches across all visible outlines).
+-- Cycling controls: ↑ previous match · ↓ next match · current index (3 of 17).
+
+-- Source: spec/32-ui-design/06-workflowy-ui/02-search/07-results-and-highlighting.md`,
+  "s4-1": `Already declared in §Database Routing above.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Database Contract`,
+  "s4-2": `md describes the 5-tier match-kind score × field-weight formula. md describes Auth::hasRole().
+
+-- Auth::isAuthenticated($userId) returns true (anonymous users get 401).
+-- q.length >= 2 (single-char queries return 400).
+-- q.length <= 256 (longer queries return 400 to bound regex cost).
+-- The user has at least one View-grant on at least one item in the workspace; otherwise the result set is empty (200 with items: []).
+-- ❌ Resolving permissions per row (calling Auth::hasRole() inside the result loop). Use the precomputed visibility set.
+
+-- Source: spec/31-app/02-workflows/06-search-query-flow.md`,
+  "s4-3": `Content + ItemTags. Cross-workspace search: opt-in via Scope=*; sequential fan-out across user's accessible App DBs (workspace_members from Root DB → iterate App DBs sequentially, no cross-DB JOIN).
+
+-- Auth: user. Server filters results to items the caller can read (own + shared with read or higher).
+-- Query:
+-- Q (string, required, 1–256 chars) — query text. Tokenised on whitespace + punctuation.
+-- Scope (string, optional) — Item ID to constrain to a subtree. Default = entire workspace.
+-- Types (csv, optional) — filter by ItemType (bullet, board, dashboard, mirror).
+
+-- Source: spec/31-app/06-endpoints/15b-search.md`,
+  "s4-4": `md). Server-side filter; never client-side.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Permissions Contract`,
+  "s4-5": `| Aspect | Specification | |---|---| | Stream emission | None. Search is read-only and does NOT emit any SSE frame on /stream/page/{id} or /stream/user/{id} (per ADR-0025: SSE is read-signal only).
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # SSE / Realtime Contract`,
+  "s4-6": `php::bucket(int $score): int returns floor($score / 20) clamped to [0,5]. php::parse(string $raw): ParsedQuery — emits AST of {terms, filters[], excludes[], groupingOp}.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Backend Contract`,
+  "s9-closing": `UpdatedAt descending. This balances "the obviously correct match" with "the most recently touched note" without requiring a full BM25 implementation in MVP.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Overview`,
 };

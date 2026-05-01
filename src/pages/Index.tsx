@@ -6,6 +6,7 @@ import { enforcementSlides } from "@/deck/enforcement-slides";
 import { userSlides } from "@/deck/user-slides";
 import { feedbackSlides } from "@/deck/feedback-slides";
 import { activitySlides } from "@/deck/activity-slides";
+import { searchSlides } from "@/deck/search-slides";
 
 const Index = () => {
   const fePhases = countChapters(frontendSlides);
@@ -15,6 +16,7 @@ const Index = () => {
   const usrPhases = countChapters(userSlides);
   const fbPhases = countChapters(feedbackSlides);
   const actPhases = countChapters(activitySlides);
+  const srPhases = countChapters(searchSlides);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -55,6 +57,9 @@ const Index = () => {
           <DeckCard to="/activity-deck" kicker="Activity" title="One chokepoint. 8 events. 30-day reaper."
             blurb="Dedicated activity.db, 5-stage capture pipeline, mirror-first feed loader, exhaustive row dispatcher, cursor-pinned mirror compaction."
             stats={[{ label: "Slides", value: activitySlides.length }, { label: "Phases", value: actPhases }]} />
+          <DeckCard to="/search-deck" kicker="Search" title="One grammar. Five buckets. Sub-300 ms."
+            blurb="Closed EBNF grammar with 12 keys, deterministic relevance-then-recency ranking, FTS5 per App-DB, no client re-rank, 250-cap viewport."
+            stats={[{ label: "Slides", value: searchSlides.length }, { label: "Phases", value: srPhases }]} />
         </div>
 
         <footer className="mt-20 pt-8 border-t border-border text-sm text-muted-foreground space-y-2">
@@ -74,6 +79,7 @@ const Index = () => {
             {" · "}<Link to="/print?deck=user" className="underline hover:text-foreground">user</Link>
             {" · "}<Link to="/print?deck=feedback" className="underline hover:text-foreground">feedback</Link>
             {" · "}<Link to="/print?deck=activity" className="underline hover:text-foreground">activity</Link>
+            {" · "}<Link to="/print?deck=search" className="underline hover:text-foreground">search</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
           <div>
@@ -85,6 +91,7 @@ const Index = () => {
             {" · "}<Link to="/presenter?deck=user" className="underline hover:text-foreground">user</Link>
             {" · "}<Link to="/presenter?deck=feedback" className="underline hover:text-foreground">feedback</Link>
             {" · "}<Link to="/presenter?deck=activity" className="underline hover:text-foreground">activity</Link>
+            {" · "}<Link to="/presenter?deck=search" className="underline hover:text-foreground">search</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
           <div>
