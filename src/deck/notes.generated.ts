@@ -1050,30 +1050,26 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
 
 -- Source: spec/36-user-management/01-account-and-settings.md`,
-  "u1-2": `(no prose found in source section)
+  "u1-2": `Set Password — From Account → Security.
 
--- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
--- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
--- Multi-Factor Authentication — From Account → Security → MFA. Supports TOTP (authenticator app, RFC 6238) and WebAuthn passkeys (per ./00-overview.md FR-3). One TOTP secret + N passkeys per user. Recovery codes are generated once at enrolment; user must download/print before the dialog can close. (component: mfa-enroll-dialog)
--- Delete Account — From Account → Danger Zone. Requires re-entering password + typing the literal phrase delete my account. On confirmation, the account is soft-deleted with a 30-day grace window matching trash retention (mem://features/trash-logic); login during grace cancels the deletion. After grace, a daily WP cron purges all User rows + cascaded Item/Mirror/Share rows. (component: delete-account-dialog)
+-- Requires the current password to set a new one.
+-- md FR-3.
 
--- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity`,
-  "u1-3": `(no prose found in source section)
+-- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity (bullet 1)`,
+  "u1-3": `Multi-Factor Authentication — From Account → Security → MFA.
 
--- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
--- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
--- Multi-Factor Authentication — From Account → Security → MFA. Supports TOTP (authenticator app, RFC 6238) and WebAuthn passkeys (per ./00-overview.md FR-3). One TOTP secret + N passkeys per user. Recovery codes are generated once at enrolment; user must download/print before the dialog can close. (component: mfa-enroll-dialog)
--- Delete Account — From Account → Danger Zone. Requires re-entering password + typing the literal phrase delete my account. On confirmation, the account is soft-deleted with a 30-day grace window matching trash retention (mem://features/trash-logic); login during grace cancels the deletion. After grace, a daily WP cron purges all User rows + cascaded Item/Mirror/Share rows. (component: delete-account-dialog)
+-- md FR-3).
+-- One TOTP secret + N passkeys per user.
+-- Recovery codes are generated once at enrolment; user must download/print before the dialog can close.
 
--- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity`,
-  "u1-4": `(no prose found in source section)
+-- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity (bullet 3)`,
+  "u1-4": `Delete Account — From Account → Danger Zone.
 
--- Set Password — From Account → Security. Requires the current password to set a new one. Validates against the password policy in ./00-overview.md FR-3. (component: set-password-form)
--- Change Email — From Account → Email. Sends a confirmation link to the new address; the change is only persisted after the user clicks through. The previous email retains login access until confirmation succeeds. (component: change-email-form)
--- Multi-Factor Authentication — From Account → Security → MFA. Supports TOTP (authenticator app, RFC 6238) and WebAuthn passkeys (per ./00-overview.md FR-3). One TOTP secret + N passkeys per user. Recovery codes are generated once at enrolment; user must download/print before the dialog can close. (component: mfa-enroll-dialog)
--- Delete Account — From Account → Danger Zone. Requires re-entering password + typing the literal phrase delete my account. On confirmation, the account is soft-deleted with a 30-day grace window matching trash retention (mem://features/trash-logic); login during grace cancels the deletion. After grace, a daily WP cron purges all User rows + cascaded Item/Mirror/Share rows. (component: delete-account-dialog)
+-- Requires re-entering password + typing the literal phrase delete my account.
+-- On confirmation, the account is soft-deleted with a 30-day grace window matching trash retention (mem://features/trash-logic); login during grace cancels the deletion.
+-- After grace, a daily WP cron purges all User rows + cascaded Item/Mirror/Share rows.
 
--- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity`,
+-- Source: spec/36-user-management/01-account-and-settings.md # Account & Identity (bullet 4)`,
   "u2-1": `auth · login · registration · passkey · webauthn · session · jwt · argon2id · mfa · recovery-codes · solo-mode · sync-mode
 
 -- ./00-overview.md §"Functional Requirements" (FR-3, FR-4, FR-6) and §"Anti-Patterns".
