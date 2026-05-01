@@ -61,7 +61,7 @@ function extractSection(md: string, anchor?: string): string {
   return lines.slice(start, end).join("\n");
 }
 
-function summarize(section: string): { headline: string; bullets: string[] } {
+function summarize(section: string, bulletIndex?: number): { headline: string; bullets: string[] } {
   const lines = section.split("\n");
   const para: string[] = [];
   const bullets: string[] = [];
@@ -72,15 +72,15 @@ function summarize(section: string): { headline: string; bullets: string[] } {
     const line = raw.trimEnd();
     if (line.startsWith("```")) { inCode = !inCode; continue; }
     if (inCode) continue;
-    if (/^>/.test(line)) continue;       // blockquote = metadata
-    if (/^#/.test(line)) continue;       // skip sub-headings
+    if (/^>/.test(line)) continue;
+    if (/^#/.test(line)) continue;
     if (/^\s*$/.test(line)) {
       if (para.length) inPara = false;
       continue;
     }
     const bm = line.match(/^\s*[-*]\s+(.*)$/);
     if (bm) {
-      if (bullets.length < 5) bullets.push(cleanInline(bm[1]));
+      if (bulletIndex !== undefined || bullets.length < 5) bullets.push(cleanInline(bm[1]));
       inPara = false;
       continue;
     }
@@ -88,6 +88,15 @@ function summarize(section: string): { headline: string; bullets: string[] } {
       para.push(cleanInline(line));
       inPara = true;
     }
+  }
+
+  if (bulletIndex !== undefined) {
+    const picked = bullets[bulletIndex - 1];
+    if (!picked) return { headline: "", bullets: [] };
+    const sentences = picked.match(/[^.!?]+[.!?]+(\s|$)/g) ?? [picked];
+    const headline = sentences[0].trim();
+    const rest = sentences.slice(1).map((s) => s.trim()).filter(Boolean);
+    return { headline, bullets: rest.slice(0, 4) };
   }
 
   const fullPara = para.join(" ").trim();
@@ -146,8 +155,16 @@ function main() {
       skipCount++;
       continue;
     }
-    const { headline, bullets } = summarize(section);
-    const note = format(headline, bullets, src.spec + (src.anchor ? ` # ${src.anchor}` : ""));
+    const { headline, bullets } = summarize(section, src.bullet);
+    if (!headline) {
+      console.warn(`! bullet ${src.bullet} not found: ${src.spec} # ${src.anchor ?? ""} (slide ${src.slideId})`);
+      skipCount++;
+      continue;
+    }
+    const srcLabel = src.spec
+      + (src.anchor ? ` # ${src.anchor}` : "")
+      + (src.bullet ? ` (bullet ${src.bullet})` : "");
+    const note = format(headline, bullets, srcLabel);
     out.push(`  ${JSON.stringify(src.slideId)}: \`${escapeBacktick(note)}\`,`);
     okCount++;
   }
