@@ -53,6 +53,7 @@ const App = () => (
           <Route path="/search-sim" element={<SearchSim />} />
           <Route path="/peer-group-sim" element={<PeerGroupSim />} />
           <Route path="/template-sim" element={<TemplateSim />} />
+          <Route path="/decks" element={<Decks />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
