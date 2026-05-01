@@ -1128,4 +1128,213 @@ export const GENERATED_NOTES: Record<string, string> = {
 -- Per-item sharing ACLs → spec/31-app/01-features/08-share-dialog.md F4 appendix and mem://features/sharing-model.
 
 -- Source: spec/36-user-management/00-overview.md`,
+  "fb-cover": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- Feedback table migration in feedback.db (PascalCase, FeedbackId INTEGER PRIMARY KEY AUTOINCREMENT, status enum)
+-- FeedbackType + FeedbackStatus TypeScript enums (no magic strings)
+-- src/features/feedback/FeedbackButton.tsx + FeedbackForm.tsx (Navbar entry per FR-1)
+-- src/features/feedback/feedback.schema.ts (Zod schema enforcing 120/2000 char limits)
+-- src/features/feedback/admin/FeedbackInbox.tsx (Admin-role gated)
+
+-- Source: spec/33-feedback-report/00-overview.md`,
+  "fb-guide": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- Feedback table migration in feedback.db (PascalCase, FeedbackId INTEGER PRIMARY KEY AUTOINCREMENT, status enum)
+-- FeedbackType + FeedbackStatus TypeScript enums (no magic strings)
+-- src/features/feedback/FeedbackButton.tsx + FeedbackForm.tsx (Navbar entry per FR-1)
+-- src/features/feedback/feedback.schema.ts (Zod schema enforcing 120/2000 char limits)
+-- src/features/feedback/admin/FeedbackInbox.tsx (Admin-role gated)
+
+-- Source: spec/33-feedback-report/00-overview.md`,
+  "f1-1": `Purpose — Define the FeedbackReport table schema, the closed FeedbackType and FeedbackStatus enums, the Diagnostics JSON sub-shape, and the PII-exclusion contract for the in-app feedback feature. This sub-spec is the SSOT for any column, enum value, or column-level constraint referenced by the submission flow, admin review UI, or retention job.
+
+-- wp-plugin/migrations/feedback/0001_create_feedback_report.sql (PascalCase columns, check constraints)
+-- wp-plugin/includes/Feedback/FeedbackTypeEnum.php + FeedbackStatusEnum.php (closed enums)
+-- src/features/feedback/feedback.schema.ts (Zod, mirrors SQL constraints exactly)
+-- src/features/feedback/feedback.types.ts (branded FeedbackReportId, FeedbackType, FeedbackStatus)
+-- Form UX & optimistic submission → ./02-submission-flow.md
+
+-- Source: spec/33-feedback-report/01-data-model.md`,
+  "f1-2": `db per the Split-DB pattern. db.
+
+-- Source: spec/33-feedback-report/01-data-model.md # FeedbackReport`,
+  "f1-3": `| Value | Meaning | UI affordance | |---|---|---| | Bug | Something is broken / incorrect behavior | Red triangle icon | | Idea | Feature request or enhancement | Lightbulb icon | | Praise | Positive feedback | Heart icon | | Question | Usage or support question | Question-mark icon |
+
+-- Terminal states (Resolved, WontFix, Duplicate) are immutable — no transitions out (gate G-33-DM-TERMINAL-IMMUTABLE).
+-- Backwards transitions (e.g. InProgress → New) are forbidden — admins reopen by creating a linked new report instead.
+-- The transition matrix MUST be encoded as a TS Record<FeedbackStatus, ReadonlyArray<FeedbackStatus>> and consumed by the admin UI; a duplicate transition table in the UI layer is forbidden (gate G-33-DM-TRANSITION-SSOT).
+
+-- Source: spec/33-feedback-report/01-data-model.md # Closed Enums`,
+  "f1-4": `| From → To | New | Triaged | InProgress | Resolved | WontFix | Duplicate | |---|---|---|---|---|---|---| | New | — | ✅ | ✅ | ❌ | ✅ | ✅ | | Triaged | ❌ | — | ✅ | ✅ | ✅ | ✅ | | InProgress | ❌ | ❌ | — | ✅ | ✅ | ✅ | | Resolved | ❌ | ❌ | ❌ | — | ❌ | ❌ | | WontFix | ❌ | ❌ | ❌ | ❌ | — | ❌ | | Duplicate | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+
+-- Terminal states (Resolved, WontFix, Duplicate) are immutable — no transitions out (gate G-33-DM-TERMINAL-IMMUTABLE).
+-- Backwards transitions (e.g. InProgress → New) are forbidden — admins reopen by creating a linked new report instead.
+-- The transition matrix MUST be encoded as a TS Record<FeedbackStatus, ReadonlyArray<FeedbackStatus>> and consumed by the admin UI; a duplicate transition table in the UI layer is forbidden (gate G-33-DM-TRANSITION-SSOT).
+
+-- Source: spec/33-feedback-report/01-data-model.md # FeedbackStatus`,
+  "f1-5": `Stored serialized in DiagnosticsJson. Validated by Zod at both client write and server read boundaries (no trust of stored JSON shape).
+
+-- Source: spec/33-feedback-report/01-data-model.md # Diagnostics`,
+  "f2-1": `---
+
+-- src/features/feedback/FeedbackButton.tsx (Navbar entry)
+-- src/features/feedback/FeedbackForm.tsx (Dialog + form fields)
+-- src/features/feedback/captureDiagnostics.ts (pure function, clock-injected)
+-- src/features/feedback/captureScreenshot.ts (consent-gated, opaque blob upload)
+-- src/features/feedback/submitFeedback.ts (single egress, action-tier per ADR-0023)
+
+-- Source: spec/33-feedback-report/02-submission-flow.md # Submission`,
+  "f2-2": `| Invariant | Gate | |---|---| | Envelope uses PascalCase keys with mandatory Status/Attributes/Results per ADR-0004/0019 | G-04-API-ENVELOPE-PASCAL | | Server re-validates the entire payload with the same Zod schema as the client (no trust of client validation) | G-33-SF-SERVER-REVALIDATE | | Rate limit: 10 submissions per user per hour (HTTP 429 with Retry-After) | G-33-RATE-LIMIT | | Idempotency: client supplies Idempotency-Key header (= optimistic ID); server stores it for 24 h and short-circuits duplicate submissions to the original FeedbackReportId | G-33-SF-IDEMPOTENCY-KEY | | Endpoint MUST return the canonical FeedbackReportId in Results.FeedbackReportId so the optimistic ID can be reconciled | G-33-RECEIPT |
+
+-- Source: spec/33-feedback-report/02-submission-flow.md # EP-FEEDBACK-CREATE`,
+  "f2-3": `| Condition | Action | Gate | |---|---|---| | Network offline (navigator.onLine === false) at submit | Queue worker holds the entry; UI shows toast "Saved locally — will sync when online" | G-33-SF-OFFLINE-DEGRADE | | Server returns 5xx | Queue worker retries with exponential backoff (1s, 2s, 4s, 8s, max 30s), up to 8 attempts | G-33-SF-BACKOFF | | Server returns 4xx (other than 429) | Entry is moved to a dead-letter store; user is shown a non-blocking toast with Retry and Discard actions | G-33-SF-DEAD-LETTER | | Server returns 429 | Worker honours Retry-After; UI shows toast "Slow down — try again in N seconds" | G-33-RATE-LIMIT |
+
+-- Source: spec/33-feedback-report/02-submission-flow.md # Retry`,
+  "f3-1": `| Invariant | Gate | |---|---| | Route path: /admin/feedback (list) and /admin/feedback/:feedbackReportId (detail drawer) — both mounted as siblings in the React Router v7 data-router config | G-33-AR-ROUTE-PATH | | Both routes are wrapped in <AdminBoundary> (one of the 8 named error boundaries per ADR-0017) — a crash MUST NOT take down the parent app shell | G-33-AR-BOUNDARY-NAMED | | The route loader MUST call requireRole('Admin') synchronously before any data read; non-Admin sessions get a redirect('/forbidden') response from the loader (server-side gating mirror) | G-33-AR-LOADER-ROLE-GUARD | | The Navbar entry to /admin/feedback is conditionally rendered based on the same hasRole(userId, 'Admin') check used by the loader — no parallel role check anywhere | G-33-AR-ROLE-SSOT | | Route param :feedbackReportId is parsed as branded FeedbackReportId at the loader boundary; raw string IDs forbidden per ADR-0020 | G-33-AR-BRANDED-PARAM |
+
+-- Source: spec/33-feedback-report/03-admin-review-ui.md # Route Mounting`,
+  "f3-2": `The inbox is a virtualized list of FeedbackReport rows (per the 250-item view limit and 1000-item virtualization rule from ADR-0017 — virtualization activates beyond 250 visible rows).
+
+-- Source: spec/33-feedback-report/03-admin-review-ui.md # Inbox`,
+  "f3-3": `Mounted at /admin/feedback/:feedbackReportId as a Radix <Sheet> (right side, 480 px wide on md+, full-screen on sm).
+
+-- Source: spec/33-feedback-report/03-admin-review-ui.md # Detail Drawer`,
+  "f3-4": `Status. Per ADR-0023, it writes mirror + queue in one IDB transaction.
+
+-- Source: spec/33-feedback-report/03-admin-review-ui.md # Status Transition`,
+  "f4-1": `Purpose — Define the 90-day retention policy, the deterministic purge job that enforces it, the GDPR DeleteMyFeedback(userId) one-shot operation, and the Admin-gated CSV export for FeedbackReport. This sub-spec is the SSOT for any code path that deletes feedback rows or extracts them in bulk.
+
+-- wp-plugin/includes/Feedback/PurgeJob.php (WP-Cron handler)
+-- wp-plugin/includes/Feedback/DeleteMyFeedback.php (GDPR one-shot)
+-- wp-plugin/includes/Rest/FeedbackExportController.php — GET /feedback/export.csv
+-- PHPUnit tests covering 90-day boundary, idempotency, GDPR completeness, CSV escaping
+-- Schema, enums, PurgeAfter column definition → ./01-data-model.md
+
+-- Source: spec/33-feedback-report/04-retention-and-export.md`,
+  "f4-2": `| Invariant | Gate | |---|---| | Filter uses the pre-computed PurgeAfter column from ./01-data-model.md (never recomputes SubmittedAt + 90d in WHERE) — keeps IX_FeedbackReport_PurgeAfter covering | G-33-RE-USE-PURGE-AFTER-COL | | Each batch runs inside a single SQLite tx with PRAGMA locking_mode = EXCLUSIVE to serialize against CLI invocations | G-33-RE-EXCLUSIVE-LOCK | | Re-running the job within the same minute MUST be a no-op | G-33-RE-IDEMPOTENT-RERUN | | A failed batch MUST NOT advance the cursor; next run picks up at the same PurgeAfter boundary | G-33-RE-NO-PARTIAL-COMMIT | | Cascade order is fixed: dereference blobs → delete notes → delete reports — reverse order would leave orphan note rows or dangling blob refs | G-33-RE-CASCADE-ORDER | | Telemetry emitted via the standard sink (../06-telemetry-and-logging/); error_log()/var_dump() forbidden | G-33-RE-NO-DIRECT-LOG |
+
+-- WP-Cron schedule: workflowy_feedback_purge_daily registered with wp_schedule_event(time(), 'daily', …) at plugin activation; offset to 00:30 UTC (15 min after activity-feed purge).
+-- Handler: WorkFlowy\\Feedback\\PurgeJob::run().
+-- MUST also be invocable from CLI: wp workflowy feedback purge --dry-run (gate G-33-RE-CLI-DRY-RUN).
+
+-- Source: spec/33-feedback-report/04-retention-and-export.md # purge`,
+  "f4-3": `A one-shot operation triggered by the user-management "Delete my account" flow OR by a direct GDPR Art. 17 request relayed by an Admin.
+
+-- Source: spec/33-feedback-report/04-retention-and-export.md # GDPR`,
+  "f4-4": `csv — produces a streaming CSV download for offline review or migration.
+
+-- Source: spec/33-feedback-report/04-retention-and-export.md # CSV`,
+  "f9-closing": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- Feedback table migration in feedback.db (PascalCase, FeedbackId INTEGER PRIMARY KEY AUTOINCREMENT, status enum)
+-- FeedbackType + FeedbackStatus TypeScript enums (no magic strings)
+-- src/features/feedback/FeedbackButton.tsx + FeedbackForm.tsx (Navbar entry per FR-1)
+-- src/features/feedback/feedback.schema.ts (Zod schema enforcing 120/2000 char limits)
+-- src/features/feedback/admin/FeedbackInbox.tsx (Admin-role gated)
+
+-- Source: spec/33-feedback-report/00-overview.md`,
+  "act-cover": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- src/pages/activity/ActivityFeed.tsx
+-- wp-plugin/includes/Activity/ActivityRecorder.php
+-- wp-plugin/includes/Rest/ActivityController.php
+-- Audit log for compliance — see operator runbooks in spec/15-wp-plugin-how-to/23-operator-runbooks/
+-- Email/push notifications — covered separately by spec/36-user-management/
+
+-- Source: spec/34-activity-feed/00-overview.md`,
+  "act-guide": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- src/pages/activity/ActivityFeed.tsx
+-- wp-plugin/includes/Activity/ActivityRecorder.php
+-- wp-plugin/includes/Rest/ActivityController.php
+-- Audit log for compliance — see operator runbooks in spec/15-wp-plugin-how-to/23-operator-runbooks/
+-- Email/push notifications — covered separately by spec/36-user-management/
+
+-- Source: spec/34-activity-feed/00-overview.md`,
+  "a1-1": `Define the canonical ActivityEvent table, the closed EventType enum, the JSON shape of every event, and the invariants every emitter and consumer MUST honour. md) depends on this shape.
+
+-- ./00-overview.md — Parent overview (§"Pending Sub-Specs" row 01)
+-- ./97-acceptance-criteria.md — AT registry
+
+-- Source: spec/34-activity-feed/01-event-schema.md`,
+  "a1-2": `PascalCase columns per spec/04-database-conventions/. INTEGER PK auto-increment per ADR for SQLite identity (no UUIDs in primary keys).
+
+-- Source: spec/34-activity-feed/01-event-schema.md # DDL`,
+  "a1-3": `---
+
+-- Source: spec/34-activity-feed/01-event-schema.md # EventType`,
+  "a1-4": `Each PayloadJson value MUST validate against the schema for its EventType. Stored as TEXT (JSON string), parsed on read via parseResponse(json, PayloadSchemaForType[type]).
+
+-- Source: spec/34-activity-feed/01-event-schema.md # Payload`,
+  "a1-5": `Cursor is <OccurredAtMillis>_<ActivityEventId>. Lexicographic descending sort.
+
+-- Source: spec/34-activity-feed/01-event-schema.md # Cursor`,
+  "a2-1": `| # | Stage | Module | Output | |---|---|---|---| | 1 | Intent | Action handler in src/features/<feature>/actions/*.ts (per ADR-0023) | A typed ActivityIntent object | | 2 | Capture | src/features/activity/captureEvent.ts (the chokepoint) | ActivityEvent draft (no ActivityEventId) | | 3 | Persist | IDB queue worker (per ADR-0023 — sole egress) | Row written to local mirror + queued for server | | 4 | Replay | Server REST handler POST /activity/event | Row written to SQLite ActivityEvent table | | 5 | Broadcast | SSE emitter on /stream/page/{id} (per ADR-0025) | event: activity frame fanned out to subscribers |
+
+-- Source: spec/34-activity-feed/02-capture-pipeline.md # Pipeline Stages`,
+  "a2-2": `Per the loader↔queue contract (ADR-0023), every mutation lives in an action handler under src/features/<feature>/actions/. The handler MUST construct an ActivityIntent before writing to the local mirror — the intent is the input to the chokepoint.
+
+-- Source: spec/34-activity-feed/02-capture-pipeline.md # Stage 1`,
+  "a2-3": `---
+
+-- Source: spec/34-activity-feed/02-capture-pipeline.md # Stage 2`,
+  "a2-4": `The queue worker (single instance per tab, per ADR-0023) drains the FIFO queue. For activity events, it issues POST /activity/event with the canonical PascalCase envelope.
+
+-- Source: spec/34-activity-feed/02-capture-pipeline.md # Stage 3`,
+  "a2-5": `After insert, the handler publishes one event: activity frame to /stream/page/{PageItemId} per ADR-0025. md §SSE Frame).
+
+-- Source: spec/34-activity-feed/02-capture-pipeline.md # Stage 5`,
+  "a3-1": `| Route | Component | Loader | Boundary | |---|---|---|---| | /page/:pageId/activity | <PageActivityFeed> | pageActivityLoader | <ActivityBoundary> | | /me/activity | <UserActivityFeed> | userActivityLoader | <ActivityBoundary> |
+
+-- Source: spec/34-activity-feed/03-feed-ui.md # Routing`,
+  "a3-2": `Per ADR-0023 loader↔queue contract: loaders read the local mirror first (≤16ms p95, never fetch). The feed loader queries ActivityEventMirror for rows with matching PageItemId (or ActorUserId), ordered by OccurredAt DESC, limited to the cursor window.
+
+-- Source: spec/34-activity-feed/03-feed-ui.md # Loader`,
+  "a3-3": `| Element | Component | Behavior | |---|---|---| | Header | <PageHeader title="Activity" /> (no action button — read-only) | n/a | | Filter bar | <EventTypeFilter> (multi-select, 8 enum values from 01-event-schema.md) + <ActorFilter> + <DateRangeFilter> | URL-driven via ?types=…&actor=…&from=…&to=… | | List | <DataList virtualized={rows.length>=1000}> rendering <ActivityRow> per row | Virtualization mandatory ≥1000 rows (ADR-0017) | | Empty state | <EmptyState icon={Activity} title="No activity yet"> | Lucide icon only — no emoji glyphs | | Pagination | "Load more" button when Cursor present in last response | Cursor-based per 01-event-schema.md |
+
+-- EventType === 'ItemDeleted'
+-- OccurredAt > now() - 30 days (still within trash retention per mem://features/trash-logic)
+-- The row's TargetItemId is still present in the Trash table
+
+-- Source: spec/34-activity-feed/03-feed-ui.md # Components`,
+  "a3-4": `The feed surface is read-only EXCEPT for the restore action on rows where:
+
+-- EventType === 'ItemDeleted'
+-- OccurredAt > now() - 30 days (still within trash retention per mem://features/trash-logic)
+-- The row's TargetItemId is still present in the Trash table
+
+-- Source: spec/34-activity-feed/03-feed-ui.md # RestoreItemButton`,
+  "a3-5": `get('/activity/…') directly | Violates ADR-0023 mirror-first contract; ≥16ms p95 on every nav. cursor to IDB | Bypasses cursor-shape regex; IDB throws cryptic error.
+
+-- Source: spec/34-activity-feed/03-feed-ui.md # Anti-Patterns`,
+  "a4-1": `| Constant | Value | Rationale | Gate | |---|---|---|---| | RETENTION_DAYS | 30 | Mirrors trash-retention parity (mem://features/trash-logic) | G-34-RP-RETENTION-30D | | PURGE_INTERVAL | daily (00:15 UTC) | Off-peak; aligns with WP-Cron defaults | G-34-RP-PURGE-DAILY | | PURGE_BATCH_SIZE | 5,000 rows / tx | Keeps SQLite write-lock <250 ms p95 | G-34-RP-BATCH-CAP | | MIRROR_COMPACT_INTERVAL | on each new SSE batch | Piggybacks an already-open IDB tx (no extra wakeups) | G-34-RP-MIRROR-PIGGYBACK |
+
+-- Source: spec/34-activity-feed/04-retention-and-purge.md # Retention Policy`,
+  "a4-2": `md §G-34-ES-PURGE-AFTER-COMPUTED) — never recompute OccurredAt + 30d in the WHERE clause (gate G-34-RP-USE-PURGE-AFTER-COL). This keeps the index IX_ActivityEvent_PurgeAfter covering.
+
+-- WP-Cron schedule: workflowy_activity_purge_daily registered with wp_schedule_event(time(), 'daily', …) at plugin activation.
+-- Handler: WorkFlowy\\Activity\\PurgeJob::run().
+-- MUST also be invocable from CLI: wp workflowy activity purge --dry-run (gate G-34-RP-CLI-DRY-RUN).
+-- The job MUST acquire a SQLite advisory lock (PRAGMA locking_mode = EXCLUSIVE inside the tx) — concurrent invocations from CLI + Cron MUST serialize, never interleave (gate G-34-RP-EXCLUSIVE-LOCK).
+-- Re-running the job within the same minute MUST be a no-op (cutoff unchanged, no rows match) — verified by AT-ACTIVITYFEED-15.
+
+-- Source: spec/34-activity-feed/04-retention-and-purge.md # Server-Side Purge`,
+  "a4-3": `On route mount, mirror compaction MUST complete in ≤50 ms p95 for a mirror of ≤10,000 rows; otherwise it MUST yield to the next idle tick (requestIdleCallback) and resume (gate G-34-RP-COMPACT-BUDGET).
+
+-- Runs piggy-backed on every successful SSE batch apply (the IDB tx is already open per ADR-0023).
+-- Standalone trigger only on cold-start of the activity-feed route (one-shot).
+-- MUST clamp the cutoff to the oldest open feed cursor — deleting an event still referenced by a paginated cursor would invalidate the cursor and break the "stable descending sort" invariant from ./03-feed-ui.md (gate G-34-RP-CURSOR-PIN).
+-- MUST use the PurgeAfter IDB index — never scan the full object store (gate G-34-RP-MIRROR-INDEX-ONLY).
+-- MUST NOT enqueue any FIFO sync entries — purge is local-mirror cleanup only; the server purge is authoritative (gate G-34-RP-MIRROR-NO-FIFO).
+
+-- Source: spec/34-activity-feed/04-retention-and-purge.md # Mirror Compaction`,
+  "a9-closing": `This overview explicitly addresses each of the 6 AI-readiness audit dimensions; every claim is load-bearing for the next audit run.
+
+-- src/pages/activity/ActivityFeed.tsx
+-- wp-plugin/includes/Activity/ActivityRecorder.php
+-- wp-plugin/includes/Rest/ActivityController.php
+-- Audit log for compliance — see operator runbooks in spec/15-wp-plugin-how-to/23-operator-runbooks/
+-- Email/push notifications — covered separately by spec/36-user-management/
+
+-- Source: spec/34-activity-feed/00-overview.md`,
 };
