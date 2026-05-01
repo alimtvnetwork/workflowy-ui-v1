@@ -1370,6 +1370,9 @@ export const GENERATED_NOTES: Record<string, string> = {
   "s2-2": `UpdatedAt descending within each relevance bucket | | Bucket size | 20 score points (5 buckets total: 0–19, 20–39, 40–59, 60–79, 80–100) | | Tiebreak inside bucket | UpdatedAt desc, then OwnerId asc (deterministic) | | Mirror handling | Each peer-group instance ranks independently — searching surfaces the instance whose breadcrumb path matches the user's mental location. | | Trash / completed | Excluded by default; included only when query has is:trashed / is:complete.
 
 -- Source: spec/31-app/01-features/16-search-ranking.md # Decisions at a Glance`,
+  "s2-3": `I-SR-01 Ranking is deterministic — same query + same DB snapshot always yields identical order.
+
+-- Source: spec/31-app/01-features/16-search-ranking.md # Invariants (bullet 1)`,
   "s2-4": `| Case | Behavior | |------|----------| | Query matches title exactly + 100 notes substring | Title-exact item ranks first (score 150) regardless of recency. | | Two items with identical scores | Sorted by UpdatedAt desc; further tied → OwnerId asc.
 
 -- Source: spec/31-app/01-features/16-search-ranking.md # Edge Cases`,
