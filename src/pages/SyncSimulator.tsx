@@ -141,6 +141,22 @@ export default function SyncSimulator() {
               <Slider min={0} max={6000} step={100} value={[latency]} onValueChange={(v) => setLatency(v[0])} className="mt-2" />
               <p className="text-xs text-muted-foreground mt-1">Every queued op waits this long before applying.</p>
             </div>
+            <div>
+              <Label className="text-sm">
+                Clock speed: <span className="font-mono">{(clock.MsPerVirtualDay / 1000).toFixed(1)}s</span> real = 1 virtual day
+              </Label>
+              <Slider
+                min={1000}
+                max={30000}
+                step={500}
+                value={[clock.MsPerVirtualDay]}
+                onValueChange={(v) => virtualClock.setState({ MsPerVirtualDay: v[0] })}
+                className="mt-2"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Compresses time for the auto-reaper. Lower = faster virtual days.
+              </p>
+            </div>
             <div className="flex items-center justify-between">
               <div>
                 <Label className="text-sm flex items-center gap-2">
