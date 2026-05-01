@@ -11,6 +11,7 @@ export interface NoteSource {
   slideId: string;
   spec: string;       // path relative to repo root
   anchor?: string;    // heading substring, e.g. "Algorithm" or "User Story"
+  bullet?: number;    // 1-indexed: pick this bullet from the matched section as the note
 }
 
 export const NOTE_SOURCES: NoteSource[] = [
