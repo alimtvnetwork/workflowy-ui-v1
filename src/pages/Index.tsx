@@ -72,6 +72,8 @@ const Index = () => {
             {" · "}<Link to="/print?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" · "}<Link to="/print?deck=enforcement" className="underline hover:text-foreground">enforcement</Link>
             {" · "}<Link to="/print?deck=user" className="underline hover:text-foreground">user</Link>
+            {" · "}<Link to="/print?deck=feedback" className="underline hover:text-foreground">feedback</Link>
+            {" · "}<Link to="/print?deck=activity" className="underline hover:text-foreground">activity</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
           <div>
@@ -81,6 +83,8 @@ const Index = () => {
             {" · "}<Link to="/presenter?deck=ops" className="underline hover:text-foreground">ops</Link>
             {" · "}<Link to="/presenter?deck=enforcement" className="underline hover:text-foreground">enforcement</Link>
             {" · "}<Link to="/presenter?deck=user" className="underline hover:text-foreground">user</Link>
+            {" · "}<Link to="/presenter?deck=feedback" className="underline hover:text-foreground">feedback</Link>
+            {" · "}<Link to="/presenter?deck=activity" className="underline hover:text-foreground">activity</Link>
             {" "}— current slide, next slide, speaker notes, and a timer.
           </div>
           <div>
