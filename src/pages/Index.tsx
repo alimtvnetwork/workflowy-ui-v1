@@ -33,6 +33,11 @@ const Index = () => {
             server makes it true. Each slide is sourced from the spec under
             <code className="text-foreground mx-1">spec/</code>.
           </p>
+          <div className="mt-4">
+            <Link to="/decks" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-border hover:bg-muted text-sm">
+              Browse all decks & simulators →
+            </Link>
+          </div>
         </header>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
