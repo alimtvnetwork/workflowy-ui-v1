@@ -6,6 +6,8 @@ import { backendSlides } from "@/deck/backend-slides";
 import { opsSlides } from "@/deck/ops-slides";
 import { enforcementSlides } from "@/deck/enforcement-slides";
 import { userSlides } from "@/deck/user-slides";
+import { feedbackSlides } from "@/deck/feedback-slides";
+import { activitySlides } from "@/deck/activity-slides";
 import { attachNotes } from "@/deck/notes";
 import {
   clearOverride,
