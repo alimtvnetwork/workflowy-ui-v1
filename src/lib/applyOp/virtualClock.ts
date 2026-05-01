@@ -81,6 +81,17 @@ class VirtualClock {
   setState(patch: Partial<ClockState>) {
     this.hydrate();
     const wasRunning = this.state.Running;
+    // If clock speed changes while running, re-anchor so already-elapsed
+    // virtual time is preserved and only future ticks use the new scale.
+    if (
+      patch.MsPerVirtualDay !== undefined &&
+      patch.MsPerVirtualDay !== this.state.MsPerVirtualDay &&
+      this.state.Running
+    ) {
+      const currentVirtualNow = this.nowMs();
+      this.state = { ...this.state, AnchorMs: currentVirtualNow };
+      this.lastReapedDay = -1; // virtualDay() restarts from 0 against new anchor
+    }
     this.state = { ...this.state, ...patch };
     this.persist();
     if (this.state.Running && !wasRunning) this.startTimer();
