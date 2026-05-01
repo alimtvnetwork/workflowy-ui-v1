@@ -7,6 +7,7 @@ import { userSlides } from "@/deck/user-slides";
 import { feedbackSlides } from "@/deck/feedback-slides";
 import { activitySlides } from "@/deck/activity-slides";
 import { searchSlides } from "@/deck/search-slides";
+import { templateSlides } from "@/deck/template-slides";
 
 const Index = () => {
   const fePhases = countChapters(frontendSlides);
@@ -17,6 +18,7 @@ const Index = () => {
   const fbPhases = countChapters(feedbackSlides);
   const actPhases = countChapters(activitySlides);
   const srPhases = countChapters(searchSlides);
+  const tplPhases = countChapters(templateSlides);
 
   return (
     <main className="min-h-screen bg-background text-foreground">
