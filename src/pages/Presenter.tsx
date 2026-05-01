@@ -33,12 +33,16 @@ const DECKS: Record<string, { title: string; slides: SlideMeta[]; audience: stri
   ops:         { title: "Operations",        slides: attachNotes(opsSlides),         audience: "ops-deck" },
   enforcement: { title: "Enforcement Rules", slides: attachNotes(enforcementSlides), audience: "enforcement-deck" },
   user:        { title: "User Management",   slides: attachNotes(userSlides),        audience: "user-deck" },
+  feedback:    { title: "Feedback Reports",  slides: attachNotes(feedbackSlides),    audience: "feedback-deck" },
+  activity:    { title: "Activity Feed",     slides: attachNotes(activitySlides),    audience: "activity-deck" },
 };
+
+const DECK_KEYS = Object.keys(DECKS);
 
 export default function Presenter() {
   const [params, setParams] = useSearchParams();
-  const q = params.get("deck");
-  const which = q === "backend" || q === "ops" || q === "enforcement" || q === "user" ? q : "frontend";
+  const q = params.get("deck") ?? "";
+  const which = DECK_KEYS.includes(q) ? q : "frontend";
   const { title, slides } = DECKS[which];
 
   const [index, setIndex] = useState(() => Number(params.get("i") ?? 0));
