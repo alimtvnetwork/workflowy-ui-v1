@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +13,8 @@ import {
   purgeExpired,
   subscribeActivity,
 } from "@/lib/applyOp/activity";
+import { itemsStore } from "@/lib/applyOp/db";
+import type { Item } from "@/lib/applyOp/types";
 
 const EVENT_VARIANT: Record<EventType, "default" | "secondary" | "destructive" | "outline"> = {
   ItemCreated: "default",
@@ -25,18 +27,37 @@ const EVENT_VARIANT: Record<EventType, "default" | "secondary" | "destructive" |
   TemplateApplied: "outline",
 };
 
+/** Resolve an ItemId → display label. Falls back to a 6-char ID badge for
+ *  orphaned items (e.g. trashed between event capture and feed render). */
+function labelFor(id: string, items: Map<string, Item>): { label: string; orphaned: boolean } {
+  const item = items.get(id);
+  const content = item?.Content?.trim();
+  if (content) return { label: content, orphaned: false };
+  return { label: id.slice(0, 6), orphaned: true };
+}
+
 export default function ActivityFeed() {
   const [events, setEvents] = useState<ActivityEvent[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [filter, setFilter] = useState<EventType | "all">("all");
   const [pageFilter, setPageFilter] = useState<string>("all");
   const [purgedCount, setPurgedCount] = useState<number | null>(null);
 
-  const refresh = async () => setEvents(await getFeed({ limit: 200 }));
+  const refresh = async () => {
+    setEvents(await getFeed({ limit: 200 }));
+    setItems(await itemsStore.getAll());
+  };
 
   useEffect(() => {
     void refresh();
     return subscribeActivity(() => { void refresh(); });
   }, []);
+
+  const itemsById = useMemo(() => {
+    const m = new Map<string, Item>();
+    for (const i of items) m.set(i.Id, i);
+    return m;
+  }, [items]);
 
   const pageIds = Array.from(new Set(events.map((e) => e.PageItemId))).sort();
   const byPage = pageFilter === "all" ? events : events.filter((e) => e.PageItemId === pageFilter);
@@ -77,15 +98,18 @@ export default function ActivityFeed() {
           </Button>
           {pageIds.map((pid) => {
             const count = events.filter((e) => e.PageItemId === pid).length;
+            const { label, orphaned } = labelFor(pid, itemsById);
             return (
               <Button
                 key={pid}
                 size="sm"
                 variant={pageFilter === pid ? "default" : "outline"}
                 onClick={() => setPageFilter(pid)}
-                className="font-mono"
+                title={pid}
+                className={orphaned ? "font-mono" : "max-w-[16rem] truncate"}
               >
-                {pid.slice(0, 6)} ({count})
+                {orphaned ? <span className="opacity-60">⌫ </span> : null}
+                {label} ({count})
               </Button>
             );
           })}
@@ -145,14 +169,26 @@ export default function ActivityFeed() {
                 0,
                 Math.round((new Date(e.PurgeAfter).getTime() - Date.now()) / 86400_000),
               );
+              const target = labelFor(e.TargetItemId, itemsById);
+              const page = labelFor(e.PageItemId, itemsById);
               return (
                 <li key={e.ActivityEventId} className="rounded border border-border p-3 text-xs space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="secondary" className="font-mono">#{e.ActivityEventId}</Badge>
                     <Badge variant={EVENT_VARIANT[e.EventType]}>{e.EventType}</Badge>
                     <span className="text-muted-foreground">user {e.ActorUserId}</span>
-                    <span className="font-mono text-muted-foreground">target {e.TargetItemId.slice(0, 6)}</span>
-                    <span className="font-mono text-muted-foreground">page {e.PageItemId.slice(0, 6)}</span>
+                    <span
+                      className={target.orphaned ? "font-mono text-muted-foreground" : "text-muted-foreground max-w-[14rem] truncate"}
+                      title={e.TargetItemId}
+                    >
+                      target <span className={target.orphaned ? "" : "text-foreground"}>{target.orphaned ? "⌫ " : ""}{target.label}</span>
+                    </span>
+                    <span
+                      className={page.orphaned ? "font-mono text-muted-foreground" : "text-muted-foreground max-w-[14rem] truncate"}
+                      title={e.PageItemId}
+                    >
+                      page <span className={page.orphaned ? "" : "text-foreground"}>{page.orphaned ? "⌫ " : ""}{page.label}</span>
+                    </span>
                     {e.Reversible === 0 && <Badge variant="outline">irreversible</Badge>}
                     <span className="ml-auto text-muted-foreground">
                       {new Date(e.OccurredAt).toLocaleTimeString()} · purge in {purgeIn}d

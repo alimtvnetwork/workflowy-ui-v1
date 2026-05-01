@@ -35,6 +35,10 @@ export interface LwwLossEvent {
   ItemId: string;
   Reason: "keep-remote" | "lww-local-lost";
   At: string;
+  /** ISO timestamp of the remote write that won (for diagnostics). */
+  RemoteUpdatedAt?: string;
+  /** ISO timestamp of the local edit that lost (EnqueuedAt). */
+  LocalEnqueuedAt?: string;
 }
 type LossListener = (ev: LwwLossEvent) => void;
 
@@ -211,18 +215,53 @@ class SyncQueue {
     const entry = this.queue.find((q) => q.QueueId === queueId);
     if (!entry || entry.Status !== "conflict") return;
     entry.Resolution = strategy;
+    const itemId = (entry.Payload as UpdatePayload)?.Id ?? entry.BaseSnapshot?.Id ?? "";
+
     if (strategy === "keep-remote") {
-      // Drop the local change entirely — local user's edit was overwritten.
+      // User explicitly drops local — overwrite is a loss event.
       entry.Status = "applied";
       entry.ResultEnvelope = null;
       await this.persist(entry);
-      const itemId = (entry.Payload as UpdatePayload)?.Id ?? entry.BaseSnapshot?.Id ?? "";
-      this.emitLoss({ QueueId: entry.QueueId, ItemId: itemId, Reason: "keep-remote", At: nowIso() });
+      this.emitLoss({
+        QueueId: entry.QueueId,
+        ItemId: itemId,
+        Reason: "keep-remote",
+        At: nowIso(),
+        RemoteUpdatedAt: entry.ConflictRemote?.UpdatedAt,
+        LocalEnqueuedAt: entry.EnqueuedAt,
+      });
       this.emit();
       return;
     }
-    // keep-local and lww both reapply the local payload — lww wins because
-    // applyOp will write a newer UpdatedAt over the remote.
+
+    if (strategy === "lww") {
+      // Auto last-writer-wins — compare remote's UpdatedAt against the local
+      // edit's EnqueuedAt (when the user typed it). If remote is strictly
+      // newer, local loses: drop the local payload AND emit a loss event so
+      // the toast pipeline can surface it (spec 14 §14.4 + 14b §14b.4).
+      const remoteAt = entry.ConflictRemote?.UpdatedAt
+        ? new Date(entry.ConflictRemote.UpdatedAt).getTime()
+        : 0;
+      const localAt = new Date(entry.EnqueuedAt).getTime();
+      if (remoteAt > localAt) {
+        entry.Status = "applied";
+        entry.ResultEnvelope = null;
+        await this.persist(entry);
+        this.emitLoss({
+          QueueId: entry.QueueId,
+          ItemId: itemId,
+          Reason: "lww-local-lost",
+          At: nowIso(),
+          RemoteUpdatedAt: entry.ConflictRemote?.UpdatedAt,
+          LocalEnqueuedAt: entry.EnqueuedAt,
+        });
+        this.emit();
+        return;
+      }
+      // Local is newer (or equal) — fall through and commit, local wins.
+    }
+
+    // keep-local OR lww-local-wins: reapply the local payload.
     await this.commit(entry);
   }
 
