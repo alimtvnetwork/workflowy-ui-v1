@@ -224,4 +224,62 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "u4-3", spec: "spec/36-user-management/04-admin-ui.md", anchor: "audit" },
 
   { slideId: "u9-closing", spec: "spec/36-user-management/00-overview.md" },
+
+  // =========================================================================
+  // Feedback report deck (/feedback-deck) — fb-cover, f1..f4 + closing
+  // =========================================================================
+  { slideId: "fb-cover", spec: "spec/33-feedback-report/00-overview.md" },
+  { slideId: "fb-guide", spec: "spec/33-feedback-report/00-overview.md" },
+
+  { slideId: "f1-1", spec: "spec/33-feedback-report/01-data-model.md" },
+  { slideId: "f1-2", spec: "spec/33-feedback-report/01-data-model.md", anchor: "FeedbackReport" },
+  { slideId: "f1-3", spec: "spec/33-feedback-report/01-data-model.md", anchor: "Closed Enums" },
+  { slideId: "f1-4", spec: "spec/33-feedback-report/01-data-model.md", anchor: "FeedbackStatus" },
+  { slideId: "f1-5", spec: "spec/33-feedback-report/01-data-model.md", anchor: "Diagnostics" },
+
+  { slideId: "f2-1", spec: "spec/33-feedback-report/02-submission-flow.md", anchor: "Submission" },
+  { slideId: "f2-2", spec: "spec/33-feedback-report/02-submission-flow.md", anchor: "EP-FEEDBACK-CREATE" },
+  { slideId: "f2-3", spec: "spec/33-feedback-report/02-submission-flow.md", anchor: "Retry" },
+
+  { slideId: "f3-1", spec: "spec/33-feedback-report/03-admin-review-ui.md", anchor: "Route Mounting" },
+  { slideId: "f3-2", spec: "spec/33-feedback-report/03-admin-review-ui.md", anchor: "Inbox" },
+  { slideId: "f3-3", spec: "spec/33-feedback-report/03-admin-review-ui.md", anchor: "Detail Drawer" },
+  { slideId: "f3-4", spec: "spec/33-feedback-report/03-admin-review-ui.md", anchor: "Status Transition" },
+
+  { slideId: "f4-1", spec: "spec/33-feedback-report/04-retention-and-export.md" },
+  { slideId: "f4-2", spec: "spec/33-feedback-report/04-retention-and-export.md", anchor: "purge" },
+  { slideId: "f4-3", spec: "spec/33-feedback-report/04-retention-and-export.md", anchor: "GDPR" },
+  { slideId: "f4-4", spec: "spec/33-feedback-report/04-retention-and-export.md", anchor: "CSV" },
+
+  { slideId: "f9-closing", spec: "spec/33-feedback-report/00-overview.md" },
+
+  // =========================================================================
+  // Activity feed deck (/activity-deck) — act-cover, a1..a4 + closing
+  // =========================================================================
+  { slideId: "act-cover", spec: "spec/34-activity-feed/00-overview.md" },
+  { slideId: "act-guide", spec: "spec/34-activity-feed/00-overview.md" },
+
+  { slideId: "a1-1", spec: "spec/34-activity-feed/01-event-schema.md" },
+  { slideId: "a1-2", spec: "spec/34-activity-feed/01-event-schema.md", anchor: "DDL" },
+  { slideId: "a1-3", spec: "spec/34-activity-feed/01-event-schema.md", anchor: "EventType" },
+  { slideId: "a1-4", spec: "spec/34-activity-feed/01-event-schema.md", anchor: "Payload" },
+  { slideId: "a1-5", spec: "spec/34-activity-feed/01-event-schema.md", anchor: "Cursor" },
+
+  { slideId: "a2-1", spec: "spec/34-activity-feed/02-capture-pipeline.md", anchor: "Pipeline Stages" },
+  { slideId: "a2-2", spec: "spec/34-activity-feed/02-capture-pipeline.md", anchor: "Stage 1" },
+  { slideId: "a2-3", spec: "spec/34-activity-feed/02-capture-pipeline.md", anchor: "Stage 2" },
+  { slideId: "a2-4", spec: "spec/34-activity-feed/02-capture-pipeline.md", anchor: "Stage 3" },
+  { slideId: "a2-5", spec: "spec/34-activity-feed/02-capture-pipeline.md", anchor: "Stage 5" },
+
+  { slideId: "a3-1", spec: "spec/34-activity-feed/03-feed-ui.md", anchor: "Routing" },
+  { slideId: "a3-2", spec: "spec/34-activity-feed/03-feed-ui.md", anchor: "Loader" },
+  { slideId: "a3-3", spec: "spec/34-activity-feed/03-feed-ui.md", anchor: "Components" },
+  { slideId: "a3-4", spec: "spec/34-activity-feed/03-feed-ui.md", anchor: "RestoreItemButton" },
+  { slideId: "a3-5", spec: "spec/34-activity-feed/03-feed-ui.md", anchor: "Anti-Patterns" },
+
+  { slideId: "a4-1", spec: "spec/34-activity-feed/04-retention-and-purge.md", anchor: "Retention Policy" },
+  { slideId: "a4-2", spec: "spec/34-activity-feed/04-retention-and-purge.md", anchor: "Server-Side Purge" },
+  { slideId: "a4-3", spec: "spec/34-activity-feed/04-retention-and-purge.md", anchor: "Mirror Compaction" },
+
+  { slideId: "a9-closing", spec: "spec/34-activity-feed/00-overview.md" },
 ];
