@@ -916,6 +916,121 @@ Cross-reference: spec/36-user-management/97-acceptance-criteria.md. Questions?`,
 3. PurgeAfter is a column, not a query. Cursor-pinned compaction. Both exist so the system stays small without ever losing a restore.
 
 Cross-reference: spec/34-activity-feed/97-acceptance-criteria.md. Questions?`,
+
+  // ============================================================
+  // FEEDBACK REPORT DECK (/feedback-deck)
+  // ============================================================
+
+  "fb-cover": `Feedback is one inbox, two closed enums, and a 90-day reaper. Smaller scope than activity, same discipline.
+
+-- Audience: anyone shipping a feature whose users might hit "Report a problem".
+-- 22 slides, ~20 minutes. Closed enums and the transition matrix carry most of the weight.
+-- Spec source: spec/33-feedback-report/.`,
+
+  "fb-guide": `Read this if you're touching the navbar feedback button, the admin inbox, or anything that mutates FeedbackStatus. The transition matrix on slide f1-4 is the rulebook — every status change MUST go through it.
+
+-- Four phases mirror the spec folder: schema → submission → admin → retention.
+-- Gate IDs (G-33-*) are quoted verbatim and CI-checked.`,
+
+  // ----- Phase F-1: Storage & schema -----
+  "f1-divider": `Phase F-1 — the data shape. Five slides on the database, the table, the enums, the transition matrix, and the diagnostics blob.`,
+
+  "f1-1": `feedback.db is its own SQLite file. Same reasoning as activity.db: write rate is bursty (one per user complaint, but they cluster around incidents) and the daily purge would lock the main DB.
+
+-- Same WP-Plugin process, separate file handle.
+-- No cross-DB joins; if you need ItemContent in a report, denormalize at submit time.`,
+
+  "f1-2": `One table: FeedbackReport. PascalCase columns, INTEGER PK. Indexed on Status, SubmittedAt, AssignedToUserId, and PurgeAfter.
+
+-- PurgeAfter is a stored column (not a computed expression) — same rationale as activity-deck slide a4-2.
+-- Diagnostics is TEXT (JSON); never a per-field column.`,
+
+  "f1-3": `Two closed enums. FeedbackType has 4 values: BugReport, FeatureRequest, ContentIssue, Other. FeedbackStatus has 6: New, Triaged, InProgress, Resolved, WontFix, Duplicate.
+
+-- Both are ADR-level decisions to extend.
+-- The status set is intentionally small — if you find yourself wanting "WaitingOnUser", talk to PM before adding it.`,
+
+  "f1-4": `Transition matrix is a Record<FromStatus, ReadonlyArray<ToStatus>>. Hard-coded; no dynamic rules. New → {Triaged, Duplicate}, Triaged → {InProgress, WontFix, Duplicate}, and so on.
+
+-- The transitionFeedback function (slide f3-4) is the SOLE writer; it consults this matrix on every call.
+-- Resolved and WontFix are terminal except for an Admin-only "reopen" path back to Triaged.`,
+
+  "f1-5": `Diagnostics is a strict, capped, PII-bounded JSON sub-shape. Browser, OS, viewport, current route, last 20 console errors, app version. Hard cap at 8 KB after compression.
+
+-- No URLs with query strings (could leak tokens). No localStorage dump. No cookie values.
+-- Strict Zod schema at the boundary; over-cap submissions are rejected with a clear error.`,
+
+  // ----- Phase F-2: Submission -----
+  "f2-divider": `Phase F-2 — how a complaint becomes a row. Single egress, retried, idempotent.`,
+
+  "f2-1": `submitFeedback is the chokepoint. One function, one egress. Builds the FeedbackReport draft, attaches diagnostics, attaches the optional screenshot blob, POSTs once.
+
+-- ESLint boundary: only the navbar feedback dialog may import this.
+-- Nothing else in the app writes to feedback.db, ever.`,
+
+  "f2-2": `POST /feedback is the REST contract. PascalCase envelope, multipart for the screenshot. Server validates the Zod schema, computes PurgeAfter = SubmittedAt + 90 days, inserts.
+
+-- ClientReportId for idempotency; client generates it before the first attempt.
+-- Returns the canonical FeedbackReportId for the success toast.`,
+
+  "f2-3": `Retry is exponential backoff with jitter, capped at 5 attempts over ~2 minutes. Persists in IDB so a tab close doesn't lose the report.
+
+-- 4xx responses (validation failures) do NOT retry — they surface a form error immediately.
+-- 5xx and network errors retry. After the cap, the report stays in the queue with a "needs attention" badge.`,
+
+  // ----- Phase F-3: Admin review -----
+  "f3-divider": `Phase F-3 — the inbox. Route gating, URL-driven filters, the sole-writer transition function.`,
+
+  "f3-1": `/admin/feedback is wrapped in <RequireRole role="admin">. The route fails closed: a missing role redirects to /403, never renders a partial inbox.
+
+-- Same boundary as the rest of admin UI — no special case.
+-- Server-side check too; the route gate is defense in depth, not the only defense.`,
+
+  "f3-2": `Inbox is a virtualized list with URL-synchronized state. Filters (status, type, assignee, date range) live in the query string, so the URL is shareable and the back button works.
+
+-- Cursor-based pagination, not page-number — the underlying table grows monotonically.
+-- "Load more" pages backwards through the cursor.`,
+
+  "f3-3": `Detail drawer slides over the inbox; doesn't navigate away. Read-only by default — every mutation goes through the transition writer (next slide) or the assignee picker.
+
+-- Diagnostics rendered as a collapsed JSON tree; expandable on click.
+-- Screenshot lazy-loaded only when the drawer opens.`,
+
+  "f3-4": `transitionFeedback is the SOLE writer. Validates (fromStatus → toStatus) against the matrix on slide f1-4. Rejects illegal transitions with a 422 + clear error code.
+
+-- ESLint boundary: only the detail-drawer transition controls may import it.
+-- Audit log: every transition writes a row to FeedbackTransitionLog (actor, from, to, timestamp).`,
+
+  // ----- Phase F-4: Retention & GDPR -----
+  "f4-divider": `Phase F-4 — how the inbox stays bounded and how we honor deletion requests.`,
+
+  "f4-1": `Five closed constants: RETENTION_DAYS = 90, PURGE_INTERVAL = daily 00:30 UTC, PURGE_BATCH_SIZE = 1,000 rows/tx, SCREENSHOT_BLOB_TTL = matches retention, GDPR_RESPONSE_SLA = 30 days.
+
+-- 90 days is longer than activity (30) because feedback drives roadmap decisions; PMs need a quarter of context.
+-- Batch is smaller (1k vs 5k) because each row may carry a screenshot blob to dereference.`,
+
+  "f4-2": `Daily purge cascades in a fixed order: dereference screenshot blobs → delete FeedbackTransitionLog rows → delete FeedbackReport rows. Reverse order would orphan blobs or leave dangling FK references.
+
+-- WHERE PurgeAfter <= now() — uses the stored column, never recomputes (G-33-RE-USE-PURGE-AFTER-COL).
+-- PRAGMA locking_mode = EXCLUSIVE for the duration of each batch; serializes against any CLI invocation.`,
+
+  "f4-3": `DeleteMyFeedback is the GDPR Art. 17 path. One-shot, atomic, triggered either by the user-management "Delete account" flow OR by an Admin relaying a direct request.
+
+-- Cascades the same way as the daily purge but scoped to a single ReporterUserId.
+-- Returns within the 30-day SLA; in practice synchronous — the batch is small per user.`,
+
+  "f4-4": `CSV export is streamed (not buffered). Admin-only, hits the same RequireRole gate. Columns: report metadata + flattened diagnostics; never the screenshot blob (size + PII).
+
+-- Stream chunks of 500 rows; client receives a Content-Disposition: attachment response.
+-- Audited: every export writes an entry to the admin audit log with the filter set used.`,
+
+  "f9-closing": `Three things to take with you:
+
+1. submitFeedback is the only ingress, transitionFeedback is the only writer for status. Two functions, two boundaries — that's the entire write surface.
+2. The transition matrix is hard-coded. If product wants a new status flow, it's a code change with a Zod test, not a config tweak.
+3. PurgeAfter is a column. Cascade order is fixed: blobs → log → reports. GDPR uses the same cascade, just scoped to one user.
+
+Cross-reference: spec/33-feedback-report/97-acceptance-criteria.md. Questions?`,
 };
 
 // Merge with auto-extracted notes from spec markdown.
