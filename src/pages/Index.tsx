@@ -67,6 +67,9 @@ const Index = () => {
           <DeckCard to="/search-deck" kicker="Search" title="One grammar. Five buckets. Sub-300 ms."
             blurb="Closed EBNF grammar with 12 keys, deterministic relevance-then-recency ranking, FTS5 per App-DB, no client re-rank, 250-cap viewport."
             stats={[{ label: "Slides", value: searchSlides.length }, { label: "Phases", value: srPhases }]} />
+          <DeckCard to="/template-deck" kicker="Templates" title="One stamp. Zero links. Forever divergent."
+            blurb="Snapshot semantics: DFS clone with mirror flatten and trash exclusion, fresh UUIDs on apply, ownership rewrite, ten ATs."
+            stats={[{ label: "Slides", value: templateSlides.length }, { label: "Phases", value: tplPhases }]} />
         </div>
 
         <footer className="mt-20 pt-8 border-t border-border text-sm text-muted-foreground space-y-2">
@@ -87,6 +90,7 @@ const Index = () => {
             {" · "}<Link to="/print?deck=feedback" className="underline hover:text-foreground">feedback</Link>
             {" · "}<Link to="/print?deck=activity" className="underline hover:text-foreground">activity</Link>
             {" · "}<Link to="/print?deck=search" className="underline hover:text-foreground">search</Link>
+            {" · "}<Link to="/print?deck=template" className="underline hover:text-foreground">template</Link>
             {" "}— then Cmd/Ctrl-P → Save as PDF.
           </div>
           <div>
