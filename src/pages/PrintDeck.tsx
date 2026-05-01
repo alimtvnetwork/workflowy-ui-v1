@@ -8,6 +8,7 @@ import { userSlides } from "@/deck/user-slides";
 import { feedbackSlides } from "@/deck/feedback-slides";
 import { activitySlides } from "@/deck/activity-slides";
 import { searchSlides } from "@/deck/search-slides";
+import { templateSlides } from "@/deck/template-slides";
 import type { SlideMeta } from "@/deck/types";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
@@ -19,6 +20,7 @@ const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
   feedback:    { title: "WorkFlowy — Feedback Reports",  slides: feedbackSlides },
   activity:    { title: "WorkFlowy — Activity Feed",     slides: activitySlides },
   search:      { title: "WorkFlowy — Search & Ranking",  slides: searchSlides },
+  template:    { title: "WorkFlowy — Templates & Snapshots", slides: templateSlides },
 };
 
 const DECK_KEYS = Object.keys(DECKS);
