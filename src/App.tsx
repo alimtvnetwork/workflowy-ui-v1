@@ -10,6 +10,7 @@ import OpsDeck from "./pages/OpsDeck.tsx";
 import EnforcementDeck from "./pages/EnforcementDeck.tsx";
 import UserDeck from "./pages/UserDeck.tsx";
 import FeedbackDeck from "./pages/FeedbackDeck.tsx";
+import ActivityDeck from "./pages/ActivityDeck.tsx";
 import PrintDeck from "./pages/PrintDeck.tsx";
 import Presenter from "./pages/Presenter.tsx";
 import ApiPlayground from "./pages/ApiPlayground.tsx";
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/enforcement-deck" element={<EnforcementDeck />} />
           <Route path="/user-deck" element={<UserDeck />} />
           <Route path="/feedback-deck" element={<FeedbackDeck />} />
+          <Route path="/activity-deck" element={<ActivityDeck />} />
           <Route path="/print" element={<PrintDeck />} />
           <Route path="/presenter" element={<Presenter />} />
           <Route path="/api-playground" element={<ApiPlayground />} />
