@@ -298,7 +298,7 @@ export const NOTE_SOURCES: NoteSource[] = [
 
   { slideId: "s2-1", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Ranking Algorithm" },
   { slideId: "s2-2", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Decisions at a Glance" },
-  { slideId: "s2-3", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Invariants" },
+  { slideId: "s2-3", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Invariants", bullet: 1 },
   { slideId: "s2-4", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Edge Cases" },
   { slideId: "s2-5", spec: "spec/31-app/01-features/16-search-ranking.md", anchor: "Acceptance Criteria" },
 
