@@ -103,6 +103,7 @@ const Index = () => {
             {" · "}<Link to="/feedback" className="underline hover:text-foreground">feedback</Link>
             {" · "}<Link to="/search-sim" className="underline hover:text-foreground">search</Link>
             {" · "}<Link to="/peer-group-sim" className="underline hover:text-foreground">peer-group</Link>
+            {" · "}<Link to="/template-sim" className="underline hover:text-foreground">templates</Link>
             {" "}— interactive items + op-journal in IndexedDB, plus latency + conflict resolution.
           </div>
         </footer>
