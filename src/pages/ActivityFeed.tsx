@@ -27,18 +27,37 @@ const EVENT_VARIANT: Record<EventType, "default" | "secondary" | "destructive" |
   TemplateApplied: "outline",
 };
 
+/** Resolve an ItemId → display label. Falls back to a 6-char ID badge for
+ *  orphaned items (e.g. trashed between event capture and feed render). */
+function labelFor(id: string, items: Map<string, Item>): { label: string; orphaned: boolean } {
+  const item = items.get(id);
+  const content = item?.Content?.trim();
+  if (content) return { label: content, orphaned: false };
+  return { label: id.slice(0, 6), orphaned: true };
+}
+
 export default function ActivityFeed() {
   const [events, setEvents] = useState<ActivityEvent[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [filter, setFilter] = useState<EventType | "all">("all");
   const [pageFilter, setPageFilter] = useState<string>("all");
   const [purgedCount, setPurgedCount] = useState<number | null>(null);
 
-  const refresh = async () => setEvents(await getFeed({ limit: 200 }));
+  const refresh = async () => {
+    setEvents(await getFeed({ limit: 200 }));
+    setItems(await itemsStore.getAll());
+  };
 
   useEffect(() => {
     void refresh();
     return subscribeActivity(() => { void refresh(); });
   }, []);
+
+  const itemsById = useMemo(() => {
+    const m = new Map<string, Item>();
+    for (const i of items) m.set(i.Id, i);
+    return m;
+  }, [items]);
 
   const pageIds = Array.from(new Set(events.map((e) => e.PageItemId))).sort();
   const byPage = pageFilter === "all" ? events : events.filter((e) => e.PageItemId === pageFilter);
