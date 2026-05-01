@@ -21,6 +21,7 @@ import ActivityFeed from "./pages/ActivityFeed.tsx";
 import Feedback from "./pages/Feedback.tsx";
 import SearchSim from "./pages/SearchSim.tsx";
 import PeerGroupSim from "./pages/PeerGroupSim.tsx";
+import TemplateSim from "./pages/TemplateSim.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/search-sim" element={<SearchSim />} />
           <Route path="/peer-group-sim" element={<PeerGroupSim />} />
+          <Route path="/template-sim" element={<TemplateSim />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
