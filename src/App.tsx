@@ -22,6 +22,7 @@ import Feedback from "./pages/Feedback.tsx";
 import SearchSim from "./pages/SearchSim.tsx";
 import PeerGroupSim from "./pages/PeerGroupSim.tsx";
 import TemplateSim from "./pages/TemplateSim.tsx";
+import Decks from "./pages/Decks.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
