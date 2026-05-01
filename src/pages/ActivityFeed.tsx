@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +13,8 @@ import {
   purgeExpired,
   subscribeActivity,
 } from "@/lib/applyOp/activity";
+import { itemsStore } from "@/lib/applyOp/db";
+import type { Item } from "@/lib/applyOp/types";
 
 const EVENT_VARIANT: Record<EventType, "default" | "secondary" | "destructive" | "outline"> = {
   ItemCreated: "default",
