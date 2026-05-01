@@ -204,10 +204,10 @@ export const NOTE_SOURCES: NoteSource[] = [
   { slideId: "u-guide", spec: "spec/36-user-management/00-overview.md" },
 
   { slideId: "u1-1", spec: "spec/36-user-management/01-account-and-settings.md" },
-  // Section 2 covers Set Password, MFA enrol, Delete Account in three bullets.
-  { slideId: "u1-2", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity" },
-  { slideId: "u1-3", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity" },
-  { slideId: "u1-4", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity" },
+  // Section "Account & Identity" has 4 bullets: Set Password, Change Email, MFA, Delete Account.
+  { slideId: "u1-2", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity", bullet: 1 },
+  { slideId: "u1-3", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity", bullet: 3 },
+  { slideId: "u1-4", spec: "spec/36-user-management/01-account-and-settings.md", anchor: "Account & Identity", bullet: 4 },
 
   { slideId: "u2-1", spec: "spec/36-user-management/02-auth-flow.md" },
   { slideId: "u2-2", spec: "spec/36-user-management/02-auth-flow.md", anchor: "login" },
