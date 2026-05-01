@@ -155,8 +155,16 @@ function main() {
       skipCount++;
       continue;
     }
-    const { headline, bullets } = summarize(section);
-    const note = format(headline, bullets, src.spec + (src.anchor ? ` # ${src.anchor}` : ""));
+    const { headline, bullets } = summarize(section, src.bullet);
+    if (!headline) {
+      console.warn(`! bullet ${src.bullet} not found: ${src.spec} # ${src.anchor ?? ""} (slide ${src.slideId})`);
+      skipCount++;
+      continue;
+    }
+    const srcLabel = src.spec
+      + (src.anchor ? ` # ${src.anchor}` : "")
+      + (src.bullet ? ` (bullet ${src.bullet})` : "");
+    const note = format(headline, bullets, srcLabel);
     out.push(`  ${JSON.stringify(src.slideId)}: \`${escapeBacktick(note)}\`,`);
     okCount++;
   }
