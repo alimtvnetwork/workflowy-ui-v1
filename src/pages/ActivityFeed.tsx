@@ -98,15 +98,18 @@ export default function ActivityFeed() {
           </Button>
           {pageIds.map((pid) => {
             const count = events.filter((e) => e.PageItemId === pid).length;
+            const { label, orphaned } = labelFor(pid, itemsById);
             return (
               <Button
                 key={pid}
                 size="sm"
                 variant={pageFilter === pid ? "default" : "outline"}
                 onClick={() => setPageFilter(pid)}
-                className="font-mono"
+                title={pid}
+                className={orphaned ? "font-mono" : "max-w-[16rem] truncate"}
               >
-                {pid.slice(0, 6)} ({count})
+                {orphaned ? <span className="opacity-60">⌫ </span> : null}
+                {label} ({count})
               </Button>
             );
           })}
@@ -166,14 +169,26 @@ export default function ActivityFeed() {
                 0,
                 Math.round((new Date(e.PurgeAfter).getTime() - Date.now()) / 86400_000),
               );
+              const target = labelFor(e.TargetItemId, itemsById);
+              const page = labelFor(e.PageItemId, itemsById);
               return (
                 <li key={e.ActivityEventId} className="rounded border border-border p-3 text-xs space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="secondary" className="font-mono">#{e.ActivityEventId}</Badge>
                     <Badge variant={EVENT_VARIANT[e.EventType]}>{e.EventType}</Badge>
                     <span className="text-muted-foreground">user {e.ActorUserId}</span>
-                    <span className="font-mono text-muted-foreground">target {e.TargetItemId.slice(0, 6)}</span>
-                    <span className="font-mono text-muted-foreground">page {e.PageItemId.slice(0, 6)}</span>
+                    <span
+                      className={target.orphaned ? "font-mono text-muted-foreground" : "text-muted-foreground max-w-[14rem] truncate"}
+                      title={e.TargetItemId}
+                    >
+                      target <span className={target.orphaned ? "" : "text-foreground"}>{target.orphaned ? "⌫ " : ""}{target.label}</span>
+                    </span>
+                    <span
+                      className={page.orphaned ? "font-mono text-muted-foreground" : "text-muted-foreground max-w-[14rem] truncate"}
+                      title={e.PageItemId}
+                    >
+                      page <span className={page.orphaned ? "" : "text-foreground"}>{page.orphaned ? "⌫ " : ""}{page.label}</span>
+                    </span>
                     {e.Reversible === 0 && <Badge variant="outline">irreversible</Badge>}
                     <span className="ml-auto text-muted-foreground">
                       {new Date(e.OccurredAt).toLocaleTimeString()} · purge in {purgeIn}d
