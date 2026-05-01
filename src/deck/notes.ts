@@ -791,6 +791,131 @@ Cross-reference: spec/35-enforcement-rules/97-acceptance-criteria.md and 97a-acc
 3. Every account-changing action is audited and reversible within a window. Soft-delete, session revocation, role changes — symmetry beats cleverness.
 
 Cross-reference: spec/36-user-management/97-acceptance-criteria.md. Questions?`,
+
+  // ============================================================
+  // ACTIVITY FEED DECK (/activity-deck)
+  // ============================================================
+
+  "act-cover": `Activity feed is small in surface area, large in invariants. One chokepoint, eight event types, thirty-day reaper — that's the whole deck.
+
+-- Audience: backend + frontend engineers shipping mutation-emitting features.
+-- 22 slides, ~25 minutes. Heavy on contracts; keep questions for the closing.
+-- Spec source: spec/34-activity-feed/.`,
+
+  "act-guide": `Read this if you're touching any feature that mutates an item, board, or template. Every mutation MUST emit exactly one event through the chokepoint — no exceptions, no shortcuts.
+
+-- The four phases mirror the spec folder: schema → capture → UI → retention.
+-- Gate IDs (G-34-*) are quoted verbatim; CI fails if they're missing.`,
+
+  // ----- Phase A-1: Schema -----
+  "a1-divider": `Phase A-1 — the data shape. Five slides on the table, the enum, the payload, and the cursor.`,
+
+  "a1-1": `activity.db is its own SQLite file, not a table inside the main DB. Two reasons: write volume (every mutation = one row) and retention (daily purge would lock the main DB).
+
+-- Same WP-Plugin process, separate file handle. No cross-DB joins.
+-- If you need to join activity to items, denormalize ItemContent into the event payload at capture time.`,
+
+  "a1-2": `One table: ActivityEvent. PascalCase columns, INTEGER PK auto-increment (per ADR — no UUIDs in primary keys). Indexed on PageItemId, ActorUserId, OccurredAt, and PurgeAfter.
+
+-- PurgeAfter is a stored column, not a computed expression. Slide a4-2 explains why.
+-- Before/After are TEXT (JSON). Do NOT add per-field columns; the schema is closed.`,
+
+  "a1-3": `Eight EventType values, no more: ItemCreated, ItemUpdated, ItemMoved, ItemDeleted, ItemRestored, ItemMirrored, BoardColumnReordered, TemplateApplied.
+
+-- This is a closed enum — adding a ninth value is an ADR-level decision.
+-- The row dispatcher on slide a3-3 enforces exhaustiveness; TypeScript fails the build if any branch is missing.`,
+
+  "a1-4": `Each EventType has its own Zod schema for the PayloadJson column. Stored as a TEXT blob, parsed on read at the boundary — never trusted raw.
+
+-- Why per-type schemas: a Moved event has FromParentId/ToParentId; a Mirrored event has SourceItemId/MirrorItemId. They share nothing.
+-- parseResponse(payload, PayloadSchemaForType[type]) is the only acceptable read path.`,
+
+  "a1-5": `Cursor format is "<OccurredAtMillis>_<ActivityEventId>". Lexicographic sort gives you stable descending order even when two events share a millisecond.
+
+-- SSE frames carry the same cursor so the client can resume after a disconnect without dupes.
+-- Don't invent a different cursor shape elsewhere — the regex on slide a3-5 rejects anything else.`,
+
+  // ----- Phase A-2: Capture pipeline -----
+  "a2-divider": `Phase A-2 — exactly five stages from user intent to SSE broadcast. Memorize the count.`,
+
+  "a2-1": `Five stages, no more: Intent → Capture → Persist → Replay → Broadcast. Each one has a single owner module; cross-stage shortcuts are a CI failure.
+
+-- The chokepoint is Stage 2 (captureEvent). Every other stage is plumbing around it.
+-- If you find yourself emitting an event from a loader or a component, you're doing it wrong.`,
+
+  "a2-2": `Stage 1 — Intent. Lives in src/features/<feature>/actions/*.ts. Constructs an ActivityIntent BEFORE writing to the local mirror.
+
+-- The intent is just a typed object — no I/O, no awaits. Pure function output.
+-- Why first: if intent construction throws, you haven't corrupted the mirror yet.`,
+
+  "a2-3": `Stage 2 — captureEvent is THE chokepoint. One function in src/features/activity/captureEvent.ts. Validates the intent, stamps OccurredAt + PurgeAfter, writes to the mirror AND enqueues for the server in a single IDB transaction.
+
+-- Atomicity matters: a mirror row without a queue entry would never reach the server. A queue entry without a mirror row would show a phantom event in the local feed.
+-- ESLint boundary rule forbids importing this from anywhere except action handlers.`,
+
+  "a2-4": `Stages 3 & 4 — Persist drains the queue (sole egress per ADR-0023). Replay is the server REST handler that writes the canonical row.
+
+-- Persist retries on network error with exponential backoff; the row stays in the queue until 200 OK.
+-- Replay is idempotent on (ActorUserId, ClientEventId) — the client generates ClientEventId at Stage 1.`,
+
+  "a2-5": `Stage 5 — Broadcast. After the server insert, an SSE frame goes out on /stream/page/{PageItemId}. Read-only — clients never POST to the SSE endpoint.
+
+-- Frame shape is on slide a1-5. Cursor included so reconnects are resumable.
+-- Fanout is per-page, not global. A user watching page A doesn't get page B's noise.`,
+
+  // ----- Phase A-3: Feed UI -----
+  "a3-divider": `Phase A-3 — the read side. Mirror-first loaders, exhaustive dispatcher, server-side authz.`,
+
+  "a3-1": `Two routes, two loaders, one boundary. /page/:pageId/activity and /me/activity. Both wrapped in <ActivityBoundary> for error + suspense.
+
+-- Named boundary, not a generic ErrorBoundary — gives the SRE dashboard something to filter on.
+-- No third route. Cross-page activity is an admin-only query (slide a3-5).`,
+
+  "a3-2": `Loader reads the local mirror first, p95 ≤16ms. Never fetches on initial render. The SSE stream tops up new rows; "Load more" pages backwards through the cursor.
+
+-- ADR-0023: loaders are mirror-first, queue is sole egress. This slide is that contract in action.
+-- If you see a loader doing fetch('/activity/...'), reject the PR.`,
+
+  "a3-3": `Row dispatcher is a Record<EventType, FC<{event}>>. No default: case. TypeScript fails the build the moment someone adds a ninth EventType without a row component.
+
+-- This is the payoff for the closed enum on slide a1-3.
+-- Each row component owns its payload Zod parse — defensive, even though the server validated it.`,
+
+  "a3-4": `Restore is the only mutation in the read surface. Available on ItemDeleted rows where the deletion is within the trash-retention window AND the actor still has write permission.
+
+-- Restoring emits its own ItemRestored event — the feed is its own audit trail.
+-- The button calls the same editor action a normal restore would; no special endpoint.`,
+
+  "a3-5": `Authorization is server-side only. Every loader hits a hasRole check before the SQL query — never trust client-side filtering.
+
+-- Per-user feeds: ActorUserId = current user OR PageItemId in shared pages where the user has read access.
+-- Admin cross-user view: hasRole(actor, "admin") opens the filter; gated by G-33-AR-AUTHZ.`,
+
+  // ----- Phase A-4: Retention & purge -----
+  "a4-divider": `Phase A-4 — how the table stays small without losing in-flight restores.`,
+
+  "a4-1": `Four constants, all closed: RETENTION_DAYS = 30, PURGE_INTERVAL = daily 00:15 UTC, PURGE_BATCH_SIZE = 5,000 rows/tx, MIRROR_COMPACT_INTERVAL = on each new SSE batch.
+
+-- 30 days mirrors trash-retention so a restore never points at a purged event.
+-- Batch cap keeps the SQLite write-lock under 250ms p95.`,
+
+  "a4-2": `Server purge runs on WP-Cron. WHERE PurgeAfter <= now() — uses the stored column, never recomputes OccurredAt + 30d in the predicate (that breaks the index).
+
+-- Batches of 5,000 with explicit BEGIN/COMMIT. Re-entrant: a missed run catches up on the next tick.
+-- Telemetry: rows_purged + tx_duration_ms emitted per batch.`,
+
+  "a4-3": `Mirror compaction is cursor-pinned. Local deletes clamp to the oldest open feed cursor — otherwise pagination would develop holes.
+
+-- Piggybacks on the SSE write tx; no extra IDB wakeups.
+-- ≤50ms p95 for ≤10k rows; over budget, yield to requestIdleCallback and resume.`,
+
+  "a9-closing": `Three things to take with you:
+
+1. captureEvent is the only way an event enters the system. Every shortcut you're tempted to take has a CI gate that will catch it.
+2. Closed enums + exhaustive dispatchers + per-type Zod schemas. Adding a ninth EventType is not a one-line change — and that's the point.
+3. PurgeAfter is a column, not a query. Cursor-pinned compaction. Both exist so the system stays small without ever losing a restore.
+
+Cross-reference: spec/34-activity-feed/97-acceptance-criteria.md. Questions?`,
 };
 
 // Merge with auto-extracted notes from spec markdown.
