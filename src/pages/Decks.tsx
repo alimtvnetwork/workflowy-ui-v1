@@ -116,6 +116,16 @@ const DECKS: DeckEntry[] = [
     slides: searchSlides,
     related: [{ label: "Search simulator", route: "/search-sim" }],
   },
+  {
+    key: "template",
+    route: "/template-deck",
+    title: "Templates & Snapshots",
+    audience: "Eng · product",
+    blurb: "One-shot stamp model: snapshot (T-2) → apply (T-3) → divergence proof. Cites /template-sim live.",
+    Icon: Camera,
+    slides: templateSlides,
+    related: [{ label: "Template simulator", route: "/template-sim" }],
+  },
 ];
 
 const SIMS: { route: string; label: string; blurb: string; Icon: typeof Box }[] = [
