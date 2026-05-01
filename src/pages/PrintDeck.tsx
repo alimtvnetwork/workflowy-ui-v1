@@ -7,6 +7,7 @@ import { enforcementSlides } from "@/deck/enforcement-slides";
 import { userSlides } from "@/deck/user-slides";
 import { feedbackSlides } from "@/deck/feedback-slides";
 import { activitySlides } from "@/deck/activity-slides";
+import { searchSlides } from "@/deck/search-slides";
 import type { SlideMeta } from "@/deck/types";
 
 const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
@@ -17,6 +18,7 @@ const DECKS: Record<string, { title: string; slides: SlideMeta[] }> = {
   user:        { title: "WorkFlowy — User Management",   slides: userSlides },
   feedback:    { title: "WorkFlowy — Feedback Reports",  slides: feedbackSlides },
   activity:    { title: "WorkFlowy — Activity Feed",     slides: activitySlides },
+  search:      { title: "WorkFlowy — Search & Ranking",  slides: searchSlides },
 };
 
 const DECK_KEYS = Object.keys(DECKS);
@@ -68,6 +70,7 @@ export default function PrintDeck() {
         <a href="/print?deck=user"        className="text-muted-foreground hover:text-foreground underline">User</a>
         <a href="/print?deck=feedback"    className="text-muted-foreground hover:text-foreground underline">Feedback</a>
         <a href="/print?deck=activity"    className="text-muted-foreground hover:text-foreground underline">Activity</a>
+        <a href="/print?deck=search"      className="text-muted-foreground hover:text-foreground underline">Search</a>
         <button onClick={() => window.print()}
                 className="px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:opacity-90">
           Print / Save as PDF
